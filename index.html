@@ -278,7 +278,7 @@ table.t th{word-break:normal;overflow-wrap:normal}
       <div class="takeaway"><span class="tag">If you do only one thing</span><p>Write a good CLAUDE.md. It is the single highest-leverage file in this setup.</p></div>
       <ul class="tight">
         <li><b>What goes in:</b> 3-5 lines of project overview, the exact sf commands to use, our Apex/LWC standards, the definition of done.</li>
-        <li><b>Naming conventions belong here too.</b> Put the short list in CLAUDE.md itself, or - once it grows - keep the full table in <code>docs/naming-conventions.md</code> and point to it from CLAUDE.md. Claude reads it at the start of every session, so AI-written code follows the same names as ours and review stops being about names.</li>
+        <li><b>Naming conventions belong here too</b> - the short list itself, or a pointer to <code>docs/naming-conventions.md</code> once it grows. Claude reads it every session, so AI-written code follows our names and review stops being about names.</li>
         <li><b>Keep it short.</b> Every line loads into every session, so every line is a recurring cost. The official test: "Would removing this line cause Claude to make mistakes?" If not, cut it.</li>
         <li><b>Start with <code>/init</code></b> - Claude analyzes the repo and drafts the file for you. Run <code>/context</code> afterwards to see what actually loaded.</li>
         <li><b>Shared vs personal:</b> <code>./CLAUDE.md</code> in git is the team's shared brain; <code>~/.claude/CLAUDE.md</code> is yours alone; split a growing file with <code>@imports</code>.</li>
