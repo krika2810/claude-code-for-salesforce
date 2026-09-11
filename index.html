@@ -278,12 +278,12 @@ table.t th{word-break:normal;overflow-wrap:normal}
       <div class="takeaway"><span class="tag">If you do only one thing</span><p>Write a good CLAUDE.md - the highest-leverage file in this setup.</p></div>
       <ul class="tight">
         <li><b>What goes in:</b> the project overview in 3-5 lines, the exact sf commands, our Apex/LWC standards, the definition of done.</li>
-        <li><b>Naming conventions belong here too</b> - the short list itself, or a pointer to <code>docs/naming-conventions.md</code> once it grows. Claude reads it every session, so AI-written code follows our names and review stops being about names.</li>
+        <li><b>Naming conventions belong here too</b> - the short list, or a pointer to <code>docs/naming-conventions.md</code> once it grows. Claude reads it every session, so AI-written code follows our names.</li>
         <li><b>Keep it short.</b> Every line loads into every session, so every line costs tokens forever. The test: would removing it cause mistakes? If not, cut it.</li>
         <li><b>Start with <code>/init</code></b> - Claude analyzes the repo and drafts the file. Run <code>/context</code> to see what loaded.</li>
         <li><b>Shared vs personal:</b> <code>./CLAUDE.md</code> in git is shared; <code>~/.claude/CLAUDE.md</code> is yours; split a growing file with <code>@imports</code>.</li>
       </ul>
-      <p class="note">Why this works: concise always-on instructions are followed; bloated files get ignored.</p>
+      <p class="note">Why this works: concise files get followed; bloated ones get ignored.</p>
     </div>
   </div>
 </section>
