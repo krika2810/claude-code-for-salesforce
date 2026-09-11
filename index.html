@@ -275,14 +275,14 @@ table.t th{word-break:normal;overflow-wrap:normal}
     <div class="kicker">Setup - step 2 of 5: CLAUDE.md</div>
     <h2>CLAUDE.md - the file Claude reads <span class="accent">at the start of every session</span></h2>
     <div class="body">
-      <div class="takeaway"><span class="tag">If you do only one thing</span><p>Write a good CLAUDE.md. It is the single highest-leverage file in this setup.</p></div>
+      <div class="takeaway"><span class="tag">If you do only one thing</span><p>Write a good CLAUDE.md - the highest-leverage file in this setup.</p></div>
       <ul class="tight">
-        <li><b>What goes in:</b> 3-5 lines of project overview, the exact sf commands to use, our Apex/LWC standards, the definition of done.</li>
+        <li><b>What goes in:</b> the project overview in 3-5 lines, the exact sf commands, our Apex/LWC standards, the definition of done.</li>
         <li><b>Naming conventions belong here too</b> - the short list itself, or a pointer to <code>docs/naming-conventions.md</code> once it grows. Claude reads it every session, so AI-written code follows our names and review stops being about names.</li>
-        <li><b>Keep it short.</b> Every line loads into every session, so every line is a recurring cost. The official test: "Would removing this line cause Claude to make mistakes?" If not, cut it.</li>
-        <li><b>Start with <code>/init</code></b> - Claude analyzes the repo and drafts the file for you. Run <code>/context</code> afterwards to see what actually loaded.</li>
+        <li><b>Keep it short.</b> Every line loads into every session, so every line costs tokens forever. The test: would removing it cause mistakes? If not, cut it.</li>
+        <li><b>Start with <code>/init</code></b> - Claude analyzes the repo and drafts the file. Run <code>/context</code> to see what loaded.</li>
         <li><b>Shared vs personal:</b> <code>./CLAUDE.md</code> in git is the team's shared brain; <code>~/.claude/CLAUDE.md</code> is yours alone; split a growing file with <code>@imports</code>.</li>
-        <li><b>Auto memory</b> runs alongside it: Claude saves its own notes between sessions (build commands, debugging insights). Your CLAUDE.md stays the source of truth.</li>
+        <li><b>Auto memory</b> runs alongside it: Claude saves its own notes between sessions; your CLAUDE.md stays the source of truth.</li>
       </ul>
       <p class="note">Why this works: concise always-on instructions are followed reliably; bloated files get ignored.</p>
     </div>
