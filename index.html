@@ -1,4 +1,19 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><script>(function(){var saved;try{saved=localStorage.getItem('ccs-theme')}catch(e){}var theme=saved||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme})();</script><title>Claude Code for Salesforce - Developer Workshop</title><meta name="description" content="A live developer workshop on reliable Claude Code practices for real Salesforce work."><style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function(){
+  var saved; try{saved=localStorage.getItem('ccs-theme')}catch(e){}
+  var theme=saved||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
+  document.documentElement.dataset.theme=theme;
+  document.documentElement.style.colorScheme=theme;
+})();
+</script>
+<title>Claude Code for Salesforce - Team Setup Guide</title>
+<meta name="description" content="How our Salesforce development team sets up Claude Code on the repository, step by step: CLAUDE.md, rules, skills, hooks, naming conventions, CI - and how the setup is used across the whole development lifecycle.">
+<style>
 @font-face{font-family:'AWS Diatype';src:url(fonts/AWSDiatype-Regular.woff2) format('woff2');font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:'AWS Diatype';src:url(fonts/AWSDiatype-RegularItalic.woff2) format('woff2');font-weight:400;font-style:italic;font-display:swap}
 @font-face{font-family:'AWS Diatype';src:url(fonts/AWSDiatype-Bold.woff2) format('woff2');font-weight:700;font-style:normal;font-display:swap}
@@ -151,57 +166,433 @@ table.t th{word-break:normal;overflow-wrap:normal}
 .ghost{font-size:clamp(80px,26vw,120px);top:-24px}
 .meta-hero{margin-top:24px;gap:8px 16px;font-size:12px}
 }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header class="topbar">
+  <div class="brand">CLAUDE CODE <b>/</b> SALESFORCE</div>
+  <button class="theme-toggle" type="button"><span class="theme-icon">☀</span><span class="theme-label">LIGHT</span></button>
+</header>
 
-.practice{display:grid;grid-template-columns:.9fr 1.1fr 1.15fr;gap:14px;flex:1;min-height:0;max-height:42vh}
-.practice .card{justify-content:flex-start;padding:18px 20px}.practice .card .h{font-size:17px}.practice .card p{font-size:14.5px}
-.demo{background:linear-gradient(145deg,rgba(168,85,247,.12),var(--bg-card));border-color:rgba(168,85,247,.34)}
-.demo .h{color:var(--purple-soft)!important}.cmd{font-family:var(--mono);color:var(--purple-soft);font-size:12.5px;display:block;margin-top:8px;line-height:1.45}
-.workshop{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--green);text-transform:uppercase;margin-bottom:7px}
-@media(max-width:720px){.practice{display:block;max-height:none}.practice .card{margin-top:10px}.practice .card p{font-size:13.5px}}
+<!-- 1 TITLE -->
+<section class="slide">
+  <div class="inner">
+    <div class="body">
+      <div class="kicker">Team setup guide</div>
+      <h1>Claude Code<br>for <span class="accent">Salesforce</span></h1>
+      <p class="lede">How we set up Claude Code on our Salesforce repository, step by step, so the code it writes already follows our standards - and how we use it across the whole development lifecycle, from planning to deployment.</p>
+      <div class="meta-hero">
+        <span><i></i>For developers: the full setup, in the order you build it</span>
+        <span><i></i>Companion repo: krika2810/claude-code-sf-starter</span>
+        <span><i></i>Every step explains why it exists</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-.practice{display:grid;grid-template-columns:.9fr 1.1fr 1.15fr;gap:14px;flex:1;min-height:0;max-height:42vh}
-.practice .card{justify-content:flex-start;padding:18px 20px}.practice .card .h{font-size:17px}.practice .card p{font-size:14.5px}
-.demo{background:linear-gradient(145deg,rgba(168,85,247,.12),var(--bg-card));border-color:rgba(168,85,247,.34)}
-.demo .h{color:var(--purple-soft)!important}.cmd{font-family:var(--mono);color:var(--purple-soft);font-size:12.5px;display:block;margin-top:8px;line-height:1.45}
-.workshop{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--green);text-transform:uppercase;margin-bottom:7px}
-@media(max-width:720px){.practice{display:block;max-height:none}.practice .card{margin-top:10px}.practice .card p{font-size:13.5px}}
+<!-- 2 WHY -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Why we set this up</div>
+    <h2>Claude does not know our standards - <span class="accent">until the repo teaches them</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>Every new session starts blank.</b> Without setup files, you re-explain your standards every time - and you forget things.</li>
+        <li><b>Unguided Claude writes generic Salesforce code.</b> SOQL inside loops, no CRUD/FLS checks, tests without real assertions.</li>
+        <li><b>Review becomes the bottleneck.</b> Writing is the fast part; fixing what review catches is the slow part.</li>
+        <li><b>The fix:</b> write the standards down once, in the repo. Claude reads them every session, and the pipeline proves them on every pull request.</li>
+      </ul>
+      <div class="takeaway"><span class="tag">The one rule underneath everything</span><p>AI-written code meets exactly the same standard as human-written code. The setup exists to make that cheap, not to lower the bar.</p></div>
+    </div>
+  </div>
+</section>
 
-.practice{display:grid;grid-template-columns:.9fr 1.1fr 1.15fr;gap:14px;flex:1;min-height:0;max-height:42vh}
-.practice .card{justify-content:flex-start;padding:18px 20px}.practice .card .h{font-size:17px}.practice .card p{font-size:14.5px}
-.demo{background:linear-gradient(145deg,rgba(168,85,247,.12),var(--bg-card));border-color:rgba(168,85,247,.34)}
-.demo .h{color:var(--purple-soft)!important}.cmd{font-family:var(--mono);color:var(--purple-soft);font-size:12.5px;display:block;margin-top:8px;line-height:1.45}
-.workshop{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--green);text-transform:uppercase;margin-bottom:7px}
-@media(max-width:720px){.practice{display:block;max-height:none}.practice .card{margin-top:10px}.practice .card p{font-size:13.5px}}
-</style></head><body><div id="progress"></div><header class="topbar"><div class="brand">CLAUDE CODE <b>/</b> SALESFORCE WORKSHOP</div><button class="theme-toggle" type="button"><span class="theme-icon">☀</span><span class="theme-label">LIGHT</span></button></header><section class="slide"><div class="inner"><span class="ghost">01</span><div class="kicker">Developer workshop</div><div class="body"><h1>Use Claude Code as an <span class="accent">engineering system</span>, not a code generator</h1><p class="lede">A live workshop on the practices that make Claude Code reliable on real Salesforce work. Every practice ends with something the room can inspect live.</p><div class="meta-hero"><span><i></i>Developer workshop</span><span><i></i>Live practice on every slide</span><span><i></i>Apex + LWC examples</span></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Workshop path</div><h2>Learn the practices in the order you will use them</h2><div class="body"><div class="flow"><div class="stage"><span class="sn">1</span><div class="st">Frame the job</div><p>Outcome, success criteria, architecture</p></div><div class="stage"><span class="sn">2</span><div class="st">Control context</div><p>Instructions, rules, examples, plans</p></div><div class="stage"><span class="sn">3</span><div class="st">Give safe capabilities</div><p>Tools, MCP, boundaries, errors</p></div><div class="stage"><span class="sn">4</span><div class="st">Run the work</div><p>Loops, decomposition, subagents, handoffs</p></div><div class="stage"><span class="sn">5</span><div class="st">Prove the result</div><p>Tests, review, provenance, human gates</p></div><div class="stage"><span class="sn">6</span><div class="st">Operate and improve</div><p>Sessions, evaluation, cost, observability</p></div></div><div class="takeaway"><span class="tag">Workshop rule</span><p>No slide ends with theory. Each practice has a Salesforce demo the room can inspect live.</p></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 01</div><h2>Start with the business outcome, not the prompt</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>A good Claude Code task begins with the result, constraints, and proof of success. The prompt is an implementation detail, not the design.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Define: user outcome, affected Salesforce surface, non-negotiable constraints, and acceptance evidence. Keep architecture proportional to the job.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Ask Claude to turn “improve account creation” into a one-page brief: users, flow, constraints, acceptance tests, and open questions.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 02</div><h2>Choose the lightest pattern that can do the job</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Use a direct answer for a small change, a fixed workflow for known steps, and an agentic workflow only when the next step depends on what Claude discovers.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Decision rule: direct edit for clear scope; plan and chain for predictable stages; agentic loop for open-ended investigation. Complexity must earn its cost.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Run the same Apex bug three ways. Show why a one-file null check needs direct execution while an unknown governor-limit failure needs investigation.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 03</div><h2>Make success testable before Claude writes code</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Turn “good”, “secure”, and “fast” into observable criteria. Claude performs better when it can check its own work against evidence.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>State exact behavior, edge cases, limits, files allowed to change, and the command or test that proves completion. Avoid vague confidence language.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Give Claude a failing Apex test for bulk Account creation and ask it to make the test pass without changing the test or public contract.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 04</div><h2>Put stable team knowledge in the repository</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>CLAUDE.md should hold facts that apply to most tasks: architecture, commands, repo map, hard constraints, and what “done” means.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Keep shared knowledge at project level. Split detailed standards into focused files and import them. Personal preferences stay user-level.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Open a blank session, ask where Account creation starts, then add a short repo map to CLAUDE.md and repeat. Compare search time and answer quality.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 05</div><h2>Load rules only when the file needs them</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Conditional rules keep instructions relevant. They reduce context noise and prevent LWC rules from competing with Apex rules.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Use path-scoped rules for conventions spread across directories. Put only universal guidance in CLAUDE.md. Treat context as a budget.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Create apex.md for **/*.cls and lwc.md for **/lwc/**. Edit one file of each type and use /context to show what loaded.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 06</div><h2>Teach judgment with examples, not more prose</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>When a requirement is interpreted inconsistently, two or three examples usually beat another page of instructions. Include close calls and non-examples.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Show acceptable and unacceptable patterns, the reason, and expected output shape. Examples teach boundaries, not just formatting.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Give Claude one bulk-safe trigger example, one query-in-loop anti-example, and one ambiguous helper. Ask it to classify a new class and explain the boundary.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 07</div><h2>Plan when the cost of being wrong is high</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Plan mode is for architecture, many files, unknown dependencies, or several valid approaches. Direct execution is for a small, understood change.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>During planning, ask for code paths, risks, alternatives, test impact, and an explicit file-change map. Approve the plan before edits.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Use plan mode to move Person Account creation from Flow logic into an invocable Apex service. Ask for two designs and trade-offs, then choose one.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 08</div><h2>Explore large codebases in narrow passes</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Reading everything floods context. Find entry points first, follow references, record facts, and delegate noisy searches away from the main thread.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Use Glob for names, Grep for symbols and messages, then Read only the files on the path. Persist a compact map in a scratchpad.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Ask an Explore subagent to trace Account creation from LWC to Apex to Flow and return only files, entry points, and unresolved branches.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 09</div><h2>Turn repeatable work into a skill</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>A skill packages a procedure, quality bar, and allowed tools. It should activate for a recognizable job, not become a second CLAUDE.md.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Use project skills for team workflows. Fork verbose analysis and restrict allowed tools. Require arguments when missing parameters would cause guessing.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Build /apex-review with context: fork and read-only tools. Run it on one class and inspect the compact report returned to the main session.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 10</div><h2>Give every tool one clear job</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Claude selects tools from their names and descriptions. Overlap creates random routing; vague descriptions create wrong calls.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Describe when to use the tool, inputs, outputs, edge cases, and how it differs from similar tools. Split broad tools by intent.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Compare “query_salesforce” with separate “find_accounts_by_email” and “load_account_by_id”. Ask Claude which tool fits three requests.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 11</div><h2>Give each agent only the tools its role needs</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>More tools do not mean more capability. They increase selection errors and widen the damage a mistaken agent can cause.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>A researcher reads; an implementer edits; a reviewer stays read-only. Remove unused tools instead of relying on reminders not to use them.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Create a read-only Apex reviewer subagent. Show that it cannot edit or deploy even if the prompt asks it to “fix everything”.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 12</div><h2>Scope MCP connections and secrets correctly</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Share stable team integrations at project scope, keep experiments at user scope, and inject credentials through environment variables. Never commit tokens.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Prefer a maintained MCP server for standard systems. Build custom MCP only for a team-specific workflow. Expose catalogs as resources when discovery matters.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Add a read-only Salesforce metadata MCP to .mcp.json with ${SF_ACCESS_TOKEN}; show project discovery without exposing the secret.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 13</div><h2>Return errors Claude can act on</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>“Operation failed” removes the information needed for recovery. Errors should say what failed, whether retry helps, and what partial work survived.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Separate transient, validation, permission, and business errors. A valid empty result is not an access failure. Recover locally when safe.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Mock an MCP account lookup returning timeout, no match, and permission denied. Watch Claude retry only the transient case and clarify the no-match case.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 14</div><h2>Give Claude a goal and evidence, not a rigid script</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Agentic work is useful when the next step depends on what Claude discovers. A fixed script is better when every step is already known.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>State the outcome, allowed actions, stopping condition, and proof required. Let Claude adapt the investigation while deterministic controls protect hard boundaries.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Trace an unknown Account-save error: Claude searches logs, opens the named class, runs a focused test, and stops only when it can show the root cause and evidence.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 15</div><h2>Split work by independent questions</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Good decomposition reduces overlap and lets work run in parallel. Bad decomposition creates agents that repeat the same search or cannot combine results.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Partition by file set, concern, or source type. Use a fixed chain for known stages and dynamic subtasks when findings change the plan.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Send three subagents in parallel: Apex path, Flow path, and LWC path. Then ask the coordinator for one cross-layer transaction map.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 16</div><h2>Use one coordinator as the control point</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>In a multi-agent system, the coordinator owns decomposition, context routing, retries, coverage, and final synthesis. Subagents should not form an invisible side network.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Give each subagent a complete task packet and quality bar. Return structured results to the coordinator, including gaps and errors.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Run a coordinator that decides whether an Apex-only question needs one specialist or a cross-layer issue needs Apex, Flow, and LWC specialists.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 17</div><h2>Pass context explicitly between agents</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Subagents do not inherit the parent conversation. Missing constraints produce locally correct work that fails the real task.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Pass goal, relevant files, known facts, constraints, expected output, and source metadata. Use structured handoffs rather than “continue the work”.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>First omit the bulk limit and watch a subagent design for one record. Then pass a task packet requiring 200 records and compare the implementation.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 18</div><h2>Use hooks only for rules that must never be optional</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Prompts guide behavior; hooks enforce invariants. If one missed instruction can expose data or mutate the wrong org, use a deterministic control.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Intercept dangerous calls before execution. Normalize inconsistent tool output after execution. Keep judgment in prompts and guarantees in code.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Add a PreToolUse hook that blocks sf deploy to a production alias but allows scratch-org validation. Trigger both commands live.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 19</div><h2>Design handoffs for someone without the transcript</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>A handoff must stand alone. Include the objective, confirmed facts, files touched, evidence, unresolved risks, and the next decision.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Separate facts from assumptions. Keep identifiers and exact values. Never force the next agent or human to reconstruct context.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Pause a refactor halfway. Ask Claude for a structured handoff, start a fresh session, paste only that handoff, and continue safely.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 20</div><h2>Preserve critical facts outside the chat history</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Long sessions compress details and lose middle content. Keep exact requirements, identifiers, and decisions in a durable working file.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Trim verbose tool output, put key facts first, use clear sections, and maintain a case-facts or scratchpad block that survives compaction.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>During a long Account feature task, write task-state.md with decisions, file map, test status, and open risks. Compact, then ask Claude to resume from it.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 21</div><h2>Resume only when the old context is still trustworthy</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>A resumed session is useful when the code and assumptions remain valid. If files changed, provide a delta or start fresh with a verified summary.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Name important sessions. Fork to compare approaches from one baseline. Do not carry stale tool results into a changed repository.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Resume yesterday’s session after changing one Apex class. First show the stale answer; then inject the git diff and request targeted re-analysis.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 22</div><h2>Ask when ambiguity changes the outcome</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Agents should not guess among multiple customers, environments, or architectural meanings. Clarify when the missing fact is load-bearing.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Escalate explicit human requests, policy gaps, and stalled work. Do not use sentiment or a self-reported confidence number as the trigger.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Ask Claude to “update the Account flow” when two active flows match. A good system returns the two API names and asks which one.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 23</div><h2>Force structure when another system must consume the answer</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Text that looks like JSON is not a contract. Use tool schemas or forced tool choice when downstream code requires exact fields.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Make absent fields nullable. Validate semantics after schema validation; valid JSON can still contain the wrong totals or file names.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Define a finding schema: file, line, severity, evidence, fix, nullable uncertainty. Run an Apex review and inspect the tool_use payload.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 24</div><h2>Retry with the exact failure, not the same prompt</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>A retry helps when format or reasoning can be corrected. It cannot recover information that was never available.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Return the failed output plus specific validation errors. Stop or escalate when the source lacks the required fact. Track repeated failure patterns.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Reject a generated test because no assertion covers the bulk case. Feed that exact validation failure back and compare the corrected test.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 25</div><h2>Review with fresh context and more than one pass</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>The session that wrote the code is biased toward its own reasoning. An independent reviewer sees different failures. Large changes need local and cross-file passes.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>First review each file for local defects. Then review integration, data flow, and transaction behavior across files. Preserve findings between passes.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Generate an Apex service in one session. Open a fresh read-only reviewer to inspect bulk behavior, then run a second pass across caller and tests.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 26</div><h2>Keep every claim attached to its evidence</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>Synthesis often drops source attribution. Require claim-source mappings and carry them through every agent and summary.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Record file, line, command output, URL, and date where relevant. If credible sources conflict, show the conflict instead of choosing silently.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Ask three subagents for findings as {claim, file, lines, evidence}. Make the coordinator reject any final finding without evidence.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 27</div><h2>Evaluate the system, not one impressive demo</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>A workshop success is repeatable performance across realistic tasks. Measure quality, latency, cost, safety, and failure recovery.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>Build a small fixed task set, capture baselines, change one thing at a time, and inspect failures by category. Monitor drift after model or repo changes.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Run five saved Salesforce tasks before and after adding examples to a rule. Compare pass rate, unnecessary edits, turns, and tokens.</p></div></div></div></div></section>
-<section class="slide"><div class="inner"><div class="kicker">Practice 28</div><h2>Close the loop with a reusable team playbook</h2><div class="body"><div class="practice"><div class="card"><div class="h"><span class="n">WHY</span>The principle</div><p>A Claude Code practice becomes valuable when developers can repeat it, see why it works, and improve it from evidence.</p></div><div class="card"><div class="h"><span class="n">HOW</span>What developers do</div><p>For each workflow, keep the intent, inputs, allowed capabilities, acceptance test, human gate, and failure path in version control.</p></div><div class="card demo"><div class="workshop">Live workshop cue</div><div class="h">Show it in Claude Code</div><p>Final lab: developers choose a real Salesforce change and build the prompt, context, specialist roles, evidence gate, and handoff together.</p></div></div></div></div></section><nav class="nav"><div class="counter"><b id="cur">01</b> / <span id="total">30</span></div><div class="arrows"><button class="prev" aria-label="Previous">←</button><button class="next" aria-label="Next">→</button></div></nav><div class="hint">ARROWS / SPACE TO NAVIGATE</div><script>
+<!-- 3 LIFECYCLE -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">The big picture</div>
+    <h2>One setup, used across the <span class="accent">whole development lifecycle</span></h2>
+    <div class="body">
+      <div class="flow">
+        <div class="stage"><span class="sn">1</span><div class="st">Plan</div><p>Explore the org's code with a subagent. Design in plan mode before anything is written.</p></div>
+        <div class="stage"><span class="sn">2</span><div class="st">Build</div><p>Claude writes Apex, LWC, Flows, OmniStudio with CLAUDE.md and rules already loaded.</p></div>
+        <div class="stage"><span class="sn">3</span><div class="st">Validate</div><p>Optional hooks scan every edited file as Claude works - not after.</p></div>
+        <div class="stage"><span class="sn">4</span><div class="st">Test</div><p>Apex tests written to our testing rules, run in a scratch org with coverage.</p></div>
+        <div class="stage"><span class="sn">5</span><div class="st">Review</div><p>CI runs the full gate. A fresh Claude instance reviews the PR independently.</p></div>
+        <div class="stage"><span class="sn">6</span><div class="st">Deploy</div><p>sf CLI deploys. Production deploys stay human-run.</p></div>
+      </div>
+      <p class="note">The rest of this deck: the setup in the order you build it, then how each stage above uses it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 TOOLS -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">The tools</div>
+    <h2>The four tools the setup <span class="accent">builds on</span></h2>
+    <div class="body">
+      <div class="grid c4">
+        <div class="card"><div class="h"><span class="n">1</span>Claude Code</div><p>The CLI every developer installs. Reads the repo's setup files at the start of each session.</p></div>
+        <div class="card"><div class="h"><span class="n">2</span>sf CLI</div><p>Scratch orgs, deploys, tests - the whole Salesforce development loop from one CLI.</p></div>
+        <div class="card"><div class="h"><span class="n">3</span>GitHub + Actions</div><p>Where the gate runs: scanners, tests, coverage, and an independent Claude review on every PR.</p></div>
+        <div class="card"><div class="h"><span class="n">4</span>The starter repo</div><p>krika2810/claude-code-sf-starter - every file below, commented, ready to copy.</p></div>
+      </div>
+      <p class="note">Claude drives CLIs well - tell it to use sf and gh directly instead of clicking through UIs or hand-writing API calls.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 STEP 1: REPO LAYOUT -->
+<section class="slide">
+  <div class="inner">
+    <div class="ghost">1</div>
+    <div class="kicker">Setup - step 1 of 5</div>
+    <h2>Put the setup <span class="accent">in the repo</span>, shared through git</h2>
+    <div class="body">
+<pre>my-sf-repo/
+├── CLAUDE.md                  <span class="cm"># the core: commands + standards, always loaded</span>
+├── .claude/
+│   ├── rules/                 <span class="cm"># detail, loads only for matching files</span>
+│   │   ├── apex.md  lwc.md  flows.md  omnistudio.md
+│   │   ├── testing.md  git.md  claude-usage.md
+│   ├── skills/                <span class="cm"># your procedures, on demand</span>
+│   │   ├── apex-review/  deploy-validate/  scratch-org-setup/
+│   └── settings.json          <span class="cm"># OPTIONAL: hooks + denied commands</span>
+├── docs/naming-conventions.md <span class="cm"># the naming reference</span>
+└── .github/workflows/         <span class="cm"># CI gate + Claude PR review</span></pre>
+      <div class="takeaway"><span class="tag">Build it in this order</span><p>CLAUDE.md first, then rules, then skills, then hooks (optional). The next four slides take them one at a time.</p></div>
+      <p class="note">Everything is committed, so a new developer gets the whole setup with git clone.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6 STEP 2: CLAUDE.md -->
+<section class="slide">
+  <div class="inner">
+    <div class="ghost">2</div>
+    <div class="kicker">Setup - step 2 of 5: CLAUDE.md</div>
+    <h2>CLAUDE.md - the file Claude reads <span class="accent">at the start of every session</span></h2>
+    <div class="body">
+      <div class="takeaway"><span class="tag">If you do only one thing</span><p>Write a good CLAUDE.md. It is the single highest-leverage file in this setup.</p></div>
+      <ul class="tight">
+        <li><b>What goes in:</b> 3-5 lines of project overview, the exact sf commands to use, our Apex/LWC standards, the definition of done, a pointer to the naming doc.</li>
+        <li><b>Keep it short.</b> Every line loads into every session, so every line is a recurring cost. The official test: "Would removing this line cause Claude to make mistakes?" If not, cut it.</li>
+        <li><b>Start with <code>/init</code></b> - Claude analyzes the repo and drafts the file for you. Run <code>/context</code> afterwards to see what actually loaded.</li>
+        <li><b>Shared vs personal:</b> <code>./CLAUDE.md</code> in git is the team's shared brain; <code>~/.claude/CLAUDE.md</code> is yours alone; split a growing file with <code>@imports</code>.</li>
+        <li><b>Auto memory</b> runs alongside it: Claude saves its own notes between sessions (build commands, debugging insights). Your CLAUDE.md stays the source of truth.</li>
+      </ul>
+      <p class="note">Why this works: concise always-on instructions are followed reliably; bloated files get ignored.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 STEP 3: RULES -->
+<section class="slide">
+  <div class="inner">
+    <div class="ghost">3</div>
+    <div class="kicker">Setup - step 3 of 5: rules</div>
+    <h2>Rules load <span class="accent">only for the files being edited</span> - that is the point</h2>
+    <div class="body">
+<pre><span class="cm"># .claude/rules/apex.md</span>
+---
+paths: ["**/*.cls", "**/*.trigger"]
+---
+<span class="cm"># Loaded only while Claude edits Apex. Costs zero tokens</span>
+<span class="cm"># when the work is a Flow or a YAML file.</span></pre>
+      <ul class="tight">
+        <li>One file per topic: <code>apex.md</code>, <code>lwc.md</code>, <code>flows.md</code>, <code>omnistudio.md</code>, <code>testing.md</code>, <code>git.md</code>.</li>
+        <li>This is where the depth lives: bulkification, sharing and CRUD/FLS, trigger discipline, async choice, test standards - the details that used to be tribal knowledge.</li>
+        <li>Less irrelevant context means better answers <b>and</b> fewer tokens spent.</li>
+      </ul>
+      <p class="note">Why this works: conditional loading keeps the context window for the task at hand. CLAUDE.md holds what is always true; rules hold what is true for this file type.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 8 STEP 4: SKILLS -->
+<section class="slide">
+  <div class="inner">
+    <div class="ghost">4</div>
+    <div class="kicker">Setup - step 4 of 5: skills</div>
+    <h2>Skills: our procedures, <span class="accent">written down once</span></h2>
+    <div class="body">
+      <div class="grid c3">
+        <div class="card"><span class="h"><span class="n">/apex-review</span></span><p>Reviews edited Apex against our rules: bulkification, CRUD/FLS, sharing, ApexDoc.</p></div>
+        <div class="card"><span class="h"><span class="n">/deploy-validate</span></span><p>Deploy + test + scan a scratch org, in the right order, with proof at each step.</p></div>
+        <div class="card"><span class="h"><span class="n">/scratch-org-setup</span></span><p>Creates and seeds a scratch org the same way, every time.</p></div>
+      </div>
+      <ul class="tight">
+        <li>A skill is a <code>SKILL.md</code> in <code>.claude/skills/</code> - a written procedure Claude runs when the task matches. No more re-explaining your deploy ritual.</li>
+        <li><b>Skill vs CLAUDE.md:</b> universal standards go in CLAUDE.md (always on); task procedures go in skills (loaded when needed).</li>
+        <li>Frontmatter controls blast radius: <code>context: fork</code> runs it isolated; <code>allowed-tools</code> restricts what it may call; <code>disable-model-invocation</code> keeps side-effect workflows manual.</li>
+      </ul>
+      <p class="note">Why this works: reusable workflows are encoded once and invoked on demand. Write your first skill for whatever the team re-explains most often.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 9 STEP 5: HOOKS -->
+<section class="slide">
+  <div class="inner">
+    <div class="ghost">5</div>
+    <div class="kicker">Setup - step 5 of 5: hooks (optional)</div>
+    <h2>Hooks: add them <span class="accent">when advice must become enforcement</span></h2>
+    <div class="body">
+      <div class="takeaway"><span class="tag">The design rule</span><p>CLAUDE.md advises. Hooks enforce. Start without them; add one the first time a standard gets ignored.</p></div>
+      <ul class="tight">
+        <li><b>Deny list</b> in settings.json - Claude cannot run <code>sf org delete</code> or deploy to production aliases.</li>
+        <li><b>PostToolUse hook</b> - scans every Apex file Claude edits for SOQL/DML in loops, hardcoded IDs, SeeAllData, empty catches.</li>
+        <li><b>Stop hook</b> - Claude cannot end the session until tests pass and the scanner is clean.</li>
+        <li>Prompt instructions fail some percent of the time. For a non-negotiable, that failure rate is the argument for a hook.</li>
+      </ul>
+      <p class="note">Why this works: deterministic steps get programmatic enforcement; judgment calls stay as prompt guidance. Template in .claude/settings.json - delete it if you do not want hooks yet.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 10 NAMING APEX/LWC -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Shared standards (1 of 2)</div>
+    <h2>Naming conventions: <span class="accent">Apex and LWC</span></h2>
+    <div class="body">
+      <table class="t">
+        <tr><th>Artifact</th><th>Pattern</th><th>Example</th></tr>
+        <tr><td>Service class</td><td><code>&lt;Domain&gt;&lt;Purpose&gt;Service</code></td><td><code>QuotePricingService</code></td></tr>
+        <tr><td>Trigger / handler</td><td><code>&lt;Object&gt;Trigger</code> + <code>Handler</code></td><td><code>AccountTrigger</code>, <code>AccountTriggerHandler</code></td></tr>
+        <tr><td>Async classes</td><td>suffix by type</td><td><code>ErpOrderSyncQueueable</code>, <code>StaleCaseCleanupBatch</code></td></tr>
+        <tr><td>Test class</td><td><code>&lt;ClassUnderTest&gt;Test</code></td><td><code>AccountTriggerHandlerTest</code></td></tr>
+        <tr><td>LWC bundle</td><td>camelCase (platform requires it)</td><td><code>accountRenewalCard</code></td></tr>
+        <tr><td>LWC Apex controller</td><td><code>&lt;Component&gt;Controller</code></td><td><code>AccountRenewalCardController</code></td></tr>
+      </table>
+      <p class="note">CLAUDE.md points Claude at docs/naming-conventions.md - AI-written code follows the same names as ours, so review stops being about names.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 11 NAMING FLOW/OMNI -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Shared standards (2 of 2)</div>
+    <h2>Naming conventions: <span class="accent">Flows, OmniStudio, and git</span></h2>
+    <div class="body">
+      <table class="t">
+        <tr><th>Artifact</th><th>Pattern</th><th>Example</th></tr>
+        <tr><td>Record-triggered flow</td><td><code>&lt;Object&gt; - &lt;Before|After&gt; - &lt;Purpose&gt;</code></td><td><code>Case - Before - Set Priority</code></td></tr>
+        <tr><td>Screen / autolaunched</td><td>type first</td><td><code>Screen - Case Intake</code>, <code>Auto - Escalate Stale Cases</code></td></tr>
+        <tr><td>DataRaptor / Int. Proc.</td><td><code>DR_</code> / <code>IP_</code></td><td><code>DR_Extract_Account_Details</code>, <code>IP_Update_OrderStatus_ERP</code></td></tr>
+        <tr><td>OmniScript / FlexCard</td><td><code>OS_</code> / <code>FC_</code></td><td><code>OS_Service_CreateCase</code>, <code>FC_Customer_Overview</code></td></tr>
+        <tr><td>Calc / Decision artifacts</td><td><code>CM_</code> <code>DM_</code> <code>CP_</code></td><td><code>CM_Discount_Calculation</code></td></tr>
+        <tr><td>Branch / commit</td><td><code>feature/&lt;ticket&gt;-&lt;name&gt;</code></td><td><code>feature/C360-412-renewal-rules</code></td></tr>
+      </table>
+      <p class="note">OmniStudio: never edit an active component in place - ship a new version (<code>_v2</code>). Full table with per-pattern reasons: docs/naming-conventions.md in the starter repo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 12 WHAT THE SETUP CATCHES -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Quality</div>
+    <h2>What the setup <span class="accent">catches</span> - every standard has a home and a trigger</h2>
+    <div class="body">
+      <table class="t">
+        <tr><th>The check</th><th>Where it lives</th><th>When it fires</th></tr>
+        <tr><td>Bulkification: no SOQL/DML in loops</td><td>rules/apex.md (+ optional hook)</td><td>while Claude writes</td></tr>
+        <tr><td>CRUD/FLS, sharing, no SOQL injection</td><td>rules/apex.md</td><td>while Claude writes</td></tr>
+        <tr><td>Governor limits: 200-record batches, 10 MB heap sync / 25 MB async, 100 SOQL sync / 200 async</td><td>rules/apex.md</td><td>while Claude writes</td></tr>
+        <tr><td>Right async choice: future vs queueable vs batch</td><td>rules/apex.md</td><td>while Claude writes</td></tr>
+        <tr><td>Real tests: assertions, own data, 85% coverage</td><td>rules/testing.md + CI gate</td><td>while writing, and in CI</td></tr>
+      </table>
+      <p class="note">Read the table this way: each standard is taught to Claude once (left two columns) and then checked automatically (right column). Nothing depends on someone remembering.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 13 CI -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">The pipeline (1 of 2)</div>
+    <h2>CI is where the setup <span class="accent">proves itself on every pull request</span></h2>
+    <div class="body">
+      <div class="flow">
+        <div class="stage"><span class="sn">JOB 1</span><div class="st">LWC Jest</div><p>Component unit tests on every PR.</p></div>
+        <div class="stage"><span class="sn">JOB 2</span><div class="st">Apex tests</div><p>Scratch org created in CI, tests run with coverage.</p></div>
+        <div class="stage"><span class="sn">GATE</span><div class="st">85% coverage</div><p>Below the gate, the PR cannot merge.</p></div>
+        <div class="stage"><span class="sn">ALWAYS</span><div class="st">Claude review</div><p>An independent Claude instance reviews the diff and comments.</p></div>
+      </div>
+      <p class="note">Workflow files: ci-templates/ in the starter repo - one README command copies them into .github/workflows/. Keep a few repeatable Salesforce tasks and re-run them after every setup change - that is how you know a "better" CLAUDE.md actually got better.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 14 CLAUDE IN CI -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">The pipeline (2 of 2)</div>
+    <h2>A <span class="accent">fresh</span> Claude reviews every PR - on purpose</h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>Self-review is weak review.</b> The session that wrote the code keeps its reasoning and defends its choices. An independent instance catches what the author misses.</li>
+        <li>Headless in pipelines: <code>claude -p "..." --output-format json</code> - machine-parseable findings posted as PR comments.</li>
+        <li>The review prompt carries <b>explicit criteria</b> from our rules, not "be conservative" - vague instructions raise false positives and erode trust.</li>
+        <li><b>Findings must cite evidence</b> - the file, the line, the rule violated. A comment without a pointer is opinion; with one, it is actionable.</li>
+        <li><code>@claude</code> in any PR comment summons help with full repo context (Claude Code Action, installed once).</li>
+      </ul>
+      <p class="note">Why this works: an independent review instance with explicit criteria outperforms author self-review. Source: github.com/anthropics/claude-code-action.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 15 PLAN MODE -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Using it well (1 of 6)</div>
+    <h2>Plan first, <span class="accent">then execute</span></h2>
+    <div class="body">
+      <div class="grid c2">
+        <div class="card"><div class="h"><span class="n">PLAN MODE</span></div><p>Anything architectural: multi-file changes, data migrations, several valid approaches, touching a trigger framework. Explore and design first, implement after.</p></div>
+        <div class="card"><div class="h"><span class="n">DIRECT EXECUTION</span></div><p>Well-scoped changes: a single-file bug fix with a clear stack trace, one validation check, a rename.</p></div>
+      </div>
+      <div class="takeaway"><span class="tag">Rule of thumb</span><p>If the wrong approach would cost more than the planning would, plan first. Start the plan from the outcome - what should be true when this is done? A testable success criterion ("the trigger handles 200 records and the test proves it") is how Claude knows it is finished. The daily rhythm: explore, plan, implement, commit - four separate steps, not one prompt.</p></div>
+      <p class="note">Why this works (the official best-practices guide): separating research and planning from implementation avoids solving the wrong problem.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 16 PROMPTING -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Using it well (2 of 6)</div>
+    <h2>Prompts that get it right <span class="accent">the first time</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>Show, don't describe.</b> We pasted one short ApexDoc example into CLAUDE.md - Claude rewrote a poorly documented class in exactly our style. Two or three concrete examples outperform any paragraph of rules.</li>
+        <li><b>Test-driven loop:</b> write the tests first, then iterate by sharing failures. Each failure message is a precise instruction.</li>
+        <li><b>The interview pattern:</b> on unfamiliar work, tell Claude to ask you questions before implementing - then start a fresh session to execute the spec it writes.</li>
+        <li><b>Correct early.</b> Stop Claude the moment it drifts (Esc), rewind when an approach fails (Esc Esc). Two failed corrections in one session: /clear and restart with a sharper prompt.</li>
+      </ul>
+      <p class="note">Why this works: few-shot examples and precise context beat adjectives. The ApexDoc example ships in the starter repo's CLAUDE.md.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 17 ORCHESTRATION -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Using it well (3 of 6)</div>
+    <h2>Split big work across <span class="accent">a coordinator and sub-agents</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>Hub and spoke:</b> one coordinator decomposes the task, spawns sub-agents, aggregates results. Sub-agents never talk to each other directly.</li>
+        <li><b>Sub-agent context is isolated.</b> They inherit nothing automatically - the coordinator passes complete, structured findings in the prompt.</li>
+        <li><b>Decompose by question, not by file:</b> each sub-agent gets one question it can answer alone - a goal and the evidence it needs, not a rigid script.</li>
+        <li><b>Spawn in parallel:</b> independent investigations go out as multiple Task calls in one turn.</li>
+        <li><b>Scope the tools:</b> 4-5 relevant tools per agent beats 18 - tool overload degrades selection reliability. Same for MCP: connect only the servers the task actually needs.</li>
+        <li><b>Custom sub-agents</b> live in <code>.claude/agents/</code> - our example: a security reviewer that checks CRUD/FLS, sharing, and injection on demand.</li>
+      </ul>
+      <p class="note">Why this works: orchestration with isolated contexts is the core agentic architecture pattern.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 18 CONTEXT -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Using it well (4 of 6)</div>
+    <h2>Keep the context window <span class="accent">clean</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>The symptom of decay:</b> Claude starts citing "typical patterns" instead of the classes it read an hour ago. Performance degrades as the window fills.</li>
+        <li><b>Keep exploration out of the main context:</b> an Explore subagent reads widely and returns a summary; <code>context: fork</code> skills do the same.</li>
+        <li><b>Persist findings to scratchpad files</b> in the repo; they survive compaction and crashes.</li>
+        <li><b>Handoffs stand alone:</b> write the summary so a fresh session picks up the work without the old one - then start fresh instead of resuming a decayed session.</li>
+        <li><b><code>/clear</code> between unrelated tasks. <code>/compact</code> early,</b> with instructions in CLAUDE.md about what must survive. A fresh session with a written summary beats resuming a rotten one.</li>
+      </ul>
+      <p class="note">Why this works: the context window is the most important resource to manage - treat it as a budget, not a bottomless pit.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 19 MODELS -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Using it well (5 of 6)</div>
+    <h2>Match the model to the task - <span class="accent">cost follows</span></h2>
+    <div class="body">
+      <table class="t">
+        <tr><th>Model</th><th>Use for</th></tr>
+        <tr><td><code>Haiku</code></td><td>Fast, cheap, simple: file scans, formatting, classification, boilerplate.</td></tr>
+        <tr><td><code>Sonnet</code></td><td>The default. Day-to-day Apex/LWC development, tests, refactors.</td></tr>
+        <tr><td><code>Opus</code></td><td>Hard reasoning: architecture choices, nasty governor-limit debugging, security review.</td></tr>
+      </table>
+      <div class="takeaway"><span class="tag">The default</span><p>Sonnet for the day job. Drop to Haiku for grunt work, escalate to Opus when the task earns it.</p></div>
+      <p class="note">Why this works: model selection is a quality-speed-cost trade-off you make per task, not a default you set once.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 20 TOKENS -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Using it well (6 of 6)</div>
+    <h2>Fewer wasted tokens is a <span class="accent">setup</span> property, not willpower</h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>Path-scoped rules</b> load only for matching files - you stop paying for Apex rules while editing YAML.</li>
+        <li><b>Lean CLAUDE.md.</b> It is prepended to every session; every line is a recurring cost.</li>
+        <li><b>Prompt caching</b> for repeated large contexts; <b>Message Batches API</b> for overnight work - 50% cheaper, never for anything blocking a merge.</li>
+        <li><b>Right-size the model</b> - the biggest single lever.</li>
+      </ul>
+      <p class="note">Why this works: token efficiency comes from configuration - rules, file size, caching - not from asking developers to type less.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 21 RESPONSIBLE USE -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Responsible use</div>
+    <h2>The rules we all follow when <span class="accent">Claude writes our code</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>You review everything you merge.</b> AI-written code you have not read is still your code and your name on the commit.</li>
+        <li><b>Same bar as human code.</b> Scanner clean, tests real, security checks present.</li>
+        <li><b>No secrets, ever.</b> No credentials, session IDs, or customer data in prompts, CLAUDE.md, rules, or skills. MCP server tokens live in your secret store, never in the repo.</li>
+        <li><b>Production is human-run.</b> Deploys to prod are run by a person, not by Claude.</li>
+        <li><b>Escalate doubt.</b> If Claude's approach looks wrong, challenge it or ask a human.</li>
+      </ul>
+      <p class="note">The principle underneath: guardrails on anything irreversible, and a human accountable for every merge.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 22 GET STARTED -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Get started</div>
+    <h2>Set it up on your repo <span class="accent">in about fifteen minutes</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>1.</b> Read the starter repo: <code>github.com/krika2810/claude-code-sf-starter</code> - every file commented.</li>
+        <li><b>2.</b> Copy it into your repo (one README command), then run <code>/init</code> in Claude Code and merge its draft with our CLAUDE.md.</li>
+        <li><b>3.</b> Add the CI templates, install the Claude Code GitHub Action, add <code>ANTHROPIC_API_KEY</code> to repo secrets.</li>
+        <li><b>4.</b> Open a PR and watch the gate run.</li>
+      </ul>
+      <p class="note">Everything on every slide traces to the official sources: code.claude.com/docs (best practices, memory, hooks, skills, sub-agents, github-actions), developer.salesforce.com (Apex governor limits).</p>
+    </div>
+  </div>
+</section>
+
+<nav class="nav">
+  <div class="counter"><b id="cur">01</b> / <span id="total">22</span></div>
+  <div class="arrows"><button class="prev" aria-label="Previous">←</button><button class="next" aria-label="Next">→</button></div>
+</nav>
+<div class="hint">ARROWS / SPACE TO NAVIGATE</div>
+
+<script>
 (function(){
   var slides=[].slice.call(document.querySelectorAll('.slide'));
   var total=slides.length;
@@ -257,4 +648,6 @@ table.t th{word-break:normal;overflow-wrap:normal}
     paint(next);
   });
 })();
-</script></body></html>
+</script>
+</body>
+</html>
