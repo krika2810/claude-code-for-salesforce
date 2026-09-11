@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code for Salesforce - Team Setup</title>
+<style>
+:root {
+  --bg: #0b0e14; --bg2: #12161f; --card: #171c26; --line: #262d3a;
+  --text: #e8ecf3; --muted: #9aa4b5; --accent: #8b5cf6; --accent2: #2ee6a8;
+  --warn: #f7b955; --bad: #f26d6d; --good: #2ee6a8;
+}
+[data-theme="light"] {
+  --bg: #f7f8fb; --bg2: #ffffff; --card: #ffffff; --line: #dde2ea;
+  --text: #1a2230; --muted: #55617a; --accent: #6d3df0; --accent2: #0a9d6c;
+  --warn: #b07a10; --bad: #c73e3e; --good: #0a9d6c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+#progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); width: 0%; z-index: 30; transition: width .25s; }
+#nav {
+  position: fixed; top: 0; right: 0; z-index: 40; display: flex; gap: 8px; align-items: center;
+  padding: 12px 16px;
+}
+#nav button {
+  background: var(--card); color: var(--text); border: 1px solid var(--line);
+  border-radius: 8px; padding: 6px 12px; font-size: 14px; cursor: pointer;
+}
+#counter { color: var(--muted); font-size: 14px; padding: 6px 4px; }
+#deck { height: 100%; }
+.slide {
+  position: absolute; inset: 0; display: none; overflow-y: auto;
+  padding: 72px 24px 60px;
+}
+.slide.active { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+.wrap { width: 100%; max-width: 1080px; margin: auto 0; }
+.kicker { color: var(--accent2); font-size: 14px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; }
+h1 { font-size: clamp(34px, 5vw, 58px); line-height: 1.1; margin-bottom: 18px; }
+h2 { font-size: clamp(26px, 3.6vw, 40px); line-height: 1.15; margin-bottom: 16px; }
+h2 .grad, h1 .grad { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+p, li { font-size: clamp(16px, 1.55vw, 20px); line-height: 1.55; color: var(--text); }
+p.dim, li.dim { color: var(--muted); }
+ul { padding-left: 22px; } li { margin-bottom: 8px; }
+.point {
+  background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent2);
+  border-radius: 10px; padding: 14px 18px; margin: 16px 0 20px; font-size: clamp(16px,1.6vw,20px);
+}
+.point b { color: var(--accent2); }
+.grid { display: grid; gap: 14px; margin: 18px 0; }
+.grid.c2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.grid.c3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+.card h3 { font-size: 18px; margin-bottom: 8px; color: var(--accent2); }
+.card p, .card li { font-size: 15.5px; color: var(--muted); }
+.card ul { padding-left: 18px; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: clamp(13.5px, 1.35vw, 17px); }
+th, td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; }
+th { background: var(--bg2); color: var(--accent2); }
+td { color: var(--text); }
+code, pre { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+pre {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; overflow-x: auto; font-size: clamp(12px, 1.15vw, 15px);
+  line-height: 1.5; margin: 12px 0; color: var(--text);
+}
+pre .c { color: var(--muted); } pre .k { color: var(--accent); } pre .s { color: var(--accent2); }
+.tag { display: inline-block; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 13px; color: var(--muted); margin: 3px 4px 3px 0; }
+.bad { color: var(--bad); } .good { color: var(--good); } .warn { color: var(--warn); }
+a { color: var(--accent2); }
+.footer { margin-top: 22px; color: var(--muted); font-size: 14px; }
+.hint { position: fixed; bottom: 14px; left: 0; right: 0; text-align: center; color: var(--muted); font-size: 13px; z-index: 20; }
+@media (max-width: 640px) { .slide { padding: 64px 14px 48px; } th, td { padding: 6px 8px; } }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="nav">
+  <span id="counter"></span>
+  <button id="themeBtn" title="Toggle light/dark">◐</button>
+  <button id="prevBtn">‹</button>
+  <button id="nextBtn">›</button>
+</div>
+<div id="deck">
+
+<!-- 1. Title -->
+<section class="slide">
+  <div class="wrap" style="text-align:center;">
+    <div class="kicker">For the development team</div>
+    <h1>Claude Code for <span class="grad">Salesforce</span></h1>
+    <p class="dim" style="max-width:760px;margin:0 auto 18px;">A repository setup that makes our coding standards automatic. Claude reads the standards from the repo, applies them while it writes code, and our pipeline checks them before anything reaches QA.</p>
+    <div>
+      <span class="tag">Apex</span><span class="tag">LWC</span><span class="tag">Flow</span><span class="tag">OmniStudio</span><span class="tag">GitHub Actions</span>
+    </div>
+    <p class="footer">September 2026 · Press → to move through the slides</p>
+  </div>
+</section>
+
+<!-- 2. Why -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">The problem</div>
+    <h2>Why we are doing this</h2>
+    <div class="point"><b>The point:</b> our mistakes are predictable, so they are preventable. The fix is to write the standards down where the tools can enforce them.</div>
+    <ul>
+      <li>The same classes of mistake keep reaching QA: governor-limit violations, SOQL in loops, missing CRUD/FLS checks, weak tests.</li>
+      <li>When the pipeline fails, we run it again. Every rerun is developer time spent waiting instead of building.</li>
+      <li>Code review spends time on naming, formatting, and known anti-patterns. That is machine work. Review should be about design.</li>
+      <li>We now have Claude Code writing code with us. An AI assistant writes fast in every direction, including the wrong one, unless the repo tells it what "right" means here.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 3. Mistake catalog overview -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">The mistake catalog</div>
+    <h2>Six mistakes that cost us the most</h2>
+    <div class="point"><b>The point:</b> these are the patterns the setup in this deck is built to catch before QA does.</div>
+    <div class="grid c3">
+      <div class="card"><h3>1. Governor limits</h3><p>Code that works for one record and fails in production at volume.</p></div>
+      <div class="card"><h3>2. No bulkification</h3><p>SOQL queries and DML statements inside loops.</p></div>
+      <div class="card"><h3>3. Wrong async choice</h3><p>Future methods used where Queueable or Batch was the right tool.</p></div>
+      <div class="card"><h3>4. Security gaps</h3><p>Missing sharing keywords, no CRUD/FLS enforcement, SOQL injection.</p></div>
+      <div class="card"><h3>5. Weak tests</h3><p>SeeAllData=true, no asserts, single-record tests only.</p></div>
+      <div class="card"><h3>6. Hygiene</h3><p>Hardcoded IDs, debug statements, empty catch blocks, missing ApexDoc.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Governor limits -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Mistake 1 · Governor limits</div>
+    <h2>Know the numbers you are coding against</h2>
+    <div class="point"><b>The point:</b> Apex runs in a multitenant environment, so the platform enforces per-transaction limits. Code that exceeds one fails with an exception you cannot catch.</div>
+    <table>
+      <tr><th>Per-transaction limit</th><th>Synchronous</th><th>Asynchronous</th></tr>
+      <tr><td>SOQL queries issued</td><td>100</td><td>200</td></tr>
+      <tr><td>Records retrieved by SOQL</td><td>50,000</td><td>50,000</td></tr>
+      <tr><td>DML statements</td><td>150</td><td>150</td></tr>
+      <tr><td>Records processed by DML</td><td>10,000</td><td>10,000</td></tr>
+      <tr><td>CPU time</td><td>10,000 ms</td><td>60,000 ms</td></tr>
+      <tr><td>Heap size</td><td>10 MB</td><td>25 MB</td></tr>
+      <tr><td>Callouts per transaction</td><td>100</td><td>100</td></tr>
+    </table>
+    <p class="dim" style="font-size:15px;">Source: Salesforce Apex Developer Guide, "Execution Governors and Limits". Batch Apex resets these for each execute() batch. Scheduled Apex runs under synchronous limits.</p>
+  </div>
+</section>
+
+<!-- 5. Bulkification -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Mistake 2 · Bulkification</div>
+    <h2>SOQL and DML never go inside loops</h2>
+    <div class="point"><b>The point:</b> triggers can receive 200 records at once. A query inside a loop that passes a single-record test can fire 200 times in production and hit the 100-query limit.</div>
+    <div class="grid c2">
+      <div class="card"><h3 class="bad" style="color:var(--bad)">Fails at volume</h3>
+<pre>for (Account a : Trigger.new) {
+  <span class="c">// one query per record</span>
+  Contact c = [SELECT Id FROM Contact
+    WHERE AccountId = :a.Id LIMIT 1];
+  update c; <span class="c">// one DML per record</span>
+}</pre></div>
+      <div class="card"><h3 style="color:var(--good)">Bulkified</h3>
+<pre>Map&lt;Id, Account&gt; byId =
+  new Map&lt;Id, Account&gt;(
+    [SELECT Id, (SELECT Id FROM Contacts)
+     FROM Account WHERE Id IN :Trigger.new]);
+List&lt;Contact&gt; toUpdate = new List&lt;Contact&gt;();
+for (Account a : Trigger.new) {
+  toUpdate.addAll(byId.get(a.Id).Contacts);
+}
+update toUpdate; <span class="c">// one DML total</span></pre></div>
+    </div>
+    <p class="dim">PMD catches this automatically: the rules <code>OperationWithLimitsInLoop</code> and <code>AvoidNonRestrictiveQueries</code> are in our ruleset.</p>
+  </div>
+</section>
+
+<!-- 6. Async vs sync -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Mistake 3 · Async decisions</div>
+    <h2>Pick the async mechanism on purpose</h2>
+    <div class="point"><b>The point:</b> "make it @future" is not an answer. Each async option exists for a specific shape of work.</div>
+    <table>
+      <tr><th>Mechanism</th><th>Use it when</th><th>Do not use it when</th></tr>
+      <tr><td><code>@future</code></td><td>Simple fire-and-forget work, for example a callout. Only primitive parameters.</td><td>You need sObjects, chaining, or monitoring.</td></tr>
+      <tr><td>Queueable</td><td>You need complex parameter types, job chaining, or a job ID to monitor.</td><td>You are processing thousands of records.</td></tr>
+      <tr><td>Batch Apex</td><td>Large data volumes; records processed in chunks with fresh limits per batch.</td><td>The job is small and latency matters.</td></tr>
+      <tr><td>Schedulable</td><td>The work is time-based: nightly rollups, periodic syncs.</td><td>The trigger is a data event, not a clock.</td></tr>
+    </table>
+    <p class="dim">Also enforced: no callouts after DML in the same transaction, and at most 50 queueable jobs enqueued per transaction (1 from inside async context).</p>
+  </div>
+</section>
+
+<!-- 7. Security -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Mistake 4 · Security</div>
+    <h2>Security gaps the scanners already know how to find</h2>
+    <div class="point"><b>The point:</b> these were not in the original checklist, and they are the ones a security review will find first.</div>
+    <div class="grid c2">
+      <div class="card"><h3>Sharing and CRUD/FLS</h3><ul>
+        <li>Every class declares sharing. <code>with sharing</code> is the default; anything else needs a comment saying why.</li>
+        <li>Use <code>WITH USER_MODE</code> on SOQL over user-driven queries.</li>
+        <li>Use <code>Security.stripInaccessible()</code> before DML on request data.</li>
+      </ul></div>
+      <div class="card"><h3>Injection and leaks</h3><ul>
+        <li>String-built SOQL needs <code>String.escapeSingleQuotes</code>. Prefer bind variables.</li>
+        <li>No hardcoded record IDs, profile names, or org URLs.</li>
+        <li>No <code>System.debug</code> without a logging level in committed code.</li>
+      </ul></div>
+    </div>
+    <p class="dim">PMD security rules: <code>ApexSharingViolations</code>, <code>ApexCRUDViolation</code>, <code>ApexSOQLInjection</code>, <code>AvoidHardcodingId</code>. The Graph Engine goes further: it follows data flow through the whole call path, so it catches violations that single-file analysis misses.</p>
+  </div>
+</section>
+
+<!-- 8. Tests -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Mistake 5 · Tests</div>
+    <h2>Coverage is a floor, not a goal</h2>
+    <div class="point"><b>The point:</b> 75% coverage is the platform minimum to deploy. It says nothing about whether the tests prove anything.</div>
+    <div class="grid c2">
+      <div class="card"><h3>Rejected in review</h3><ul>
+        <li><code>@isTest(SeeAllData=true)</code> - tests must create their own data.</li>
+        <li>Test methods with no assert. PMD rule <code>ApexUnitTestClassShouldHaveAsserts</code>.</li>
+        <li>Single-record trigger tests only. Test with 200 records.</li>
+      </ul></div>
+      <div class="card"><h3>Expected</h3><ul>
+        <li><code>Test.startTest()</code> / <code>stopTest()</code> around the code under test.</li>
+        <li>Asserts on behavior, not just "no exception".</li>
+        <li>Tests named <code>method_condition_expectedResult</code>.</li>
+        <li>Team gate: 85% org-wide coverage in CI, not 75%.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. Four surfaces -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Coverage</div>
+    <h2>The setup covers all four build surfaces</h2>
+    <div class="point"><b>The point:</b> standards exist per surface, because the mistakes are different on each one.</div>
+    <div class="grid c2">
+      <div class="card"><h3>Apex</h3><p>Bulkification, sharing and CRUD/FLS, one trigger per object with logic in handlers, deliberate async choices, ApexDoc on public classes and methods.</p></div>
+      <div class="card"><h3>LWC</h3><p>Wire adapters before imperative calls, <code>cacheable=true</code> for reads, handled promise rejections, ESLint clean, Jest tests for new components.</p></div>
+      <div class="card"><h3>Flow</h3><p>Before-save for same-record updates, after-save for related work, no data elements inside loops, every fault path connected. Code Analyzer v5 includes a Flow Scanner engine.</p></div>
+      <div class="card"><h3>OmniStudio</h3><p>Naming prefixes (DR_, IP_, OS_, FC_), Integration Procedures for server-side logic, new versions instead of editing active components.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. Tooling net -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">The safety net</div>
+    <h2>Salesforce Code Analyzer v5 runs it all</h2>
+    <div class="point"><b>The point:</b> one command runs PMD, ESLint, the Flow Scanner, the Graph Engine, RetireJS, and CPD over the repo. Over 500 built-in rules.</div>
+    <table>
+      <tr><th>Engine</th><th>What it catches</th></tr>
+      <tr><td><code>pmd</code></td><td>Apex anti-patterns: SOQL/DML in loops, sharing and CRUD violations, ApexDoc, complexity.</td></tr>
+      <tr><td><code>sfge</code></td><td>Graph Engine: data-flow analysis across the whole call path, including CRUD/FLS along real execution paths.</td></tr>
+      <tr><td><code>eslint</code></td><td>JavaScript and LWC issues.</td></tr>
+      <tr><td><code>flow</code></td><td>Flow Scanner: security issues and unhandled fault paths in Flows. New in v5.</td></tr>
+      <tr><td><code>retire-js</code> / <code>cpd</code></td><td>Vulnerable JavaScript dependencies; duplicated code blocks.</td></tr>
+    </table>
+<pre>sf plugins install code-analyzer
+sf code-analyzer run --workspace force-app --rule-selector recommended</pre>
+    <p class="dim" style="font-size:15px;">Code Analyzer v4 was retired in August 2025; v5 is the current CLI plugin with a single <code>run</code> command and a <code>code-analyzer.yml</code> config file.</p>
+  </div>
+</section>
+
+<!-- 11. What Claude Code adds -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">The assistant</div>
+    <h2>What Claude Code adds on top</h2>
+    <div class="point"><b>The point:</b> scanners catch mistakes after they are written. Claude Code reads the same standards from the repo and applies them while writing.</div>
+    <div class="grid c3">
+      <div class="card"><h3>CLAUDE.md + rules</h3><p>Instructions in the repo that Claude reads every session. This is where the standards live.</p></div>
+      <div class="card"><h3>Skills</h3><p>Named procedures (for example <code>/apex-review</code>) Claude runs on demand, so checklists do not depend on memory.</p></div>
+      <div class="card"><h3>Hooks</h3><p>Shell commands that fire automatically on events. The deterministic layer: they run even if Claude forgets.</p></div>
+    </div>
+    <p>Then CI repeats the same checks on every pull request, so nothing depends on one person's local setup.</p>
+  </div>
+</section>
+
+<!-- 12. CLAUDE.md -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Setup · Layer 1</div>
+    <h2>CLAUDE.md: the standards file</h2>
+    <div class="point"><b>The point:</b> CLAUDE.md is read at the start of every session. Put what you would otherwise re-explain: commands, conventions, definition of done. Keep it under about 200 lines - longer files get followed less reliably.</div>
+    <table>
+      <tr><th>Scope</th><th>Location</th><th>Use for</th></tr>
+      <tr><td>Project (shared via git)</td><td><code>./CLAUDE.md</code></td><td>Team standards, commands, architecture.</td></tr>
+      <tr><td>User (personal)</td><td><code>~/.claude/CLAUDE.md</code></td><td>Your own preferences across projects.</td></tr>
+      <tr><td>Local (gitignored)</td><td><code>./CLAUDE.local.md</code></td><td>Personal scratch settings for this repo.</td></tr>
+    </table>
+    <p>Write instructions that can be checked: <span class="good">"Run <code>sf apex run test -o dev</code> before committing"</span>, not <span class="bad">"test your changes"</span>. Subdirectory CLAUDE.md files load when Claude works in those directories. Files can import others with <code>@path/to/file</code>.</p>
+  </div>
+</section>
+
+<!-- 13. Rules -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Setup · Layer 2</div>
+    <h2>.claude/rules: detail that loads only when relevant</h2>
+    <div class="point"><b>The point:</b> a rule scoped to <code>**/*.cls</code> loads only when Claude touches Apex. Detail costs nothing when it is not needed.</div>
+<pre>.claude/rules/
+├── <span class="k">apex.md</span>        <span class="c"># paths: **/*.cls, **/*.trigger</span>
+├── <span class="k">lwc.md</span>         <span class="c"># paths: force-app/**/lwc/**</span>
+├── <span class="k">flows.md</span>       <span class="c"># paths: force-app/**/flows/**</span>
+├── <span class="k">omnistudio.md</span>  <span class="c"># paths: force-app/**/omni*/**</span>
+├── <span class="k">testing.md</span>     <span class="c"># paths: **/*Test.cls, **/__tests__/**</span>
+└── <span class="k">git.md</span>         <span class="c"># always loaded</span></pre>
+    <p>The governor-limits table, the async decision criteria, the ApexDoc style example, and the security checklist live in these files, not in the root CLAUDE.md.</p>
+  </div>
+</section>
+
+<!-- 14. Skills -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Setup · Layer 3</div>
+    <h2>Skills: procedures on demand</h2>
+    <div class="point"><b>The point:</b> a skill is a SKILL.md file with instructions Claude follows when the skill runs. The body loads only when invoked, so long checklists are free until needed.</div>
+<pre>.claude/skills/
+├── <span class="k">apex-review/</span>SKILL.md       <span class="c"># 10-point Apex review checklist</span>
+├── <span class="k">deploy-validate/</span>SKILL.md   <span class="c"># dry-run deploy + tests before QA</span>
+└── <span class="k">scratch-org-setup/</span>SKILL.md <span class="c"># create, push, permsets, smoke test</span></pre>
+    <p>Invoke directly with <code>/apex-review</code>, or Claude loads the skill itself when the description matches the task. The <code>description</code> field in the frontmatter is what Claude uses to decide.</p>
+  </div>
+</section>
+
+<!-- 15. Hooks -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Setup · Layer 4</div>
+    <h2>Hooks: the deterministic layer</h2>
+    <div class="point"><b>The point:</b> CLAUDE.md and rules advise; hooks enforce. They are shell commands that fire on events, whether or not Claude remembers the standard.</div>
+    <div class="grid c2">
+      <div class="card"><h3>Guardrails (settings.json)</h3><ul>
+        <li>Denied commands Claude cannot run: <code>sf org delete</code>, <code>sf data delete</code>, deploys to prod aliases.</li>
+        <li>Allowed list for the everyday <code>sf</code> commands, so sessions do not stall on permission prompts.</li>
+      </ul></div>
+      <div class="card"><h3>Event hooks</h3><ul>
+        <li><code>PostToolUse</code> on Edit/Write of a .cls file: run Code Analyzer on that file immediately.</li>
+        <li><code>Stop</code> hook: restate the definition of done (tests run, scanner run, verification stated) when Claude finishes.</li>
+      </ul></div>
+    </div>
+    <p class="dim">A PreToolUse hook can block a tool call outright. That is the mechanism for rules that must never be broken, regardless of context.</p>
+  </div>
+</section>
+
+<!-- 16. Naming conventions -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Setup · The template</div>
+    <h2>Naming conventions, written down once</h2>
+    <div class="point"><b>The point:</b> every name says what the artifact is, what it acts on, and what it does. The full template with descriptions lives in the starter repo at <code>docs/naming-conventions.md</code> - reference it, then tweak it for the project.</div>
+    <table>
+      <tr><th>Artifact</th><th>Pattern</th><th>Example</th></tr>
+      <tr><td>Trigger handler</td><td><code>&lt;Object&gt;TriggerHandler</code></td><td><code>AccountTriggerHandler</code></td></tr>
+      <tr><td>Batch class</td><td><code>&lt;Purpose&gt;Batch</code></td><td><code>StaleCaseCleanupBatch</code></td></tr>
+      <tr><td>Test class</td><td><code>&lt;ClassUnderTest&gt;Test</code></td><td><code>AccountTriggerHandlerTest</code></td></tr>
+      <tr><td>Record-triggered flow</td><td><code>&lt;Object&gt; - &lt;Before|After&gt; - &lt;Purpose&gt;</code></td><td><code>Case - Before - Set Priority</code></td></tr>
+      <tr><td>DataRaptor / Integration Procedure</td><td><code>DR_</code> / <code>IP_</code> + verb + object</td><td><code>DR_Extract_Account_Details</code></td></tr>
+      <tr><td>OmniScript / FlexCard</td><td><code>OS_</code> / <code>FC_</code> + purpose</td><td><code>OS_Service_CreateCase</code></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 17. Lifecycle -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Day to day</div>
+    <h2>The lifecycle, stage by stage</h2>
+    <div class="point"><b>The point:</b> the same setup helps at every stage, not just while writing code.</div>
+    <table>
+      <tr><th>Stage</th><th>What changes with this setup</th></tr>
+      <tr><td>Start a feature</td><td><code>/scratch-org-setup</code> creates the org, pushes source, assigns permsets, and smoke-tests it.</td></tr>
+      <tr><td>Build</td><td>Claude writes against CLAUDE.md and the path-scoped rules: bulkified, sharing declared, ApexDoc in the team style.</td></tr>
+      <tr><td>Self-review</td><td><code>/apex-review</code> runs the 10-point checklist. The edit hook has already scanned each file as it was written.</td></tr>
+      <tr><td>Pull request</td><td>CI runs Code Analyzer, Jest, and Apex tests with the coverage gate. Claude reviews the PR against our own standards file.</td></tr>
+      <tr><td>QA deploy</td><td><code>/deploy-validate</code> dry-runs the deployment with tests first, so the pipeline passes on the real run.</td></tr>
+      <tr><td>Release</td><td>Validated package, known coverage, no surprise failures.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 18. CI -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Automation</div>
+    <h2>CI on GitHub Actions</h2>
+    <div class="point"><b>The point:</b> the same standards run on every pull request, so nothing depends on anyone's local setup.</div>
+<pre><span class="c"># .github/workflows/ci.yml - order is deliberate: cheap checks first</span>
+PR opened
+  ├─ <span class="k">1. Static analysis</span>  sf code-analyzer run (PMD · ESLint · Flow Scanner · Graph Engine)
+  │                        fails the build on severity 1-2 violations
+  ├─ <span class="k">2. LWC Jest tests</span>    sfdx-lwc-jest, no org needed
+  └─ <span class="k">3. Apex tests</span>        scratch org, RunLocalTests, 85% coverage gate</pre>
+    <ul>
+      <li><b>Claude Code Action</b> reviews every PR against our own CLAUDE.md, rules, and naming-convention files, with inline comments on the exact lines.</li>
+      <li>Mention <code>@claude</code> in any issue or PR to hand Claude a task inside the repo.</li>
+      <li>Setup is two secrets: <code>SFDX_AUTH_URL</code> for the Dev Hub and <code>ANTHROPIC_API_KEY</code> for Claude, plus the Claude GitHub App.</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- 19. Certification lessons -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">From Anthropic's own playbook</div>
+    <h2>What the Claude Certified Architect material adds</h2>
+    <div class="point"><b>The point:</b> Anthropic runs a real certification program - Claude Certified Architect: Foundations, and the advanced Architect: Professional covering integration architecture, governance, and evaluation. The themes those exams test are the same themes this setup encodes.</div>
+    <ul>
+      <li><b>Design the agent system, not just the prompt.</b> Foundations is aimed at people who design and build agent systems with Claude. Our CLAUDE.md, rules, skills, and hooks are exactly that: a designed system, not a chat habit.</li>
+      <li><b>Governance is a feature.</b> The Professional credential covers governance and evaluation. Our deny lists, hooks, and CI gates are the governance layer.</li>
+      <li><b>Evaluation over vibes.</b> Certified practice means measuring: our metrics are pipeline reruns, review rounds, and escaped violations.</li>
+      <li>Free preparation courses live on Anthropic Academy (Claude Code 101, Claude Code in Action, AI Fluency). The exams themselves run through the Claude Partner Network with proctoring by Pearson.</li>
+    </ul>
+    <p class="dim" style="font-size:15px;">Source: claude.com/blog/four-role-based-claude-certifications (July 2026) and anthropic.skilljar.com.</p>
+  </div>
+</section>
+
+<!-- 20. Model selection -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Working smart</div>
+    <h2>Pick the model for the task</h2>
+    <div class="point"><b>The point:</b> model choice is the biggest cost and quality lever. Match the model to the job instead of leaving the most expensive one on by default.</div>
+    <table>
+      <tr><th>Model</th><th>Use it for</th></tr>
+      <tr><td><code>sonnet</code></td><td>Daily coding work: features, fixes, tests. The right default.</td></tr>
+      <tr><td><code>opus</code></td><td>Complex architectural decisions and multi-step reasoning. Switch deliberately.</td></tr>
+      <tr><td><code>haiku</code></td><td>Fast, simple tasks. Ideal for subagents doing mechanical work.</td></tr>
+      <tr><td><code>opusplan</code></td><td>Opus during plan mode, then Sonnet executes the plan.</td></tr>
+    </table>
+    <p>Switch mid-session with <code>/model</code>, or set the default in <code>/config</code>. High unexpected spend usually traces back to Opus left on as the default.</p>
+  </div>
+</section>
+
+<!-- 21. Context rot and tokens -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Working smart</div>
+    <h2>Context rot and token efficiency</h2>
+    <div class="point"><b>The point:</b> every token in the context window costs money on every message and dilutes attention. Keep context small and fresh.</div>
+    <ul>
+      <li><b>Clear between unrelated tasks</b> with <code>/clear</code>. Stale context is paid for again on every message. <code>/rename</code> first, <code>/resume</code> to return later.</li>
+      <li><b>Compact with instructions:</b> <code>/compact Focus on the failing tests</code> keeps what matters when the session grows long.</li>
+      <li><b>Keep CLAUDE.md under 200 lines.</b> Move procedures into skills, which load only when invoked, and detail into path-scoped rules, which load only for matching files.</li>
+      <li><b>Delegate verbose work to subagents</b> - test runs, log analysis, doc fetching. The bulk stays in the subagent's context; only the summary returns to yours.</li>
+      <li><b>Check <code>/context</code></b> to see what is consuming space, and prefer CLI tools like <code>sf</code> and <code>gh</code> over MCP servers where both exist.</li>
+      <li>Enterprise average: about $13 per developer per active day. Untracked usage is how teams blow past that.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 22. Orchestration -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Working smart</div>
+    <h2>Agent orchestration</h2>
+    <div class="point"><b>The point:</b> one long session doing everything is the expensive, error-prone pattern. Split work across focused agents with their own context.</div>
+    <div class="grid c2">
+      <div class="card"><h3>Subagents</h3><ul>
+        <li>Each subagent gets its own context window; only its summary returns.</li>
+        <li>Set <code>model: haiku</code> on subagents doing simple, mechanical tasks.</li>
+        <li>Good fits: running the test suite, scanning logs, researching a docs question.</li>
+      </ul></div>
+      <div class="card"><h3>Skills as the division of labor</h3><ul>
+        <li>Each of our skills is one well-scoped job: review, validate, set up.</li>
+        <li>Skills can run inside a subagent, keeping even the review output out of your main context.</li>
+        <li>Token use scales with active agents - spawn what the task needs, no more.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 23. Responsible use -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Working smart</div>
+    <h2>Responsible use rules for developers</h2>
+    <div class="point"><b>The point:</b> Claude is fast in every direction, including the wrong one. These rules keep speed from becoming risk.</div>
+    <ul>
+      <li><b>You own the merge.</b> Review every change Claude writes. The PR gates help; they do not replace reading the diff.</li>
+      <li><b>Enforce with hooks, not hope.</b> CLAUDE.md is context Claude usually follows. Hooks and deny lists are guarantees. Anything that must never happen goes in a hook.</li>
+      <li><b>Never commit secrets.</b> Auth URLs, tokens, and org credentials stay out of the repo. CI uses GitHub secrets; locally use <code>sf</code> auth, not files.</li>
+      <li><b>Least privilege in CI.</b> The Claude GitHub App and the Dev Hub secret get exactly the permissions the workflows need.</li>
+      <li><b>Watch usage.</b> Run <code>/usage</code>. If spend jumps, look for long stale sessions and default-model drift before anything else.</li>
+      <li><b>Data stays in scope.</b> Do not paste production customer data into prompts. Use sandbox data.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 24. Anecdote -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Proof from our own work</div>
+    <h2>One example taught the style</h2>
+    <div class="point"><b>The point:</b> a short example in context beats a page of rules.</div>
+    <p>Last week we were fixing PMD errors, and one of them was ApexDoc written in poor English. We gave Claude one short example of the style we wanted, and it picked the style up and rewrote the rest correctly.</p>
+    <p>That is why the setup files ship with concrete examples: the ApexDoc block in <code>.claude/rules/apex.md</code>, the naming table in <code>docs/naming-conventions.md</code>, the bulkified query in this deck. Claude imitates examples far more reliably than it obeys abstract instructions. When you correct Claude once, add the correction to the rules file so you never make it twice.</p>
+  </div>
+</section>
+
+<!-- 25. Beyond the checklist -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Research additions</div>
+    <h2>What the research added to the original list</h2>
+    <div class="point"><b>The point:</b> the starting list was governor limits, PMD, Code Analyzer, Graph Analyzer, async versus sync, and bulkification. Researching the official docs surfaced these gaps.</div>
+    <ul>
+      <li><b>Security rules as first-class checks:</b> sharing keywords, CRUD/FLS enforcement, and SOQL injection have dedicated PMD rules and Graph Engine data-flow rules.</li>
+      <li><b>Test quality rules, not just coverage:</b> PMD flags SeeAllData=true and tests without asserts.</li>
+      <li><b>Flow Scanner:</b> new in Code Analyzer v5 - Flows get scanned like code now.</li>
+      <li><b>RetireJS and CPD:</b> vulnerable JavaScript dependencies and duplicated code blocks, both bundled in Code Analyzer.</li>
+      <li><b>OmniStudio naming conventions</b> as a written standard (DR_, IP_, OS_, FC_ prefixes).</li>
+      <li><b>Hooks as the deterministic layer</b>, so enforcement does not depend on the model remembering.</li>
+      <li><b>Path-scoped rules</b> (.claude/rules/), so Apex detail loads only for Apex work.</li>
+      <li><b>Model selection, context hygiene, orchestration, and responsible-use rules</b> drawn from the Claude Code docs and Anthropic's certification material.</li>
+      <li><b>Hardcoded IDs, debug statements, empty catch blocks, logic in triggers</b> - all covered by named PMD rules in the ruleset.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 26. Payoff -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">The payoff</div>
+    <h2>What this buys us</h2>
+    <div class="point"><b>The point:</b> developer time goes to building, the QA pipeline passes the first time, and quality goes up instead of being traded away.</div>
+    <div class="grid c3">
+      <div class="card"><h3>Time back</h3><p>No pipeline reruns for known anti-patterns. No review rounds about names and formatting. No rediscovering setup steps.</p></div>
+      <div class="card"><h3>First-pass QA</h3><p>Deployments are validated with tests before the real run. Coverage gate is enforced in CI, not discovered in QA.</p></div>
+      <div class="card"><h3>Quality up</h3><p>Standards are enforced by hooks and CI on every change, human-written or AI-written, so speed does not erode them.</p></div>
+    </div>
+    <p>Metrics to watch after rollout: pipeline reruns per PR, review round trips per PR, and scanner violations that reach QA.</p>
+  </div>
+</section>
+
+<!-- 27. Get started -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Rollout</div>
+    <h2>Get started this week</h2>
+    <div class="point"><b>The point:</b> everything in this deck is already built as a starter template. Clone it, tweak the marked spots, and it is yours.</div>
+    <ul>
+      <li>Clone the starter repo: <a href="https://github.com/krika2810/claude-code-sf-starter">github.com/krika2810/claude-code-sf-starter</a></li>
+      <li>Edit <code>CLAUDE.md</code> first - project overview, org aliases, standards. This file is read every session.</li>
+      <li>Adapt <code>docs/naming-conventions.md</code> to your org, then keep it stable.</li>
+      <li>Add the two repo secrets: <code>SFDX_AUTH_URL</code> and <code>ANTHROPIC_API_KEY</code>; install the Claude GitHub App.</li>
+      <li>Verify locally: run <code>/context</code> in Claude Code to confirm the files load, then run <code>/apex-review</code> on a real file.</li>
+      <li>Open a PR and watch CI plus the Claude review run.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 28. Sources -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">References</div>
+    <h2>Sources (all official)</h2>
+    <ul style="font-size:15px;">
+      <li>Claude Code docs - Memory (CLAUDE.md): docs.anthropic.com/en/docs/claude-code/memory</li>
+      <li>Claude Code docs - Skills: docs.anthropic.com/en/docs/claude-code/skills</li>
+      <li>Claude Code docs - Hooks: docs.anthropic.com/en/docs/claude-code/hooks</li>
+      <li>Claude Code docs - GitHub Actions: docs.anthropic.com/en/docs/claude-code/github-actions</li>
+      <li>Claude Code Action: github.com/anthropics/claude-code-action</li>
+      <li>Salesforce Code Analyzer v5: developer.salesforce.com/docs/platform/salesforce-code-analyzer/overview</li>
+      <li>PMD Apex rules: docs.pmd-code.org/latest/pmd_rules_apex.html</li>
+      <li>Apex Developer Guide - Execution Governors and Limits, and Asynchronous Apex: developer.salesforce.com</li>
+      <li>Salesforce Well-Architected: architect.salesforce.com/docs/architect/well-architected</li>
+      <li>OmniStudio naming conventions: sf.watch/articles/416 (community write-up of OmniStudio naming practice)</li>
+      <li>Claude certifications: claude.com/blog/four-role-based-claude-certifications - Anthropic Academy: anthropic.skilljar.com</li>
+      <li>Claude Code docs - Manage costs (model selection, token efficiency): docs.anthropic.com/en/docs/claude-code/costs</li>
+    </ul>
+    <p class="footer">Deck + starter repo built September 2026. Starter: github.com/krika2810/claude-code-sf-starter</p>
+  </div>
+</section>
+
+</div>
+<div class="hint">← → keys or swipe · ◐ toggles light/dark</div>
+<script>
+const slides = document.querySelectorAll('.slide');
+let i = 0;
+const counter = document.getElementById('counter');
+const progress = document.getElementById('progress');
+function show(n) {
+  i = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, k) => s.classList.toggle('active', k === i));
+  counter.textContent = (i + 1) + ' / ' + slides.length;
+  progress.style.width = ((i + 1) / slides.length * 100) + '%';
+  const url = new URL(location); url.hash = '' + (i + 1); history.replaceState(null, '', url);
+}
+document.getElementById('prevBtn').onclick = () => show(i - 1);
+document.getElementById('nextBtn').onclick = () => show(i + 1);
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') show(i + 1);
+  if (e.key === 'ArrowLeft') show(i - 1);
+  if (e.key === 'Home') show(0);
+  if (e.key === 'End') show(slides.length - 1);
+});
+let tx = null;
+document.addEventListener('touchstart', e => tx = e.touches[0].clientX);
+document.addEventListener('touchend', e => {
+  if (tx === null) return;
+  const dx = e.changedTouches[0].clientX - tx;
+  if (dx < -50) show(i + 1); if (dx > 50) show(i - 1); tx = null;
+});
+// theme
+const root = document.documentElement;
+const saved = localStorage.getItem('theme');
+if (saved) root.dataset.theme = saved;
+else if (window.matchMedia('(prefers-color-scheme: light)').matches) root.dataset.theme = 'light';
+document.getElementById('themeBtn').onclick = () => {
+  root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('theme', root.dataset.theme);
+};
+// deep link
+const h = parseInt((location.hash || '').slice(1), 10);
+show(isNaN(h) ? 0 : h - 1);
+</script>
+</body>
+</html>
