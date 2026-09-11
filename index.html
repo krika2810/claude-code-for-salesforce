@@ -629,8 +629,9 @@ document.getElementById('themeBtn').onclick = () => {
   localStorage.setItem('theme', root.dataset.theme);
 };
 // deep link
-const h = parseInt((location.hash || '').slice(1), 10);
-show(isNaN(h) ? 0 : h - 1);
+function fromHash(){ const h = parseInt((location.hash || '').slice(1), 10); show(isNaN(h) ? 0 : h - 1); }
+window.addEventListener('hashchange', fromHash);
+fromHash();
 </script>
 </body>
 </html>
