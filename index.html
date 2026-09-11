@@ -348,11 +348,11 @@ paths: ["**/*.cls", "**/*.trigger"]
       <tr><td>Records retrieved by SOQL</td><td>50,000</td><td>50,000</td></tr>
       <tr><td>DML statements</td><td>150</td><td>150</td></tr>
       <tr><td>Records processed by DML</td><td>10,000</td><td>10,000</td></tr>
-      <tr><td>Heap size</td><td>6 MB</td><td>12 MB</td></tr>
+      <tr><td>Heap size</td><td>10 MB</td><td>25 MB</td></tr>
       <tr><td>CPU time</td><td>10 sec</td><td>60 sec</td></tr>
       <tr><td>Records per trigger batch</td><td colspan="2">200 (code must handle chunks)</td></tr>
     </table>
-    <p class="note">Verified against developer.salesforce.com - Execution Governors and Limits and the official Apex limits cheatsheet.</p>
+    <p class="note">Verified against developer.salesforce.com - Execution Governors and Limits (Winter '27 figures: heap raised to 10 MB sync / 25 MB async).</p>
   </div>
 </section>
 
