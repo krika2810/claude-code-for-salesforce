@@ -12,7 +12,7 @@
 })();
 </script>
 <title>Claude Code for Salesforce - Team Setup Guide</title>
-<meta name="description" content="How our Salesforce development team sets up Claude Code on the repository, step by step: CLAUDE.md, rules, skills, hooks, naming conventions, CI - and how the setup is used across the whole development lifecycle.">
+<meta name="description" content="How our Salesforce development team sets up Claude Code on the repository, step by step: CLAUDE.md, rules, skills, hooks, CI - and how the setup is used across the whole development lifecycle.">
 <style>
 @font-face{font-family:'AWS Diatype';src:url(fonts/AWSDiatype-Regular.woff2) format('woff2');font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:'AWS Diatype';src:url(fonts/AWSDiatype-RegularItalic.woff2) format('woff2');font-weight:400;font-style:italic;font-display:swap}
@@ -277,7 +277,8 @@ table.t th{word-break:normal;overflow-wrap:normal}
     <div class="body">
       <div class="takeaway"><span class="tag">If you do only one thing</span><p>Write a good CLAUDE.md. It is the single highest-leverage file in this setup.</p></div>
       <ul class="tight">
-        <li><b>What goes in:</b> 3-5 lines of project overview, the exact sf commands to use, our Apex/LWC standards, the definition of done, a pointer to the naming doc.</li>
+        <li><b>What goes in:</b> 3-5 lines of project overview, the exact sf commands to use, our Apex/LWC standards, the definition of done.</li>
+        <li><b>Naming conventions belong here too.</b> Put the short list in CLAUDE.md itself, or - once it grows - keep the full table in <code>docs/naming-conventions.md</code> and point to it from CLAUDE.md. Claude reads it at the start of every session, so AI-written code follows the same names as ours and review stops being about names.</li>
         <li><b>Keep it short.</b> Every line loads into every session, so every line is a recurring cost. The official test: "Would removing this line cause Claude to make mistakes?" If not, cut it.</li>
         <li><b>Start with <code>/init</code></b> - Claude analyzes the repo and drafts the file for you. Run <code>/context</code> afterwards to see what actually loaded.</li>
         <li><b>Shared vs personal:</b> <code>./CLAUDE.md</code> in git is the team's shared brain; <code>~/.claude/CLAUDE.md</code> is yours alone; split a growing file with <code>@imports</code>.</li>
@@ -352,46 +353,6 @@ paths: ["**/*.cls", "**/*.trigger"]
   </div>
 </section>
 
-<!-- 10 NAMING APEX/LWC -->
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Shared standards (1 of 2)</div>
-    <h2>Naming conventions: <span class="accent">Apex and LWC</span></h2>
-    <div class="body">
-      <table class="t">
-        <tr><th>Artifact</th><th>Pattern</th><th>Example</th></tr>
-        <tr><td>Service class</td><td><code>&lt;Domain&gt;&lt;Purpose&gt;Service</code></td><td><code>QuotePricingService</code></td></tr>
-        <tr><td>Trigger / handler</td><td><code>&lt;Object&gt;Trigger</code> + <code>Handler</code></td><td><code>AccountTrigger</code>, <code>AccountTriggerHandler</code></td></tr>
-        <tr><td>Async classes</td><td>suffix by type</td><td><code>ErpOrderSyncQueueable</code>, <code>StaleCaseCleanupBatch</code></td></tr>
-        <tr><td>Test class</td><td><code>&lt;ClassUnderTest&gt;Test</code></td><td><code>AccountTriggerHandlerTest</code></td></tr>
-        <tr><td>LWC bundle</td><td>camelCase (platform requires it)</td><td><code>accountRenewalCard</code></td></tr>
-        <tr><td>LWC Apex controller</td><td><code>&lt;Component&gt;Controller</code></td><td><code>AccountRenewalCardController</code></td></tr>
-      </table>
-      <p class="note">CLAUDE.md points Claude at docs/naming-conventions.md - AI-written code follows the same names as ours, so review stops being about names.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 11 NAMING FLOW/OMNI -->
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Shared standards (2 of 2)</div>
-    <h2>Naming conventions: <span class="accent">Flows, OmniStudio, and git</span></h2>
-    <div class="body">
-      <table class="t">
-        <tr><th>Artifact</th><th>Pattern</th><th>Example</th></tr>
-        <tr><td>Record-triggered flow</td><td><code>&lt;Object&gt; - &lt;Before|After&gt; - &lt;Purpose&gt;</code></td><td><code>Case - Before - Set Priority</code></td></tr>
-        <tr><td>Screen / autolaunched</td><td>type first</td><td><code>Screen - Case Intake</code>, <code>Auto - Escalate Stale Cases</code></td></tr>
-        <tr><td>DataRaptor / Int. Proc.</td><td><code>DR_</code> / <code>IP_</code></td><td><code>DR_Extract_Account_Details</code>, <code>IP_Update_OrderStatus_ERP</code></td></tr>
-        <tr><td>OmniScript / FlexCard</td><td><code>OS_</code> / <code>FC_</code></td><td><code>OS_Service_CreateCase</code>, <code>FC_Customer_Overview</code></td></tr>
-        <tr><td>Calc / Decision artifacts</td><td><code>CM_</code> <code>DM_</code> <code>CP_</code></td><td><code>CM_Discount_Calculation</code></td></tr>
-        <tr><td>Branch / commit</td><td><code>feature/&lt;ticket&gt;-&lt;name&gt;</code></td><td><code>feature/C360-412-renewal-rules</code></td></tr>
-      </table>
-      <p class="note">OmniStudio: never edit an active component in place - ship a new version (<code>_v2</code>). Full table with per-pattern reasons: docs/naming-conventions.md in the starter repo.</p>
-    </div>
-  </div>
-</section>
-
 <!-- 12 WHAT THE SETUP CATCHES -->
 <section class="slide">
   <div class="inner">
@@ -415,15 +376,16 @@ paths: ["**/*.cls", "**/*.trigger"]
 <section class="slide">
   <div class="inner">
     <div class="kicker">The pipeline (1 of 2)</div>
-    <h2>CI is where the setup <span class="accent">proves itself on every pull request</span></h2>
+    <h2>Open a pull request - <span class="accent">the checks run themselves</span></h2>
     <div class="body">
+      <p class="lede">Nobody has to remember to run the tests. Every PR goes through the same pipeline, and a PR that fails cannot merge:</p>
       <div class="flow">
         <div class="stage"><span class="sn">JOB 1</span><div class="st">LWC Jest</div><p>Component unit tests on every PR.</p></div>
         <div class="stage"><span class="sn">JOB 2</span><div class="st">Apex tests</div><p>Scratch org created in CI, tests run with coverage.</p></div>
         <div class="stage"><span class="sn">GATE</span><div class="st">85% coverage</div><p>Below the gate, the PR cannot merge.</p></div>
         <div class="stage"><span class="sn">ALWAYS</span><div class="st">Claude review</div><p>An independent Claude instance reviews the diff and comments.</p></div>
       </div>
-      <p class="note">Workflow files: ci-templates/ in the starter repo - one README command copies them into .github/workflows/. Keep a few repeatable Salesforce tasks and re-run them after every setup change - that is how you know a "better" CLAUDE.md actually got better.</p>
+      <p class="note">Workflow files: ci-templates/ in the starter repo - one README command copies them into .github/workflows/.</p>
     </div>
   </div>
 </section>
@@ -580,6 +542,7 @@ paths: ["**/*.cls", "**/*.trigger"]
         <li><b>2.</b> Copy it into your repo (one README command), then run <code>/init</code> in Claude Code and merge its draft with our CLAUDE.md.</li>
         <li><b>3.</b> Add the CI templates, install the Claude Code GitHub Action, add <code>ANTHROPIC_API_KEY</code> to repo secrets.</li>
         <li><b>4.</b> Open a PR and watch the gate run.</li>
+        <li><b>5.</b> Keep a few repeatable Salesforce tasks and re-run them after every setup change - that is how you know a "better" CLAUDE.md actually got better.</li>
       </ul>
       <p class="note">Everything on every slide traces to the official sources: code.claude.com/docs (best practices, memory, hooks, skills, sub-agents, github-actions), developer.salesforce.com (Apex governor limits).</p>
     </div>
