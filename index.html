@@ -12,7 +12,7 @@
 })();
 </script>
 <title>Claude Code for Salesforce - Team Setup Guide</title>
-<meta name="description" content="How our Salesforce development team sets up Claude Code on the repository: CLAUDE.md, rules, skills, hooks, naming conventions, CI, and responsible use.">
+<meta name="description" content="How our Salesforce development team sets up Claude Code on the repository, step by step: CLAUDE.md, rules, skills, hooks, naming conventions, CI - and how the setup is used across the whole development lifecycle.">
 <style>
 @font-face{font-family:'AWS Diatype';src:url(fonts/AWSDiatype-Regular.woff2) format('woff2');font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:'AWS Diatype';src:url(fonts/AWSDiatype-RegularItalic.woff2) format('woff2');font-weight:400;font-style:italic;font-display:swap}
@@ -65,90 +65,107 @@ a:hover{color:var(--purple-pale)}
 @media(max-width:640px){.hint{display:none}}
 
 /* ---------- slides ---------- */
-.slide{position:fixed;inset:0;display:flex;padding:72px 30px 80px;opacity:0;transform:translateX(40px);pointer-events:none;transition:opacity .35s ease,transform .35s ease;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.slide{position:fixed;inset:0;display:flex;padding:62px 36px 74px;opacity:0;transform:translateX(40px);pointer-events:none;transition:opacity .35s ease,transform .35s ease;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 .slide.back{transform:translateX(-40px)}
 .slide.active{opacity:1;transform:none;pointer-events:auto}
-.inner{width:min(1160px,94vw);margin:auto;position:relative;flex:none}
+.inner{width:min(1600px,94vw);min-height:calc(100vh - 162px);margin:auto;position:relative;flex:none;display:flex;flex-direction:column}
+.body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:16px;margin-top:6px}
 .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--purple-soft);margin-bottom:16px;display:flex;align-items:center;gap:12px}
 .kicker::before{content:'';width:30px;height:1px;background:var(--purple);display:inline-block}
 h1{font-family:var(--display);font-weight:700;font-size:clamp(46px,7.2vw,78px);line-height:1.05;letter-spacing:-.01em;margin-bottom:24px}
 h1 .accent{color:var(--purple-soft)}
-h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,3.8vw,46px);line-height:1.12;letter-spacing:-.01em;margin-bottom:18px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,3.6vw,44px);line-height:1.12;letter-spacing:-.01em;margin-bottom:14px}
 h2 .accent{color:var(--purple-soft)}
-.lede{font-size:clamp(17px,2vw,20px);color:var(--ink-dim);max-width:760px}
-.takeaway{margin:18px 0;padding:16px 22px;background:linear-gradient(135deg,rgba(168,85,247,.12),rgba(168,85,247,.03));border:1px solid rgba(168,85,247,.32);border-radius:12px}
+.lede{font-size:clamp(17px,2vw,20px);color:var(--ink-dim);max-width:1100px}
+.takeaway{padding:16px 22px;background:linear-gradient(135deg,rgba(168,85,247,.12),rgba(168,85,247,.03));border:1px solid rgba(168,85,247,.32);border-radius:12px}
 .takeaway p{margin:0;font-size:clamp(16px,1.9vw,19px);line-height:1.5;color:var(--ink)}
 .takeaway .tag{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--purple-soft);display:block;margin-bottom:6px}
-.ghost{font-family:var(--display);font-weight:700;font-size:clamp(120px,20vw,200px);line-height:.8;color:transparent;-webkit-text-stroke:1px #23232e;position:absolute;top:-40px;right:-6px;pointer-events:none;user-select:none;z-index:-1}
+.ghost{font-family:var(--display);font-weight:700;font-size:clamp(120px,18vw,190px);line-height:.8;color:transparent;-webkit-text-stroke:1px #23232e;position:absolute;top:-46px;right:-6px;pointer-events:none;user-select:none;z-index:-1}
 :root[data-theme="light"] .ghost{-webkit-text-stroke-color:#ddd6e8}
 
 /* content blocks */
-.grid{display:grid;gap:14px;margin-top:18px}
+.grid{display:grid;gap:14px}
 .grid.c2{grid-template-columns:1fr 1fr}
 .grid.c3{grid-template-columns:1fr 1fr 1fr}
 .grid.c4{grid-template-columns:repeat(4,1fr)}
-@media(max-width:720px){.grid.c2,.grid.c3,.grid.c4{grid-template-columns:1fr}}
-@media(max-width:720px){
-.slide{padding:64px 16px 96px}
-.inner{width:100%}
-.kicker{margin-bottom:12px}
-h1{font-size:clamp(34px,9.5vw,46px);margin-bottom:16px}
-h2{font-size:clamp(24px,6.6vw,32px);margin-bottom:12px}
-.lede{font-size:15.5px}
-.takeaway{margin:14px 0;padding:13px 16px}
-.grid{gap:10px;margin-top:14px}
-.card{padding:13px 15px}
-.card p{font-size:13.5px}
-ul.tight li{font-size:14.5px;padding:6px 0 6px 20px}
-pre{font-size:12px;padding:12px 14px;max-height:38vh}
-.note{font-size:11.5px;margin-top:14px}
-.ghost{font-size:clamp(80px,26vw,120px);top:-24px}
-.meta-hero{margin-top:24px;gap:8px 16px;font-size:12px}
-}
-.card{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:12px;padding:17px 20px}
+.body>.grid{flex:1 1 auto;min-height:0;grid-auto-rows:1fr;max-height:38vh}
+.card{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:12px;padding:17px 20px;display:flex;flex-direction:column;justify-content:center}
 .card .h{font-family:var(--display);font-weight:700;font-size:16px;color:var(--ink);margin-bottom:6px}
 .card .h .n{font-family:var(--mono);font-weight:400;font-size:11.5px;color:var(--purple-soft);display:block;margin-bottom:5px;letter-spacing:.1em}
 .card p{font-size:14.5px;color:var(--ink-dim);line-height:1.5;margin:0}
 .card p b{color:var(--ink)}
-ul.tight{list-style:none;margin-top:14px}
-ul.tight li{font-size:16px;color:var(--ink-dim);padding:8px 0 8px 24px;position:relative;border-bottom:1px solid var(--line-soft)}
+ul.tight{list-style:none}
+.body>ul.tight{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:space-evenly}
+ul.tight li{font-size:16px;color:var(--ink-dim);padding:9px 0 9px 24px;position:relative;border-bottom:1px solid var(--line-soft)}
 ul.tight li:last-child{border-bottom:none}
-ul.tight li::before{content:'';position:absolute;left:2px;top:16px;width:6px;height:6px;border-radius:50%;background:var(--purple)}
+ul.tight li::before{content:'';position:absolute;left:2px;top:17px;width:6px;height:6px;border-radius:50%;background:var(--purple)}
 ul.tight li b{color:var(--ink);font-weight:700}
 ul.tight li code{font-family:var(--mono);font-size:13.5px;color:var(--purple-soft)}
-pre{background:#0d0d13;border:1px solid var(--line);border-radius:10px;padding:16px 18px;font-family:var(--mono);font-size:13.5px;line-height:1.55;color:var(--ink-dim);overflow:auto;max-height:42vh;margin-top:16px}
+pre{background:#0d0d13;border:1px solid var(--line);border-radius:10px;padding:16px 18px;font-family:var(--mono);font-size:13.5px;line-height:1.55;color:var(--ink-dim);overflow:auto}
+.body>pre{flex:0 1 auto;min-height:0;margin-top:0}
 :root[data-theme="light"] pre{background:#f1eef8}
 pre .cm{color:var(--ink-faint)}
 pre .kw{color:var(--purple-soft)}
-table.t{width:100%;border-collapse:collapse;margin-top:16px;font-size:15px}
-table.t th{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--purple-soft);text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
-table.t td{padding:9px 12px;border-bottom:1px solid var(--line-soft);color:var(--ink-dim)}
+table.t{width:100%;border-collapse:collapse;font-size:15.5px}
+table.t th{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--purple-soft);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line)}
+table.t td{padding:14px 14px;border-bottom:1px solid var(--line-soft);color:var(--ink-dim)}
 table.t td:first-child{color:var(--ink)}
 table.t td code{font-family:var(--mono);font-size:13px;color:var(--purple-soft)}
 table.t tr:last-child td{border-bottom:none}
-@media(max-width:720px){table.t{font-size:12px}
-table.t td,table.t th{padding:6px 6px;white-space:normal;word-break:break-word;overflow-wrap:anywhere}
-table.t td code{font-size:11px;word-break:break-all}
-table.t th{word-break:normal;overflow-wrap:normal}}
-.note{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);margin-top:18px;padding-top:12px;border-top:1px dashed var(--line)}
+.note{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);margin-top:16px;padding-top:12px;border-top:1px dashed var(--line)}
 .note a{color:var(--ink-faint);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
 .note a:hover{color:var(--purple-soft)}
-.flow{display:flex;gap:0;margin-top:18px;flex-wrap:wrap}
-.stage{flex:1;min-width:150px;background:var(--bg-card);border:1px solid var(--line-soft);padding:15px 16px;position:relative}
+.flow{display:flex;gap:0;flex-wrap:wrap}
+.body>.flow{flex:1 1 auto;min-height:0;align-items:stretch;max-height:34vh}
+.stage{flex:1;min-width:150px;background:var(--bg-card);border:1px solid var(--line-soft);padding:15px 16px;position:relative;display:flex;flex-direction:column;justify-content:center}
 .stage:first-child{border-radius:12px 0 0 12px}
 .stage:last-child{border-radius:0 12px 12px 0}
-@media(max-width:720px){.stage{min-width:45%}.stage:first-child{border-radius:12px 0 0 0}}
 .stage .sn{font-family:var(--mono);font-size:11px;color:var(--purple-soft);letter-spacing:.1em;display:block;margin-bottom:6px}
 .stage .st{font-family:var(--display);font-weight:700;font-size:15px;margin-bottom:5px}
 .stage p{font-size:13px;color:var(--ink-dim);line-height:1.45;margin:0}
 .meta-hero{font-family:var(--mono);font-size:13px;color:var(--ink-faint);display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:38px}
 .meta-hero span{display:flex;align-items:center;gap:8px}
 .meta-hero i{width:5px;height:5px;background:var(--purple);border-radius:50%;display:inline-block}
-.src-line{font-family:var(--mono);font-size:13.5px;color:var(--ink-dim);padding:10px 0;border-bottom:1px solid var(--line-soft);word-break:break-all}
-.src-line a{color:var(--purple-soft)}
-.src-line small{display:block;color:var(--ink-faint);font-size:11.5px;margin-top:2px}
-.certband{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:#0a0a0f;background:var(--purple-soft);border-radius:6px;padding:3px 10px;margin-bottom:14px;font-weight:700}
-:root[data-theme="light"] .certband{color:#fff}
+
+@media(max-width:1400px){
+table.t{font-size:14.5px}
+table.t td,table.t th{padding:9px 12px}
+ul.tight li{font-size:15px;padding:7px 0 7px 24px}
+.card p{font-size:14px}
+}
+/* ---------- mobile ---------- */
+@media(max-width:720px){
+.slide{padding:64px 16px 96px}
+.inner{width:100%;min-height:0;display:block}
+.body{display:block;margin-top:0}
+.body>.grid,.body>.flow{max-height:none}
+.body>*+*{margin-top:14px}
+.body>.grid{grid-auto-rows:auto}
+.grid.c2,.grid.c3,.grid.c4{grid-template-columns:1fr}
+.body>ul.tight{display:block}
+.card{display:block}
+.stage{display:block;min-width:45%}
+.stage:first-child{border-radius:12px 0 0 0}
+.body>pre{max-height:38vh}
+.kicker{margin-bottom:12px}
+h1{font-size:clamp(34px,9.5vw,46px);margin-bottom:16px}
+h2{font-size:clamp(24px,6.6vw,32px);margin-bottom:12px}
+.lede{font-size:15.5px}
+.takeaway{padding:13px 16px}
+.grid{gap:10px}
+.card{padding:13px 15px}
+.card p{font-size:13.5px}
+ul.tight li{font-size:14.5px;padding:6px 0 6px 20px}
+ul.tight li::before{top:14px}
+pre{font-size:12px;padding:12px 14px}
+table.t{font-size:12px;margin-top:0}
+table.t td,table.t th{padding:6px 6px;white-space:normal;word-break:break-word;overflow-wrap:anywhere}
+table.t td code{font-size:11px;word-break:break-all}
+table.t th{word-break:normal;overflow-wrap:normal}
+.note{font-size:11.5px;margin-top:14px}
+.ghost{font-size:clamp(80px,26vw,120px);top:-24px}
+.meta-hero{margin-top:24px;gap:8px 16px;font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -161,68 +178,79 @@ table.t th{word-break:normal;overflow-wrap:normal}}
 <!-- 1 TITLE -->
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Team setup guide</div>
-    <h1>Claude Code<br>for <span class="accent">Salesforce</span></h1>
-    <p class="lede">How we set up Claude Code on our repository so every line it writes already follows our standards - and how the setup proves it.</p>
-    <div class="meta-hero">
-      <span><i></i>For our developers, not an intro to Salesforce</span>
-      <span><i></i>Companion repo: krika2810/claude-code-sf-starter</span>
-      <span><i></i>Best practices from both Claude Certified Architect exam guides at the end</span>
+    <div class="body">
+      <div class="kicker">Team setup guide</div>
+      <h1>Claude Code<br>for <span class="accent">Salesforce</span></h1>
+      <p class="lede">How we set up Claude Code on our Salesforce repository, step by step, so the code it writes already follows our standards - and how we use it across the whole development lifecycle, from planning to deployment.</p>
+      <div class="meta-hero">
+        <span><i></i>For developers: the full setup, in the order you build it</span>
+        <span><i></i>Companion repo: krika2810/claude-code-sf-starter</span>
+        <span><i></i>Every step explains why it exists</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 2 THE GOAL -->
+<!-- 2 WHY -->
 <section class="slide">
   <div class="inner">
-    <div class="ghost">01</div>
-    <div class="kicker">The goal</div>
-    <h2>Claude writes code that <span class="accent">passes review the first time</span></h2>
-    <ul class="tight">
-      <li><b>The repo teaches Claude our standards.</b> CLAUDE.md, rules, and skills carry them; Claude reads them every session.</li>
-      <li><b>The pipeline proves them.</b> Scanners, tests, and an independent Claude review run on every PR.</li>
-      <li><b>Hooks add hard enforcement - optional.</b> Add them when advice alone is not enough. More on that later.</li>
-      <li><b>The bar does not change.</b> AI-written code meets exactly the same standard as human-written code.</li>
-    </ul>
+    <div class="kicker">Why we set this up</div>
+    <h2>Claude does not know our standards - <span class="accent">until the repo teaches them</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>Every new session starts blank.</b> Without setup files, you re-explain your standards every time - and you forget things.</li>
+        <li><b>Unguided Claude writes generic Salesforce code.</b> SOQL inside loops, no CRUD/FLS checks, tests without real assertions.</li>
+        <li><b>Review becomes the bottleneck.</b> Writing is the fast part; fixing what review catches is the slow part.</li>
+        <li><b>The fix:</b> write the standards down once, in the repo. Claude reads them every session, and the pipeline proves them on every pull request.</li>
+      </ul>
+      <div class="takeaway"><span class="tag">The one rule underneath everything</span><p>AI-written code meets exactly the same standard as human-written code. The setup exists to make that cheap, not to lower the bar.</p></div>
+    </div>
   </div>
 </section>
 
 <!-- 3 LIFECYCLE -->
 <section class="slide">
   <div class="inner">
-    <div class="kicker">The development lifecycle</div>
-    <h2>Where Claude Code sits in <span class="accent">every stage</span></h2>
-    <div class="flow">
-      <div class="stage"><span class="sn">1</span><div class="st">Plan</div><p>Explore the org's code with the Explore subagent. Design in plan mode before anything is written.</p></div>
-      <div class="stage"><span class="sn">2</span><div class="st">Build</div><p>Claude writes Apex, LWC, Flows, OmniStudio with CLAUDE.md and rules already loaded.</p></div>
-      <div class="stage"><span class="sn">3</span><div class="st">Validate</div><p>Optional hooks scan every edited file with Code Analyzer as Claude works - not after.</p></div>
-      <div class="stage"><span class="sn">4</span><div class="st">Test</div><p>Apex tests generated to our testing rules, run in a scratch org with coverage.</p></div>
-      <div class="stage"><span class="sn">5</span><div class="st">Review</div><p>CI runs the full gate. A fresh Claude instance reviews the PR independently.</p></div>
-      <div class="stage"><span class="sn">6</span><div class="st">Deploy</div><p>sf CLI deploys. Production deploys stay human-run.</p></div>
+    <div class="kicker">The big picture</div>
+    <h2>One setup, used across the <span class="accent">whole development lifecycle</span></h2>
+    <div class="body">
+      <div class="flow">
+        <div class="stage"><span class="sn">1</span><div class="st">Plan</div><p>Explore the org's code with a subagent. Design in plan mode before anything is written.</p></div>
+        <div class="stage"><span class="sn">2</span><div class="st">Build</div><p>Claude writes Apex, LWC, Flows, OmniStudio with CLAUDE.md and rules already loaded.</p></div>
+        <div class="stage"><span class="sn">3</span><div class="st">Validate</div><p>Optional hooks scan every edited file with Code Analyzer as Claude works - not after.</p></div>
+        <div class="stage"><span class="sn">4</span><div class="st">Test</div><p>Apex tests written to our testing rules, run in a scratch org with coverage.</p></div>
+        <div class="stage"><span class="sn">5</span><div class="st">Review</div><p>CI runs the full gate. A fresh Claude instance reviews the PR independently.</p></div>
+        <div class="stage"><span class="sn">6</span><div class="st">Deploy</div><p>sf CLI deploys. Production deploys stay human-run.</p></div>
+      </div>
+      <p class="note">The rest of this deck: the setup in the order you build it, then how each stage above uses it.</p>
     </div>
-    <p class="note">Each stage below maps to a file in the starter repo you can read and tweak.</p>
   </div>
 </section>
 
-<!-- 4 WHAT YOU NEED -->
+<!-- 4 TOOLS -->
 <section class="slide">
   <div class="inner">
     <div class="kicker">The tools</div>
-    <h2>Four pieces, <span class="accent">one setup</span></h2>
-    <div class="grid c4">
-      <div class="card"><div class="h"><span class="n">1</span>Claude Code</div><p>The CLI every developer installs. Reads the repo setup files each session.</p></div>
-      <div class="card"><div class="h"><span class="n">2</span>sf CLI + Code Analyzer v5</div><p>Scratch orgs, deploys, tests - and all the static-analysis engines in one command.</p></div>
-      <div class="card"><div class="h"><span class="n">3</span>GitHub + Actions</div><p>Where the gate runs: scanners, tests, coverage, independent Claude review on every PR.</p></div>
-      <div class="card"><div class="h"><span class="n">4</span>The starter repo</div><p>krika2810/claude-code-sf-starter - the setup files below, commented, ready to copy.</p></div>
+    <h2>The four tools the setup <span class="accent">builds on</span></h2>
+    <div class="body">
+      <div class="grid c4">
+        <div class="card"><div class="h"><span class="n">1</span>Claude Code</div><p>The CLI every developer installs. Reads the repo's setup files at the start of each session.</p></div>
+        <div class="card"><div class="h"><span class="n">2</span>sf CLI + Code Analyzer v5</div><p>Scratch orgs, deploys, tests - and every static-analysis engine through one command: sf code-analyzer run.</p></div>
+        <div class="card"><div class="h"><span class="n">3</span>GitHub + Actions</div><p>Where the gate runs: scanners, tests, coverage, and an independent Claude review on every PR.</p></div>
+        <div class="card"><div class="h"><span class="n">4</span>The starter repo</div><p>krika2810/claude-code-sf-starter - every file below, commented, ready to copy.</p></div>
+      </div>
+      <p class="note">Claude drives CLIs well - tell it to use sf and gh directly instead of clicking through UIs or hand-writing API calls.</p>
     </div>
   </div>
 </section>
 
-<!-- 5 REPO LAYOUT -->
+<!-- 5 STEP 1: REPO LAYOUT -->
 <section class="slide">
   <div class="inner">
-    <div class="kicker">The setup</div>
-    <h2>Everything lives <span class="accent">in the repo</span>, shared by git</h2>
+    <div class="ghost">1</div>
+    <div class="kicker">Setup - step 1 of 5</div>
+    <h2>Put the setup <span class="accent">in the repo</span>, shared through git</h2>
+    <div class="body">
 <pre>my-sf-repo/
 ├── CLAUDE.md                  <span class="cm"># the core: commands + standards, always loaded</span>
 ├── .claude/
@@ -233,252 +261,293 @@ table.t th{word-break:normal;overflow-wrap:normal}}
 │   │   ├── apex-review/  deploy-validate/  scratch-org-setup/
 │   └── settings.json          <span class="cm"># OPTIONAL: hooks + denied commands</span>
 ├── docs/naming-conventions.md <span class="cm"># the naming reference</span>
-├── pmd-ruleset.xml  code-analyzer.yml
+├── code-analyzer.yml          <span class="cm"># Code Analyzer v5 configuration</span>
 └── .github/workflows/         <span class="cm"># CI gate + Claude PR review</span></pre>
-    <p class="note">Two pieces matter most: CLAUDE.md and skills. Rules come next. Hooks are optional. The next four slides take them in that order.</p>
-  </div>
-</section>
-
-<!-- 6 CLAUDE.md -->
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Core, 1 of 2: CLAUDE.md</div>
-    <h2>CLAUDE.md - the file Claude reads <span class="accent">every session</span></h2>
-    <div class="takeaway"><span class="tag">If you do only one thing</span><p>Write a good CLAUDE.md. It is the single highest-leverage file in this setup.</p></div>
-    <ul class="tight">
-      <li><b>What goes in:</b> 3-5 lines of project overview, the exact sf commands to use, our Apex/LWC standards, the definition of done, a pointer to the naming doc.</li>
-      <li><b>Keep it under ~200 lines.</b> Long instruction files get followed less reliably. Detail moves to rules and skills.</li>
-      <li><b>Project vs personal:</b> <code>./CLAUDE.md</code> in git is the team's shared brain; <code>~/.claude/CLAUDE.md</code> is personal and never shared.</li>
-      <li><b>Split with <code>@import</code></b> when it grows. Debug odd behavior with <code>/memory</code> - it shows exactly which files loaded.</li>
-    </ul>
-    <p class="note">Starter file: CLAUDE.md in the template repo, every section commented. Source: Claude Code docs + CCAR-F exam guide, Domain 3.1.</p>
-  </div>
-</section>
-
-<!-- 7 SKILLS -->
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Core, 2 of 2: skills</div>
-    <h2>Skills: teach Claude your procedures <span class="accent">once</span></h2>
-    <div class="grid c3">
-      <div class="card"><span class="h"><span class="n">/apex-review</span></span><p>Reviews edited Apex against our rules: bulkification, CRUD/FLS, sharing, ApexDoc.</p></div>
-      <div class="card"><span class="h"><span class="n">/deploy-validate</span></span><p>Deploy + test + scan a scratch org, in the right order, with proof at each step.</p></div>
-      <div class="card"><span class="h"><span class="n">/scratch-org-setup</span></span><p>Creates and seeds a scratch org the same way, every time.</p></div>
+      <div class="takeaway"><span class="tag">Build it in this order</span><p>CLAUDE.md first, then rules, then skills, then hooks (optional). The next four slides take them one at a time.</p></div>
+      <p class="note">Everything is committed, so a new developer gets the whole setup with git clone.</p>
     </div>
-    <ul class="tight">
-      <li>A skill is a <code>SKILL.md</code> in <code>.claude/skills/</code> - a written procedure Claude runs when the task matches. No more re-explaining your deploy ritual.</li>
-      <li><b>Skill vs CLAUDE.md:</b> universal standards go in CLAUDE.md (always on); task procedures go in skills (loaded when needed).</li>
-      <li>Frontmatter controls blast radius: <code>context: fork</code> runs it isolated; <code>allowed-tools</code> restricts what it may call.</li>
-    </ul>
-    <p class="note">Source: CCAR-F exam guide, Domain 3.2. Write your first skill for whatever the team explains most often.</p>
   </div>
 </section>
 
-<!-- 8 RULES -->
+<!-- 6 STEP 2: CLAUDE.md -->
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Next layer: path-scoped rules</div>
-    <h2>Rules load <span class="accent">only when relevant</span> - that is the point</h2>
+    <div class="ghost">2</div>
+    <div class="kicker">Setup - step 2 of 5: CLAUDE.md</div>
+    <h2>CLAUDE.md - the file Claude reads <span class="accent">at the start of every session</span></h2>
+    <div class="body">
+      <div class="takeaway"><span class="tag">If you do only one thing</span><p>Write a good CLAUDE.md. It is the single highest-leverage file in this setup.</p></div>
+      <ul class="tight">
+        <li><b>What goes in:</b> 3-5 lines of project overview, the exact sf commands to use, our Apex/LWC standards, the definition of done, a pointer to the naming doc.</li>
+        <li><b>Keep it short.</b> Every line loads into every session, so every line is a recurring cost. The official test: "Would removing this line cause Claude to make mistakes?" If not, cut it.</li>
+        <li><b>Start with <code>/init</code></b> - Claude analyzes the repo and drafts the file for you. Run <code>/context</code> afterwards to see what actually loaded.</li>
+        <li><b>Shared vs personal:</b> <code>./CLAUDE.md</code> in git is the team's shared brain; <code>~/.claude/CLAUDE.md</code> is yours alone; split a growing file with <code>@imports</code>.</li>
+        <li><b>Auto memory</b> runs alongside it: Claude saves its own notes between sessions (build commands, debugging insights). Your CLAUDE.md stays the source of truth.</li>
+      </ul>
+      <p class="note">Why this works (Claude Certified Architect - Foundations, 3.1): concise always-on instructions are followed reliably; bloated files get ignored.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 STEP 3: RULES -->
+<section class="slide">
+  <div class="inner">
+    <div class="ghost">3</div>
+    <div class="kicker">Setup - step 3 of 5: rules</div>
+    <h2>Rules load <span class="accent">only for the files being edited</span> - that is the point</h2>
+    <div class="body">
 <pre><span class="cm"># .claude/rules/apex.md</span>
 ---
 paths: ["**/*.cls", "**/*.trigger"]
 ---
 <span class="cm"># Loaded only while Claude edits Apex. Costs zero tokens</span>
 <span class="cm"># when the work is a Flow or a YAML file.</span></pre>
-    <ul class="tight">
-      <li>One file per topic: <code>apex.md</code>, <code>lwc.md</code>, <code>flows.md</code>, <code>omnistudio.md</code>, <code>testing.md</code>, <code>git.md</code>.</li>
-      <li>Where the depth lives: bulkification, sharing and CRUD/FLS, trigger discipline, async choice, test standards - the details that used to be tribal knowledge.</li>
-      <li>Less irrelevant context = better answers <b>and</b> fewer tokens.</li>
-    </ul>
-    <p class="note">Source: CCAR-F exam guide, Domain 3.3 (conditional convention loading).</p>
+      <ul class="tight">
+        <li>One file per topic: <code>apex.md</code>, <code>lwc.md</code>, <code>flows.md</code>, <code>omnistudio.md</code>, <code>testing.md</code>, <code>git.md</code>.</li>
+        <li>This is where the depth lives: bulkification, sharing and CRUD/FLS, trigger discipline, async choice, test standards - the details that used to be tribal knowledge.</li>
+        <li>Less irrelevant context means better answers <b>and</b> fewer tokens spent.</li>
+      </ul>
+      <p class="note">Why this works (CCAR-F 3.3): conditional loading keeps the context window for the task at hand. CLAUDE.md holds what is always true; rules hold what is true for this file type.</p>
+    </div>
   </div>
 </section>
 
-<!-- 9 HOOKS - OPTIONAL -->
+<!-- 8 STEP 4: SKILLS -->
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Optional layer: hooks</div>
-    <h2>Hooks: <span class="accent">not mandatory</span> - add them when advice is not enough</h2>
-    <div class="takeaway"><span class="tag">The design rule</span><p>CLAUDE.md advises. Hooks enforce. Start without them; add one the first time a standard gets ignored.</p></div>
-    <ul class="tight">
-      <li><b>Deny list</b> in settings.json - Claude cannot run <code>sf org delete</code> or deploy to production aliases.</li>
-      <li><b>PostToolUse hook</b> - scans every Apex file Claude edits for SOQL/DML in loops, hardcoded IDs, SeeAllData, empty catches.</li>
-      <li><b>Stop hook</b> - Claude cannot end the session until tests pass and the scanner is clean.</li>
-      <li>Prompt instructions fail some percent of the time. For a non-negotiable, that failure rate is the argument for a hook.</li>
-    </ul>
-    <p class="note">Source: CCAR-F exam guide, Task Statements 1.4-1.5 (programmatic enforcement vs prompt guidance). Template in .claude/settings.json - delete it if you do not want hooks yet.</p>
+    <div class="ghost">4</div>
+    <div class="kicker">Setup - step 4 of 5: skills</div>
+    <h2>Skills: our procedures, <span class="accent">written down once</span></h2>
+    <div class="body">
+      <div class="grid c3">
+        <div class="card"><span class="h"><span class="n">/apex-review</span></span><p>Reviews edited Apex against our rules: bulkification, CRUD/FLS, sharing, ApexDoc.</p></div>
+        <div class="card"><span class="h"><span class="n">/deploy-validate</span></span><p>Deploy + test + scan a scratch org, in the right order, with proof at each step.</p></div>
+        <div class="card"><span class="h"><span class="n">/scratch-org-setup</span></span><p>Creates and seeds a scratch org the same way, every time.</p></div>
+      </div>
+      <ul class="tight">
+        <li>A skill is a <code>SKILL.md</code> in <code>.claude/skills/</code> - a written procedure Claude runs when the task matches. No more re-explaining your deploy ritual.</li>
+        <li><b>Skill vs CLAUDE.md:</b> universal standards go in CLAUDE.md (always on); task procedures go in skills (loaded when needed).</li>
+        <li>Frontmatter controls blast radius: <code>context: fork</code> runs it isolated; <code>allowed-tools</code> restricts what it may call; <code>disable-model-invocation</code> keeps side-effect workflows manual.</li>
+      </ul>
+      <p class="note">Why this works (CCAR-F 3.2): reusable workflows are encoded once and invoked on demand. Write your first skill for whatever the team re-explains most often.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 9 STEP 5: HOOKS -->
+<section class="slide">
+  <div class="inner">
+    <div class="ghost">5</div>
+    <div class="kicker">Setup - step 5 of 5: hooks (optional)</div>
+    <h2>Hooks: add them <span class="accent">when advice must become enforcement</span></h2>
+    <div class="body">
+      <div class="takeaway"><span class="tag">The design rule</span><p>CLAUDE.md advises. Hooks enforce. Start without them; add one the first time a standard gets ignored.</p></div>
+      <ul class="tight">
+        <li><b>Deny list</b> in settings.json - Claude cannot run <code>sf org delete</code> or deploy to production aliases.</li>
+        <li><b>PostToolUse hook</b> - scans every Apex file Claude edits for SOQL/DML in loops, hardcoded IDs, SeeAllData, empty catches.</li>
+        <li><b>Stop hook</b> - Claude cannot end the session until tests pass and the scanner is clean.</li>
+        <li>Prompt instructions fail some percent of the time. For a non-negotiable, that failure rate is the argument for a hook.</li>
+      </ul>
+      <p class="note">Why this works (CCAR-F 1.4-1.5): deterministic steps get programmatic enforcement; judgment calls stay as prompt guidance. Template in .claude/settings.json - delete it if you do not want hooks yet.</p>
+    </div>
   </div>
 </section>
 
 <!-- 10 NAMING APEX/LWC -->
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Naming conventions (1 of 2)</div>
-    <h2>Names that explain themselves: <span class="accent">Apex + LWC</span></h2>
-    <table class="t">
-      <tr><th>Artifact</th><th>Pattern</th><th>Example</th></tr>
-      <tr><td>Service class</td><td><code>&lt;Domain&gt;&lt;Purpose&gt;Service</code></td><td><code>QuotePricingService</code></td></tr>
-      <tr><td>Trigger / handler</td><td><code>&lt;Object&gt;Trigger</code> + <code>Handler</code></td><td><code>AccountTrigger</code>, <code>AccountTriggerHandler</code></td></tr>
-      <tr><td>Async classes</td><td>suffix by type</td><td><code>ErpOrderSyncQueueable</code>, <code>StaleCaseCleanupBatch</code></td></tr>
-      <tr><td>Test class</td><td><code>&lt;ClassUnderTest&gt;Test</code></td><td><code>AccountTriggerHandlerTest</code></td></tr>
-      <tr><td>LWC bundle</td><td>camelCase (platform requires it)</td><td><code>accountRenewalCard</code></td></tr>
-      <tr><td>LWC Apex controller</td><td><code>&lt;Component&gt;Controller</code></td><td><code>AccountRenewalCardController</code></td></tr>
-    </table>
-    <p class="note">CLAUDE.md points Claude at docs/naming-conventions.md - AI-written code follows the same names as ours, so review stops being about names.</p>
+    <div class="kicker">Shared standards (1 of 2)</div>
+    <h2>Naming conventions: <span class="accent">Apex and LWC</span></h2>
+    <div class="body">
+      <table class="t">
+        <tr><th>Artifact</th><th>Pattern</th><th>Example</th></tr>
+        <tr><td>Service class</td><td><code>&lt;Domain&gt;&lt;Purpose&gt;Service</code></td><td><code>QuotePricingService</code></td></tr>
+        <tr><td>Trigger / handler</td><td><code>&lt;Object&gt;Trigger</code> + <code>Handler</code></td><td><code>AccountTrigger</code>, <code>AccountTriggerHandler</code></td></tr>
+        <tr><td>Async classes</td><td>suffix by type</td><td><code>ErpOrderSyncQueueable</code>, <code>StaleCaseCleanupBatch</code></td></tr>
+        <tr><td>Test class</td><td><code>&lt;ClassUnderTest&gt;Test</code></td><td><code>AccountTriggerHandlerTest</code></td></tr>
+        <tr><td>LWC bundle</td><td>camelCase (platform requires it)</td><td><code>accountRenewalCard</code></td></tr>
+        <tr><td>LWC Apex controller</td><td><code>&lt;Component&gt;Controller</code></td><td><code>AccountRenewalCardController</code></td></tr>
+      </table>
+      <p class="note">CLAUDE.md points Claude at docs/naming-conventions.md - AI-written code follows the same names as ours, so review stops being about names.</p>
+    </div>
   </div>
 </section>
 
 <!-- 11 NAMING FLOW/OMNI -->
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Naming conventions (2 of 2)</div>
-    <h2><span class="accent">Flows + OmniStudio</span> + git</h2>
-    <table class="t">
-      <tr><th>Artifact</th><th>Pattern</th><th>Example</th></tr>
-      <tr><td>Record-triggered flow</td><td><code>&lt;Object&gt; - &lt;Before|After&gt; - &lt;Purpose&gt;</code></td><td><code>Case - Before - Set Priority</code></td></tr>
-      <tr><td>Screen / autolaunched</td><td>type first</td><td><code>Screen - Case Intake</code>, <code>Auto - Escalate Stale Cases</code></td></tr>
-      <tr><td>DataRaptor / Int. Proc.</td><td><code>DR_</code> / <code>IP_</code></td><td><code>DR_Extract_Account_Details</code>, <code>IP_Update_OrderStatus_ERP</code></td></tr>
-      <tr><td>OmniScript / FlexCard</td><td><code>OS_</code> / <code>FC_</code></td><td><code>OS_Service_CreateCase</code>, <code>FC_Customer_Overview</code></td></tr>
-      <tr><td>Calc / Decision artifacts</td><td><code>CM_</code> <code>DM_</code> <code>CP_</code></td><td><code>CM_Discount_Calculation</code></td></tr>
-      <tr><td>Branch / commit</td><td><code>feature/&lt;ticket&gt;-&lt;name&gt;</code></td><td><code>feature/C360-412-renewal-rules</code></td></tr>
-    </table>
-    <p class="note">OmniStudio: never edit an active component in place - ship a new version (<code>_v2</code>). Full table with per-pattern reasons: docs/naming-conventions.md in the starter repo.</p>
+    <div class="kicker">Shared standards (2 of 2)</div>
+    <h2>Naming conventions: <span class="accent">Flows, OmniStudio, and git</span></h2>
+    <div class="body">
+      <table class="t">
+        <tr><th>Artifact</th><th>Pattern</th><th>Example</th></tr>
+        <tr><td>Record-triggered flow</td><td><code>&lt;Object&gt; - &lt;Before|After&gt; - &lt;Purpose&gt;</code></td><td><code>Case - Before - Set Priority</code></td></tr>
+        <tr><td>Screen / autolaunched</td><td>type first</td><td><code>Screen - Case Intake</code>, <code>Auto - Escalate Stale Cases</code></td></tr>
+        <tr><td>DataRaptor / Int. Proc.</td><td><code>DR_</code> / <code>IP_</code></td><td><code>DR_Extract_Account_Details</code>, <code>IP_Update_OrderStatus_ERP</code></td></tr>
+        <tr><td>OmniScript / FlexCard</td><td><code>OS_</code> / <code>FC_</code></td><td><code>OS_Service_CreateCase</code>, <code>FC_Customer_Overview</code></td></tr>
+        <tr><td>Calc / Decision artifacts</td><td><code>CM_</code> <code>DM_</code> <code>CP_</code></td><td><code>CM_Discount_Calculation</code></td></tr>
+        <tr><td>Branch / commit</td><td><code>feature/&lt;ticket&gt;-&lt;name&gt;</code></td><td><code>feature/C360-412-renewal-rules</code></td></tr>
+      </table>
+      <p class="note">OmniStudio: never edit an active component in place - ship a new version (<code>_v2</code>). Full table with per-pattern reasons: docs/naming-conventions.md in the starter repo.</p>
+    </div>
   </div>
 </section>
 
-<!-- 12 QUALITY ENFORCEMENT -->
+<!-- 12 WHAT THE SETUP CATCHES -->
 <section class="slide">
   <div class="inner">
-    <div class="kicker">How quality is enforced</div>
-    <h2>Every check has <span class="accent">a home and a trigger</span></h2>
-    <table class="t">
-      <tr><th>The check</th><th>Where it lives</th><th>When it fires</th></tr>
-      <tr><td>Bulkification: no SOQL/DML in loops</td><td>rules/apex.md (+ optional hook)</td><td>while Claude writes</td></tr>
-      <tr><td>CRUD/FLS, sharing, no SOQL injection</td><td>rules/apex.md + PMD + Graph Engine</td><td>while writing, and in CI</td></tr>
-      <tr><td>Real tests: assertions, own data, 85% coverage</td><td>rules/testing.md + CI gate</td><td>while writing, and in CI</td></tr>
-      <tr><td>All scanners: PMD, ESLint, Flow Scanner, RetireJS, CPD, SFGE</td><td>code-analyzer.yml</td><td>every PR</td></tr>
-      <tr><td>Independent review of the diff</td><td>Claude Code Action</td><td>every PR</td></tr>
-    </table>
-    <p class="note">The rules also carry the platform facts Claude must respect: 200-record trigger batches, 10 MB heap sync / 25 MB async (Winter '27), 100 SOQL sync / 200 async.</p>
+    <div class="kicker">Quality</div>
+    <h2>What the setup <span class="accent">catches</span> - every standard has a home and a trigger</h2>
+    <div class="body">
+      <table class="t">
+        <tr><th>The check</th><th>Where it lives</th><th>When it fires</th></tr>
+        <tr><td>Bulkification: no SOQL/DML in loops</td><td>rules/apex.md (+ optional hook)</td><td>while Claude writes</td></tr>
+        <tr><td>CRUD/FLS, sharing, no SOQL injection</td><td>rules/apex.md + PMD + Graph Engine</td><td>while writing, and in CI</td></tr>
+        <tr><td>Governor limits: 200-record batches, 10 MB heap sync / 25 MB async, 100 SOQL sync / 200 async</td><td>rules/apex.md</td><td>while Claude writes</td></tr>
+        <tr><td>Right async choice: future vs queueable vs batch</td><td>rules/apex.md</td><td>while Claude writes</td></tr>
+        <tr><td>Real tests: assertions, own data, 85% coverage</td><td>rules/testing.md + CI gate</td><td>while writing, and in CI</td></tr>
+        <tr><td>All engines: PMD, ESLint, Flow Scanner, RetireJS, CPD, SFGE</td><td>code-analyzer.yml</td><td>every PR</td></tr>
+      </table>
+      <p class="note">Read the table this way: each standard is taught to Claude once (left two columns) and then checked automatically (right column). Nothing depends on someone remembering.</p>
+    </div>
   </div>
 </section>
 
 <!-- 13 CI -->
 <section class="slide">
   <div class="inner">
-    <div class="kicker">CI on GitHub Actions</div>
-    <h2>The pipeline is the <span class="accent">enforcement</span> of the setup</h2>
-    <div class="flow">
-      <div class="stage"><span class="sn">JOB 1</span><div class="st">Analyze</div><p>Code Analyzer, all engines. Severity-2+ findings fail the build.</p></div>
-      <div class="stage"><span class="sn">JOB 2</span><div class="st">LWC Jest</div><p>Component unit tests on every PR.</p></div>
-      <div class="stage"><span class="sn">JOB 3</span><div class="st">Apex tests</div><p>Scratch org created in CI, tests run with coverage.</p></div>
-      <div class="stage"><span class="sn">GATE</span><div class="st">85% coverage</div><p>Below the gate, the PR cannot merge.</p></div>
-      <div class="stage"><span class="sn">ALWAYS</span><div class="st">Claude review</div><p>An independent Claude instance reviews the diff and comments.</p></div>
+    <div class="kicker">The pipeline (1 of 2)</div>
+    <h2>CI is where the setup <span class="accent">proves itself on every pull request</span></h2>
+    <div class="body">
+      <div class="flow">
+        <div class="stage"><span class="sn">JOB 1</span><div class="st">Analyze</div><p>sf code-analyzer run, all engines. Severity-2+ findings fail the build.</p></div>
+        <div class="stage"><span class="sn">JOB 2</span><div class="st">LWC Jest</div><p>Component unit tests on every PR.</p></div>
+        <div class="stage"><span class="sn">JOB 3</span><div class="st">Apex tests</div><p>Scratch org created in CI, tests run with coverage.</p></div>
+        <div class="stage"><span class="sn">GATE</span><div class="st">85% coverage</div><p>Below the gate, the PR cannot merge.</p></div>
+        <div class="stage"><span class="sn">ALWAYS</span><div class="st">Claude review</div><p>An independent Claude instance reviews the diff and comments.</p></div>
+      </div>
+      <p class="note">Workflow files: ci-templates/ in the starter repo - one README command copies them into .github/workflows/.</p>
     </div>
-    <p class="note">Workflow files: ci-templates/ in the starter repo (copy into .github/workflows/ - one command in the README).</p>
   </div>
 </section>
 
 <!-- 14 CLAUDE IN CI -->
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Claude Code inside the pipeline</div>
+    <div class="kicker">The pipeline (2 of 2)</div>
     <h2>A <span class="accent">fresh</span> Claude reviews every PR - on purpose</h2>
-    <ul class="tight">
-      <li><b>Self-review is weak review.</b> The session that wrote the code keeps its reasoning and defends its choices. An independent instance catches what the author misses.</li>
-      <li>Headless in pipelines: <code>claude -p "..." --output-format json</code> - machine-parseable findings posted as PR comments.</li>
-      <li>The review prompt carries <b>explicit criteria</b> from our rules, not "be conservative" - vague instructions raise false positives and erode trust.</li>
-      <li><code>@claude</code> in any PR comment summons help with full repo context (Claude Code Action, installed once).</li>
-    </ul>
-    <p class="note">Sources: CCAR-F exam guide Domains 3.6 + 4.6, github.com/anthropics/claude-code-action.</p>
-  </div>
-</section>
-
-<!-- 15 ORCHESTRATION -->
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Using it well: orchestration</div>
-    <h2>Big work gets <span class="accent">a coordinator and sub-agents</span></h2>
-    <ul class="tight">
-      <li><b>Hub and spoke:</b> one coordinator decomposes the task, spawns sub-agents, aggregates results. Sub-agents never talk to each other directly.</li>
-      <li><b>Sub-agent context is isolated.</b> They inherit nothing automatically - the coordinator passes complete, structured findings in the prompt.</li>
-      <li><b>Spawn in parallel:</b> independent investigations go out as multiple Task calls in one turn.</li>
-      <li><b>Scope the tools:</b> 4-5 relevant tools per agent beats 18. Tool overload degrades selection reliability.</li>
-    </ul>
-    <p class="note">Source: CCAR-F exam guide, Domain 1 (27% of the exam).</p>
-  </div>
-</section>
-
-<!-- 16 MODELS -->
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Using it well: model choice</div>
-    <h2>Match the model to the task - <span class="accent">cost follows</span></h2>
-    <table class="t">
-      <tr><th>Model</th><th>Use for</th></tr>
-      <tr><td><code>Haiku</code></td><td>Fast, cheap, simple: file scans, formatting, classification, boilerplate.</td></tr>
-      <tr><td><code>Sonnet</code></td><td>The default. Day-to-day Apex/LWC development, tests, refactors.</td></tr>
-      <tr><td><code>Opus</code></td><td>Hard reasoning: architecture choices, nasty governor-limit debugging, security review.</td></tr>
-    </table>
-    <p class="note">Source: CCAR-P exam guide, Domain 2 (select models based on trade-offs).</p>
-  </div>
-</section>
-
-<!-- 17 CONTEXT ROT -->
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Using it well: context rot</div>
-    <h2>Long sessions decay. <span class="accent">Manage context deliberately.</span></h2>
-    <ul class="tight">
-      <li><b>The symptom:</b> Claude starts citing "typical patterns" instead of the classes it read an hour ago.</li>
-      <li><b>Keep exploration out of the main context:</b> the Explore sub-agent reads widely and returns a summary; <code>context: fork</code> skills do the same.</li>
-      <li><b>Persist findings to scratchpad files</b> in the repo; they survive compaction and crashes.</li>
-      <li><b><code>/compact</code> early;</b> when prior results are stale, start fresh with a written summary - it beats resuming a rotten session.</li>
-    </ul>
-    <p class="note">Source: CCAR-F exam guide, Domain 5 + Domain 3.4.</p>
-  </div>
-</section>
-
-<!-- 18 TOKENS -->
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Using it well: token efficiency</div>
-    <h2>Fewer wasted tokens is a <span class="accent">setup</span> property, not willpower</h2>
-    <ul class="tight">
-      <li><b>Path-scoped rules</b> load only for matching files - you stop paying for Apex rules while editing YAML.</li>
-      <li><b>Lean CLAUDE.md</b> (~200 lines). It is prepended to every session; every line is a recurring cost.</li>
-      <li><b>Prompt caching</b> for repeated large contexts; <b>Message Batches API</b> for overnight work - 50% cheaper, never for anything blocking a merge.</li>
-      <li><b>Right-size the model</b> - the biggest single lever.</li>
-    </ul>
-    <p class="note">Sources: CCAR-F exam guide Domains 4.5 + 5.1, CCAR-P Domain 2.</p>
-  </div>
-</section>
-
-<!-- 19 PLAN MODE -->
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Using it well: plan mode</div>
-    <h2>Plan mode for thinking. <span class="accent">Direct execution for typing.</span></h2>
-    <div class="grid c2">
-      <div class="card"><div class="h"><span class="n">PLAN MODE</span></div><p>Anything architectural: multi-file changes, migrations, several valid approaches, touching a trigger framework. Explore and design first, implement after.</p></div>
-      <div class="card"><div class="h"><span class="n">DIRECT EXECUTION</span></div><p>Well-scoped changes: a single-file bug fix with a clear stack trace, one validation check, a rename.</p></div>
+    <div class="body">
+      <ul class="tight">
+        <li><b>Self-review is weak review.</b> The session that wrote the code keeps its reasoning and defends its choices. An independent instance catches what the author misses.</li>
+        <li>Headless in pipelines: <code>claude -p "..." --output-format json</code> - machine-parseable findings posted as PR comments.</li>
+        <li>The review prompt carries <b>explicit criteria</b> from our rules, not "be conservative" - vague instructions raise false positives and erode trust.</li>
+        <li><code>@claude</code> in any PR comment summons help with full repo context (Claude Code Action, installed once).</li>
+      </ul>
+      <p class="note">Why this works (CCAR-F 3.6 + 4.6): an independent review instance with explicit criteria outperforms author self-review. Source: github.com/anthropics/claude-code-action.</p>
     </div>
-    <div class="takeaway"><span class="tag">Rule of thumb</span><p>If the wrong approach would cost more than the planning would, plan first. Combine both: plan the migration, then execute the plan directly.</p></div>
-    <p class="note">Source: CCAR-F exam guide, Domain 3.4.</p>
   </div>
 </section>
 
-<!-- 20 PROMPTING -->
+<!-- 15 PLAN MODE -->
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Using it well: prompting</div>
-    <h2>Examples beat adjectives. <span class="accent">Tests beat descriptions.</span></h2>
-    <ul class="tight">
-      <li><b>Show, don't describe.</b> We pasted one short ApexDoc example into CLAUDE.md - Claude rewrote a poorly documented class in exactly our style. Two or three concrete examples outperform any paragraph of rules.</li>
-      <li><b>Test-driven loop:</b> write the tests first, then iterate by sharing failures. Each failure message is a precise instruction.</li>
-      <li><b>The interview pattern:</b> on unfamiliar work, tell Claude to ask you questions before implementing.</li>
-    </ul>
-    <p class="note">Sources: CCAR-F exam guide Domains 3.5 + 4.2. The ApexDoc example ships in the starter repo's CLAUDE.md.</p>
+    <div class="kicker">Using it well (1 of 6)</div>
+    <h2>Plan first, <span class="accent">then execute</span></h2>
+    <div class="body">
+      <div class="grid c2">
+        <div class="card"><div class="h"><span class="n">PLAN MODE</span></div><p>Anything architectural: multi-file changes, data migrations, several valid approaches, touching a trigger framework. Explore and design first, implement after.</p></div>
+        <div class="card"><div class="h"><span class="n">DIRECT EXECUTION</span></div><p>Well-scoped changes: a single-file bug fix with a clear stack trace, one validation check, a rename.</p></div>
+      </div>
+      <div class="takeaway"><span class="tag">Rule of thumb</span><p>If the wrong approach would cost more than the planning would, plan first. The daily rhythm: explore, plan, implement, commit - four separate steps, not one prompt.</p></div>
+      <p class="note">Why this works (CCAR-F 3.4, and the official best-practices guide): separating research and planning from implementation avoids solving the wrong problem.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 16 PROMPTING -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Using it well (2 of 6)</div>
+    <h2>Prompts that get it right <span class="accent">the first time</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>Show, don't describe.</b> We pasted one short ApexDoc example into CLAUDE.md - Claude rewrote a poorly documented class in exactly our style. Two or three concrete examples outperform any paragraph of rules.</li>
+        <li><b>Test-driven loop:</b> write the tests first, then iterate by sharing failures. Each failure message is a precise instruction.</li>
+        <li><b>The interview pattern:</b> on unfamiliar work, tell Claude to ask you questions before implementing - then start a fresh session to execute the spec it writes.</li>
+        <li><b>Correct early.</b> Stop Claude the moment it drifts (Esc), rewind when an approach fails (Esc Esc). Two failed corrections in one session: /clear and restart with a sharper prompt.</li>
+      </ul>
+      <p class="note">Why this works (CCAR-F 3.5 + 4.2): few-shot examples and precise context beat adjectives. The ApexDoc example ships in the starter repo's CLAUDE.md.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 17 ORCHESTRATION -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Using it well (3 of 6)</div>
+    <h2>Split big work across <span class="accent">a coordinator and sub-agents</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>Hub and spoke:</b> one coordinator decomposes the task, spawns sub-agents, aggregates results. Sub-agents never talk to each other directly.</li>
+        <li><b>Sub-agent context is isolated.</b> They inherit nothing automatically - the coordinator passes complete, structured findings in the prompt.</li>
+        <li><b>Spawn in parallel:</b> independent investigations go out as multiple Task calls in one turn.</li>
+        <li><b>Scope the tools:</b> 4-5 relevant tools per agent beats 18. Tool overload degrades selection reliability.</li>
+        <li><b>Custom sub-agents</b> live in <code>.claude/agents/</code> - our example: a security reviewer that checks CRUD/FLS, sharing, and injection on demand.</li>
+      </ul>
+      <p class="note">Why this works (CCAR-F Domain 1, 27% of the Foundations exam): orchestration with isolated contexts is the core agentic architecture pattern.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 18 CONTEXT -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Using it well (4 of 6)</div>
+    <h2>Keep the context window <span class="accent">clean</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>The symptom of decay:</b> Claude starts citing "typical patterns" instead of the classes it read an hour ago. Performance degrades as the window fills.</li>
+        <li><b>Keep exploration out of the main context:</b> an Explore subagent reads widely and returns a summary; <code>context: fork</code> skills do the same.</li>
+        <li><b>Persist findings to scratchpad files</b> in the repo; they survive compaction and crashes.</li>
+        <li><b><code>/clear</code> between unrelated tasks. <code>/compact</code> early,</b> with instructions in CLAUDE.md about what must survive. A fresh session with a written summary beats resuming a rotten one.</li>
+      </ul>
+      <p class="note">Why this works (CCAR-F Domain 5 + 3.4): the context window is the most important resource to manage - treat it as a budget, not a bottomless pit.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 19 MODELS -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Using it well (5 of 6)</div>
+    <h2>Match the model to the task - <span class="accent">cost follows</span></h2>
+    <div class="body">
+      <table class="t">
+        <tr><th>Model</th><th>Use for</th></tr>
+        <tr><td><code>Haiku</code></td><td>Fast, cheap, simple: file scans, formatting, classification, boilerplate.</td></tr>
+        <tr><td><code>Sonnet</code></td><td>The default. Day-to-day Apex/LWC development, tests, refactors.</td></tr>
+        <tr><td><code>Opus</code></td><td>Hard reasoning: architecture choices, nasty governor-limit debugging, security review.</td></tr>
+      </table>
+      <div class="takeaway"><span class="tag">The default</span><p>Sonnet for the day job. Drop to Haiku for grunt work, escalate to Opus when the task earns it.</p></div>
+      <p class="note">Why this works (CCAR-P Domain 2): model selection is a quality-speed-cost trade-off you make per task, not a default you set once.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 20 TOKENS -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Using it well (6 of 6)</div>
+    <h2>Fewer wasted tokens is a <span class="accent">setup</span> property, not willpower</h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>Path-scoped rules</b> load only for matching files - you stop paying for Apex rules while editing YAML.</li>
+        <li><b>Lean CLAUDE.md.</b> It is prepended to every session; every line is a recurring cost.</li>
+        <li><b>Prompt caching</b> for repeated large contexts; <b>Message Batches API</b> for overnight work - 50% cheaper, never for anything blocking a merge.</li>
+        <li><b>Right-size the model</b> - the biggest single lever.</li>
+      </ul>
+      <p class="note">Why this works (CCAR-F 4.5 + 5.1, CCAR-P Domain 2): token efficiency comes from configuration - rules, file size, caching - not from asking developers to type less.</p>
+    </div>
   </div>
 </section>
 
@@ -486,86 +555,40 @@ paths: ["**/*.cls", "**/*.trigger"]
 <section class="slide">
   <div class="inner">
     <div class="kicker">Responsible use</div>
-    <h2>Rules for using Claude Code <span class="accent">on this team</span></h2>
-    <ul class="tight">
-      <li><b>You review everything you merge.</b> AI-written code you have not read is still your code and your name on the commit.</li>
-      <li><b>Same bar as human code.</b> Scanner clean, tests real, security checks present.</li>
-      <li><b>No secrets, ever.</b> No credentials, session IDs, or customer data in prompts, CLAUDE.md, rules, or skills.</li>
-      <li><b>Production is human-run.</b> Deploys to prod are run by a person, not by Claude.</li>
-      <li><b>Escalate doubt.</b> If Claude's approach looks wrong, challenge it or ask a human.</li>
-    </ul>
-    <p class="note">Aligned with CCAR-P exam guide, Domain 5 (governance, safety, human-in-the-loop).</p>
+    <h2>The rules we all follow when <span class="accent">Claude writes our code</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>You review everything you merge.</b> AI-written code you have not read is still your code and your name on the commit.</li>
+        <li><b>Same bar as human code.</b> Scanner clean, tests real, security checks present.</li>
+        <li><b>No secrets, ever.</b> No credentials, session IDs, or customer data in prompts, CLAUDE.md, rules, or skills.</li>
+        <li><b>Production is human-run.</b> Deploys to prod are run by a person, not by Claude.</li>
+        <li><b>Escalate doubt.</b> If Claude's approach looks wrong, challenge it or ask a human.</li>
+      </ul>
+      <p class="note">Aligned with CCAR-P Domain 5 (governance, safety, human-in-the-loop): guardrails on anything irreversible, a human accountable for every merge.</p>
+    </div>
   </div>
 </section>
 
-<!-- 22 CERT BEST PRACTICES: FOUNDATIONS -->
-<section class="slide">
-  <div class="inner">
-    <div class="certband">FROM THE EXAM GUIDES · CLAUDE CERTIFIED ARCHITECT - FOUNDATIONS</div>
-    <h2>Best practices <span class="accent">the exam tests for</span> (1 of 2)</h2>
-    <table class="t">
-      <tr><th>Practice</th><th>Exam domain</th></tr>
-      <tr><td>Decompose big work into a coordinator + isolated sub-agents; pass complete findings in the prompt.</td><td>1. Agentic Architecture &amp; Orchestration (27%)</td></tr>
-      <tr><td>Scope tools: 4-5 relevant tools per agent. Overload degrades tool selection.</td><td>2. Tool Design &amp; MCP (18%)</td></tr>
-      <tr><td>Deterministic steps get programmatic enforcement; prompt guidance is probabilistic.</td><td>1.4-1.5</td></tr>
-      <tr><td>Examples beat prose: 2-4 few-shot examples for style and format.</td><td>4. Prompt Engineering (20%)</td></tr>
-      <tr><td>Independent review instance over self-review.</td><td>4.6</td></tr>
-      <tr><td>Fight context rot: scratchpads, /compact, Explore subagent, fresh session + summary.</td><td>5. Context Management (15%)</td></tr>
-      <tr><td>Headless in CI: <code>claude -p</code> + <code>--output-format json</code>.</td><td>3.6</td></tr>
-    </table>
-    <p class="note">Exam: 60 items, 120 min, $125, pass 720/1000. Source: Claude Certified Architect - Foundations Exam Guide (PDF, read in full for this deck).</p>
-  </div>
-</section>
-
-<!-- 23 CERT BEST PRACTICES: PROFESSIONAL -->
-<section class="slide">
-  <div class="inner">
-    <div class="certband">FROM THE EXAM GUIDES · CLAUDE CERTIFIED ARCHITECT - PROFESSIONAL</div>
-    <h2>Best practices <span class="accent">the exam tests for</span> (2 of 2)</h2>
-    <table class="t">
-      <tr><th>Practice</th><th>Exam domain</th></tr>
-      <tr><td>Match the model to the task on quality, speed, and cost trade-offs.</td><td>2. Models, Prompting &amp; Context (13%)</td></tr>
-      <tr><td>Optimize context windows and tokens; cache repeated context.</td><td>2</td></tr>
-      <tr><td>Avoid capability bloat: evaluate tool and agent configurations, not just prompts.</td><td>3. Integration &amp; Systems (19%)</td></tr>
-      <tr><td>Measure: accuracy, latency, cost, safety metrics plus real eval datasets.</td><td>4. Evaluation &amp; Testing (16%)</td></tr>
-      <tr><td>Guardrails and human-in-the-loop for anything irreversible.</td><td>5. Governance &amp; Safety (14%)</td></tr>
-      <tr><td>Document decisions and trade-offs so the team inherits them.</td><td>6. Stakeholder &amp; Lifecycle (14%)</td></tr>
-    </table>
-    <p class="note">Exam: 63 items, $175, pass 720/1000. Solution Design is 17%; Developer Productivity 7%. Source: Claude Certified Architect - Professional Exam Guide (PDF, read in full for this deck). Both guide PDFs linked on the last slide.</p>
-  </div>
-</section>
-
-<!-- 24 GET STARTED -->
+<!-- 22 GET STARTED -->
 <section class="slide">
   <div class="inner">
     <div class="kicker">Get started</div>
-    <h2>Fifteen minutes to <span class="accent">the same setup</span></h2>
-    <ul class="tight">
-      <li><b>1.</b> Read the starter repo: <code>github.com/krika2810/claude-code-sf-starter</code> - every file commented.</li>
-      <li><b>2.</b> Copy it into your repo (one README command), edit CLAUDE.md for your org.</li>
-      <li><b>3.</b> Install the sf Code Analyzer plugin; run <code>sf scanner run</code> once locally.</li>
-      <li><b>4.</b> Add the CI templates, install the Claude Code GitHub Action, add <code>ANTHROPIC_API_KEY</code> to secrets.</li>
-      <li><b>5.</b> Open a PR and watch the gate run.</li>
-    </ul>
-  </div>
-</section>
-
-<!-- 25 SOURCES -->
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Sources - everything verified</div>
-    <div class="src-line"><a href="https://github.com/krika2810/claude-code-sf-starter">github.com/krika2810/claude-code-sf-starter</a><small>The companion template: CLAUDE.md, 7 rule files, 3 skills, optional hooks, naming doc, CI templates.</small></div>
-    <div class="src-line"><a href="https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification">anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification</a><small>Foundations exam guide PDF: 5 domains, 27 task statements, all practice claims verified against the full text.</small></div>
-    <div class="src-line"><a href="https://anthropic-partners.skilljar.com/claude-certified-architect-professional-certification">anthropic-partners.skilljar.com/claude-certified-architect-professional-certification</a><small>Professional exam guide PDF: 7 domains.</small></div>
-    <div class="src-line"><a href="https://code.claude.com/docs/en/best-practices">code.claude.com/docs/en/best-practices</a><small>Official Claude Code best practices.</small></div>
-    <div class="src-line"><a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm">developer.salesforce.com/.../apex_gov_limits.htm</a><small>Execution governors and limits (Winter '27: heap 10 MB sync / 25 MB async).</small></div>
-    <div class="src-line"><a href="https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide">developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide</a><small>Code Analyzer v5 - engines and configuration.</small></div>
-    <div class="src-line"><a href="https://github.com/anthropics/claude-code-action">github.com/anthropics/claude-code-action</a><small>Claude Code GitHub Action.</small></div>
+    <h2>Set it up on your repo <span class="accent">in about fifteen minutes</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b>1.</b> Read the starter repo: <code>github.com/krika2810/claude-code-sf-starter</code> - every file commented.</li>
+        <li><b>2.</b> Copy it into your repo (one README command), then run <code>/init</code> in Claude Code and merge its draft with our CLAUDE.md.</li>
+        <li><b>3.</b> Install the Code Analyzer plugin and run <code>sf code-analyzer run</code> once locally.</li>
+        <li><b>4.</b> Add the CI templates, install the Claude Code GitHub Action, add <code>ANTHROPIC_API_KEY</code> to repo secrets.</li>
+        <li><b>5.</b> Open a PR and watch the gate run.</li>
+      </ul>
+      <p class="note">Everything on every slide traces to the official sources: code.claude.com/docs (best practices, memory, hooks, skills, sub-agents, github-actions), developer.salesforce.com (Code Analyzer v5, Apex governor limits), and both Claude Certified Architect exam guides (anthropic-partners.skilljar.com).</p>
+    </div>
   </div>
 </section>
 
 <nav class="nav">
-  <div class="counter"><b id="cur">01</b> / <span id="total">25</span></div>
+  <div class="counter"><b id="cur">01</b> / <span id="total">22</span></div>
   <div class="arrows"><button class="prev" aria-label="Previous">←</button><button class="next" aria-label="Next">→</button></div>
 </nav>
 <div class="hint">ARROWS / SPACE TO NAVIGATE</div>
@@ -591,6 +614,10 @@ paths: ["**/*.cls", "**/*.trigger"]
   }
   var start=parseInt((location.hash||'').replace('#',''),10);
   go(isNaN(start)?0:Math.min(total-1,Math.max(0,start-1)),false);
+  window.addEventListener('hashchange',function(){
+    var n=parseInt((location.hash||'').replace('#',''),10);
+    if(!isNaN(n)&&(n-1)!==cur)go(Math.min(total-1,Math.max(0,n-1)),false);
+  });
   document.querySelector('.next').addEventListener('click',function(){go(cur+1)});
   document.querySelector('.prev').addEventListener('click',function(){go(cur-1)});
   document.addEventListener('keydown',function(e){
