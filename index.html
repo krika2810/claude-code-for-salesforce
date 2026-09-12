@@ -175,25 +175,25 @@ table.t td code{font-size:11px;word-break:break-all}
 <section class="slide">
   <div class="inner">
     <div class="kicker">Why we are doing this</div>
-    <h2>Claude does not know <span class="accent">our standards</span></h2>
+    <h2>Repo instructions prevent <span class="accent">common Apex mistakes</span></h2>
     <div class="body">
       <ul class="tight">
-        <li><b>Every session starts blank.</b> Write the standards once, in the repo - Claude reads them every time.</li>
+        <li>Without repo instructions, Claude can repeat the same mistakes we catch in review.</li>
       </ul>
       <div class="grid c2">
-        <pre><span class="cm">// unguided: the first draft you get today</span>
+        <pre><span class="cm">// without repo instructions</span>
 for (Account a : accounts) {
     List&lt;Contact&gt; cs = [SELECT Id FROM Contact
         WHERE AccountId = :a.Id]; <span class="bad">// SOQL in a loop</span>
     update cs; <span class="bad">// DML in a loop too</span>
 }</pre>
-        <pre><span class="cm">// the same prompt, with our setup in the repo</span>
+        <pre><span class="cm">// same prompt, with our repo instructions</span>
 Map&lt;Id, Account&gt; byId = new Map&lt;Id, Account&gt;(accounts);
 List&lt;Contact&gt; cs = [SELECT Id, AccountId FROM Contact
     WHERE AccountId IN :byId.keySet()]; <span class="ok">// one query</span>
 update cs; <span class="ok">// one DML</span></pre>
       </div>
-      <div class="takeaway"><p>Same model, same prompt. <b>The setup is the difference.</b></p></div>
+      <div class="takeaway"><p>Same prompt. <b>Repo instructions change the result.</b></p></div>
     </div>
   </div>
 </section>
@@ -221,18 +221,18 @@ update cs; <span class="ok">// one DML</span></pre>
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (2 of 8)</div>
-    <h2><span class="accent">Context</span> and <span class="accent">tokens</span></h2>
+    <h2>What Claude can see <span class="accent">in a session</span></h2>
     <div class="body">
       <div class="grid c2">
-        <div class="card"><div class="h">Context</div><p>Everything Claude can see right now: the files it read, your messages, its own replies. It starts empty every session.</p></div>
-        <div class="card"><div class="h">Tokens</div><p>The unit it reads and writes in - roughly three quarters of a word. You pay per token, in and out.</p></div>
+        <div class="card"><div class="h">Context</div><p>The files Claude has read, your messages, and its replies. A new session starts with no task history.</p></div>
+        <div class="card"><div class="h">Tokens</div><p>Small pieces of text that Claude reads and writes. Files, prompts, and replies all use tokens.</p></div>
       </div>
       <pre><span class="kw">/context</span>
 Files read            142k
 Conversation           38k
 CLAUDE.md + rules       6k
-<span class="cm">Run /context any time - this is live, not a guess.</span></pre>
-      <div class="takeaway"><p>A full Salesforce repo does not fit in the window. <b>What goes in decides what comes out.</b></p></div>
+<span class="cm">Run /context to see what is using the window.</span></pre>
+      <div class="takeaway"><p>A full Salesforce repo may not fit. <b>Give Claude only the files needed for the task.</b></p></div>
     </div>
   </div>
 </section>
@@ -240,7 +240,7 @@ CLAUDE.md + rules       6k
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (3 of 8)</div>
-    <h2>CLAUDE.md: instructions read <span class="accent">every session</span></h2>
+    <h2>Put shared instructions <span class="accent">in CLAUDE.md</span></h2>
     <div class="body">
       <pre><span class="cm"># CLAUDE.md - repo root, plain markdown</span>
 Project: C360 person-account service (Apex, Flows, LWC)
@@ -254,9 +254,9 @@ Test:    sf apex run test --wait 10
 - No SOQL or DML inside loops. Check CRUD/FLS.
 - Done = deployed, tests green, analyzer clean.</pre>
       <ul class="tight">
-        <li>Claude reads it <b>before you type a word</b>.</li>
-        <li>Only what is always true: commands, standards, naming.</li>
-        <li><code>/init</code> writes the first draft - then you trim it.</li>
+        <li>Claude reads it at the start of each session.</li>
+        <li>Keep only shared commands, standards, and naming rules here.</li>
+        <li><code>/init</code> creates a first draft. Review it and remove anything unnecessary.</li>
       </ul>
     </div>
   </div>
@@ -265,7 +265,7 @@ Test:    sf apex run test --wait 10
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (4 of 8)</div>
-    <h2>Rules: detail that loads <span class="accent">only when it matters</span></h2>
+    <h2>Use rules for <span class="accent">specific file types</span></h2>
     <div class="body">
       <pre><span class="cm"># .claude/rules/apex.md</span>
 ---
@@ -276,9 +276,9 @@ paths: ["**/*.cls", "**/*.trigger"]
 - Tests need real assertions, wrapped in
   Test.startTest() / Test.stopTest().</pre>
       <ul class="tight">
-        <li>CLAUDE.md is always on. <b>Rules load only for matching files.</b></li>
-        <li>Editing a Flow? The Apex rules never load. No tokens, no noise.</li>
-        <li>This is where the depth lives: bulkification, CRUD/FLS, sharing.</li>
+        <li>Claude loads a rule only when it works on a matching file.</li>
+        <li>When you edit a Flow, the Apex rules do not load.</li>
+        <li>Put detailed guidance here: bulkification, CRUD/FLS, and sharing.</li>
       </ul>
     </div>
   </div>
@@ -287,7 +287,7 @@ paths: ["**/*.cls", "**/*.trigger"]
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (5 of 8)</div>
-    <h2>Skills: procedures Claude runs <span class="accent">on demand</span></h2>
+    <h2>Use skills for <span class="accent">repeatable tasks</span></h2>
     <div class="body">
       <div class="grid c2">
         <pre><span class="cm"># .claude/skills/apex-review/SKILL.md</span>
@@ -307,8 +307,8 @@ description: Check edited Apex against
   AccountRatingTest.cls  <span class="ok">clean</span></pre>
       </div>
       <ul class="tight">
-        <li>Write the procedure once. Anyone runs it with <code>/apex-review</code>.</li>
-        <li>Loads only when called - <b>zero standing token cost</b>.</li>
+        <li>Write the review steps once. Any developer can run <code>/apex-review</code>.</li>
+        <li>The skill loads only when a developer calls it.</li>
       </ul>
     </div>
   </div>
@@ -317,7 +317,7 @@ description: Check edited Apex against
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (6 of 8)</div>
-    <h2>Hooks: scripts that run on <span class="accent">Claude&#39;s actions</span></h2>
+    <h2>Use hooks to <span class="accent">block unsafe commands</span></h2>
     <div class="body">
       <div class="grid c2">
         <pre><span class="cm"># .claude/settings.json</span>
@@ -334,12 +334,11 @@ description: Check edited Apex against
   <span class="bad">✗ Blocked by hook: destructive sf commands
   need a human</span>
 
-<span class="cm">Nobody typed a review. The hook fired
-on its own.</span></pre>
+<span class="cm">The hook checks the command before it runs.</span></pre>
       </div>
       <ul class="tight">
-        <li>CLAUDE.md advises. <b>A hook enforces</b> - it cannot be talked round.</li>
-        <li>Fires automatically: before a tool call, after an edit, on stop.</li>
+        <li>CLAUDE.md gives instructions. A hook can stop a command.</li>
+        <li>Hooks can run before a command, after an edit, or when Claude stops.</li>
       </ul>
     </div>
   </div>
@@ -348,7 +347,7 @@ on its own.</span></pre>
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (7 of 8)</div>
-    <h2>Subagents: helpers with <span class="accent">their own context window</span></h2>
+    <h2>Use subagents for <span class="accent">separate research tasks</span></h2>
     <div class="body">
       <pre><span class="kw">&gt;</span> Explore how AccountTriggerHandler routes events
 
@@ -356,9 +355,9 @@ on its own.</span></pre>
   Read 14 files, came back with a 12-line summary
   <span class="ok">Your window keeps the summary, not the 14 files.</span></pre>
       <ul class="tight">
-        <li>A second Claude with <b>its own clean context</b>.</li>
-        <li>Run several in parallel. <code>/tasks</code> shows what is running.</li>
-        <li>Your own go in <code>.claude/agents/*.md</code>: a name, its tools, its instructions.</li>
+        <li>A subagent reads files in a separate context window.</li>
+        <li>You can run several at once. <code>/tasks</code> shows their status.</li>
+        <li>Define your own in <code>.claude/agents/*.md</code> with a name, tools, and instructions.</li>
       </ul>
     </div>
   </div>
@@ -367,7 +366,7 @@ on its own.</span></pre>
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (8 of 8)</div>
-    <h2>MCP: plug Claude <span class="accent">straight into your org</span></h2>
+    <h2>Use MCP to connect <span class="accent">Salesforce tools</span></h2>
     <div class="body">
       <div class="grid c2">
         <pre><span class="cm"># .mcp.json - in the repo</span>
@@ -384,12 +383,12 @@ on its own.</span></pre>
 <span class="cm">●</span> Salesforce DX: runs the query
   <span class="ok">142 records - answer in seconds</span>
 
-<span class="cm">No exports. No copying data by hand.</span></pre>
+<span class="cm">The query runs through the Salesforce MCP server.</span></pre>
       </div>
       <ul class="tight">
-        <li>MCP is the standard way to <b>give Claude new tools</b>.</li>
-        <li>Salesforce ships an official server: queries, metadata, tests.</li>
-        <li>Manage servers with <code>/mcp</code>.</li>
+        <li>MCP connects Claude Code to external tools.</li>
+        <li>Salesforce provides an MCP server for queries, metadata, and tests.</li>
+        <li>Use <code>/mcp</code> to check and manage connections.</li>
       </ul>
     </div>
   </div>
@@ -398,34 +397,19 @@ on its own.</span></pre>
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 2 - setup</div>
-    <h2>Setup is <span class="accent">one clone</span></h2>
+    <h2>Install Claude Code and <span class="accent">clone the starter repo</span></h2>
     <div class="body">
       <pre>npm install -g @anthropic-ai/claude-code
 git clone https://github.com/krika2810/claude-code-sf-starter
 cd claude-code-sf-starter &amp;&amp; claude</pre>
       <ul class="tight">
-        <li>The starter carries <b>everything from part 1</b> - CLAUDE.md, rules, skills, hooks.</li>
-        <li>Every file commented. Read what you are getting.</li>
+        <li>The starter includes CLAUDE.md, rules, skills, and hooks.</li>
+        <li>Read each file before copying it into your project.</li>
       </ul>
-      <p class="note">Five minutes of setup. The rest of the hour is using it - bring a laptop, you will be typing.</p>
     </div>
   </div>
 </section>
 
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Part 3 - try it yourself</div>
-    <h2>How the hands-on part <span class="accent">works</span></h2>
-    <div class="body">
-      <ul class="tight">
-        <li>I show a prompt. <b>You type it</b> - or your own version - against your scratch org.</li>
-        <li>Watch what Claude <b>does</b>, not just what it answers.</li>
-        <li>Which files does it open? What does it run? What does it check?</li>
-        <li>When it drifts, correct it and watch it recover. <b>That loop is the skill.</b></li>
-      </ul>
-    </div>
-  </div>
-</section>
 
 <section class="slide">
   <div class="inner">
@@ -469,7 +453,7 @@ cd claude-code-sf-starter &amp;&amp; claude</pre>
   repo standards. Write the test class too, real assertions.</pre>
       <ul class="tight">
         <li>Watch: <code>.claude/rules/apex.md</code> <b>loads by itself</b> - look for it.</li>
-        <li>Bulkified without you asking? That is the setup paying off.</li>
+        <li>Check that the class handles lists without SOQL or DML inside loops.</li>
       </ul>
     </div>
   </div>
@@ -520,7 +504,7 @@ cd claude-code-sf-starter &amp;&amp; claude</pre>
   You approve the plan - then it builds.</span></pre>
       <ul class="tight">
         <li><b>Shift+Tab</b> until the mode reads <code>plan</code>. Now it cannot edit - only read and plan.</li>
-        <li>Anything multi-file earns a plan. A one-line fix does not.</li>
+        <li>Use plan mode for multi-file changes. Skip it for a one-line fix.</li>
       </ul>
     </div>
   </div>
@@ -529,12 +513,12 @@ cd claude-code-sf-starter &amp;&amp; claude</pre>
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 4 - working well (1 of 5)</div>
-    <h2>Prompts that land <span class="accent">the first time</span></h2>
+    <h2>Give Claude <span class="accent">exact task details</span></h2>
     <div class="body">
       <div class="grid c2">
-        <pre><span class="cm"># vague - three rounds of guessing</span>
+        <pre><span class="cm"># too vague</span>
 Fix the account code</pre>
-        <pre><span class="cm"># lands first time</span>
+        <pre><span class="cm"># clear task</span>
 AccountService.recalculate() throws
 ListException on an empty list.
 Add a guard, and extend the test
@@ -543,7 +527,7 @@ class with an empty-list case.</pre>
       <ul class="tight">
         <li><b>Name the class, the error, the expected behavior.</b></li>
         <li>Paste the exact error text. Every word is a clue.</li>
-        <li>One example of the style you want beats a paragraph of adjectives.</li>
+        <li>Show one example of the result you want.</li>
       </ul>
     </div>
   </div>
@@ -558,9 +542,9 @@ class with an empty-list case.</pre>
 <span class="kw">/compact</span>   summarize the session so far, keep going
 <span class="kw">/clear</span>     wipe it - new task, fresh window</pre>
       <ul class="tight">
-        <li>Long sessions drift: vaguer answers, forgotten files.</li>
+        <li>Long sessions can include old files and unrelated messages.</li>
         <li><code>/clear</code> between unrelated tasks. It costs nothing.</li>
-        <li>Send wide reading to a subagent; keep only the summary.</li>
+        <li>Use a subagent to read many files and return a short summary.</li>
       </ul>
     </div>
   </div>
@@ -577,7 +561,7 @@ class with an empty-list case.</pre>
         <tr><td>Sonnet 5</td><td>$2 / $10</td><td>The default. Day-to-day Apex, LWC, tests</td></tr>
         <tr><td>Opus 5</td><td>$5 / $25</td><td>Architecture, nasty governor-limit bugs</td></tr>
       </table>
-      <p class="note">Switch with /model or Alt+P. Most of the day is Sonnet - drop to Haiku for grunt work, go up to Opus when the task earns it.</p>
+      <p class="note">Switch with /model or Alt+P. Use Sonnet for normal development, Haiku for simple file work, and Opus for difficult design or debugging.</p>
     </div>
   </div>
 </section>
@@ -585,13 +569,13 @@ class with an empty-list case.</pre>
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 4 - working well (4 of 5)</div>
-    <h2>Where the tokens <span class="accent">go</span></h2>
+    <h2>Reduce <span class="accent">token use</span></h2>
     <div class="body">
       <ul class="tight">
-        <li><b>Path-scoped rules.</b> Apex rules never load while you edit a Flow.</li>
-        <li><b>A lean CLAUDE.md.</b> Every line loads into every session - each one is rent.</li>
-        <li><b>The right model.</b> Haiku for grunt work, Opus only when the task earns it.</li>
-        <li><b>Subagents.</b> The wide reading happens in their window, not yours.</li>
+        <li><b>Use path-scoped rules.</b> Apex rules do not load while you edit a Flow.</li>
+        <li><b>Keep CLAUDE.md short.</b> Every line loads into every session.</li>
+        <li><b>Choose the right model.</b> Use smaller models for simple work.</li>
+        <li><b>Use subagents.</b> They can read many files and return a short summary.</li>
       </ul>
     </div>
   </div>
@@ -600,13 +584,13 @@ class with an empty-list case.</pre>
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 4 - the ground rules</div>
-    <h2>The rules when <span class="accent">Claude writes our code</span></h2>
+    <h2>Review and protect <span class="accent">every change</span></h2>
     <div class="body">
       <ul class="tight">
         <li><b>You review everything you merge.</b> Your name is on the commit.</li>
-        <li><b>Same bar as human code.</b> Tests real, scanners clean, no skipped findings.</li>
+        <li><b>Use the same checks as human-written code.</b> Run tests and fix analyzer findings.</li>
         <li><b>No secrets, ever.</b> No credentials or customer data in prompts or setup files.</li>
-        <li><b>Production stays human.</b> Claude never deploys there.</li>
+        <li><b>Keep production deployment manual.</b> A developer approves and runs it.</li>
       </ul>
     </div>
   </div>
@@ -615,13 +599,13 @@ class with an empty-list case.</pre>
 <section class="slide">
   <div class="inner">
     <div class="kicker">Where you go from here</div>
-    <h2>Keep the repo, <span class="accent">keep playing</span></h2>
+    <h2>Use this setup <span class="accent">in your repo</span></h2>
     <div class="body">
       <ul class="tight">
-        <li><b>The setup:</b> github.com/krika2810/claude-code-sf-starter - copy it into a real repo this week.</li>
-        <li><b>The habit:</b> type, watch, correct, repeat.</li>
-        <li><b>The rule of thumb:</b> plan first when the wrong approach is expensive.</li>
-        <li><b>The payoff:</b> first drafts that already follow our standards.</li>
+        <li>Start with <b>github.com/krika2810/claude-code-sf-starter</b>.</li>
+        <li>Check which files Claude reads, changes, and tests.</li>
+        <li>Use plan mode before a large change.</li>
+        <li>Keep the instructions that improve your team's results.</li>
       </ul>
     </div>
   </div>
