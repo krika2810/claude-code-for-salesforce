@@ -626,97 +626,212 @@ class with an empty-list case.</pre>
 
 <!-- REVIEW SECTION: intentionally outside the workshop flow -->
 <section class="slide review-slide">
-  <div class="inner">
-    <div class="kicker">Review later - not workshop content yet</div>
-    <h2>Ideas from popular <span class="accent">Claude Code posts</span></h2>
-    <div class="body">
-      <div class="grid c2">
-        <div class="card"><div class="h">What repeated</div><p>Manage context. Give Claude a test. Plan large changes. Isolate parallel work.</p></div>
-        <div class="card"><div class="h">What did not make the cut</div><p>Prompt tricks, large agent frameworks, and advice without a real example.</p></div>
-      </div>
-      <div class="takeaway"><p>This section is separate so we can decide what belongs in the workshop.</p></div>
-      <p class="note">Sources: Boris Cherny on X; John Kim and Scott Ortier on Substack; r/ClaudeCode; Simon Willison.</p>
-    </div>
-  </div>
+  <div class="inner"><div class="kicker">Review later - research appendix</div><h2>What the popular Claude Code guides <span class="accent">actually teach</span></h2><div class="body">
+    <div class="grid c2"><div class="card"><div class="h">X: Claude Code team workflow</div><p>Parallel worktrees, plan mode, and a CLAUDE.md that improves after real mistakes.</p></div><div class="card"><div class="h">Substack: operating Claude Code</div><p>Context management, verification loops, instruction hierarchy, skills, hooks, permissions, and daily habits.</p></div><div class="card"><div class="h">Reddit: scaling as a senior engineer</div><p>Delegate bounded implementation, isolate sessions, and keep architecture and review with the developer.</p></div><div class="card"><div class="h">Simon Willison: research and CI</div><p>Give agents a safe workspace, a clear deliverable, executable checks, and a saved artifact.</p></div></div>
+    <div class="takeaway"><p>This appendix is intentionally detailed. It is research material, not part of the workshop yet.</p></div>
+  </div></div>
 </section>
 
 <section class="slide review-slide">
-  <div class="inner">
-    <div class="kicker">Review later - source findings (1 of 2)</div>
-    <h2>Keep context small and <span class="accent">make Claude verify</span></h2>
-    <div class="body">
-      <div class="grid c2">
-        <pre><span class="cm"># keep project context short</span>
-CLAUDE.md
-  commands + shared standards
-rules/
-  file-specific guidance
-skills/
-  repeatable procedures</pre>
-        <pre><span class="cm"># put the check in the prompt</span>
-&gt; Fix AccountService.
-  Then run:
-  sf apex run test --class-names
-  AccountServiceTest --wait 10
-  Do not stop until it passes.</pre>
-      </div>
-      <ul class="tight">
-        <li>Clear old task history before starting unrelated work.</li>
-        <li>Every CLAUDE.md line should prevent a real mistake.</li>
-        <li>Name the command that proves the task is done.</li>
-      </ul>
-      <p class="note">Sources: John Kim, “50 Claude Code Tips”; Scott Ortier, “CLAUDE.md”; Boris Cherny’s workflow thread; Anthropic best practices.</p>
-    </div>
-  </div>
+  <div class="inner"><div class="kicker">Review later - Boris Cherny thread (1 of 3)</div><h2>Run independent tasks in <span class="accent">parallel worktrees</span></h2><div class="body">
+    <pre><span class="cm"># one branch and directory per session</span>
+git worktree add ../app-auth feature/auth
+git worktree add ../app-api feature/api
+git worktree add ../app-analysis analysis
+
+(cd ../app-auth &amp;&amp; claude)
+(cd ../app-api &amp;&amp; claude)
+(cd ../app-analysis &amp;&amp; claude)</pre>
+    <ul class="tight"><li><b>Team pattern:</b> run three to five sessions when the tasks do not depend on one another.</li><li><b>Name worktrees clearly.</b> Short shell aliases make switching quick.</li><li><b>Keep an analysis worktree.</b> Use it for logs, queries, and investigation without touching feature branches.</li><li><b>Do not share a working directory.</b> Two sessions editing the same files will overwrite or confuse each other.</li></ul>
+    <p class="note">Source: Claude Code team tips posted on Boris Cherny's X account, readable mirror: threadreaderapp.com/thread/2017742741636321619.html</p>
+  </div></div>
 </section>
 
 <section class="slide review-slide">
-  <div class="inner">
-    <div class="kicker">Review later - source findings (2 of 2)</div>
-    <h2>Plan large changes and <span class="accent">isolate parallel work</span></h2>
-    <div class="body">
-      <div class="grid c2">
-        <pre><span class="cm"># first session: feature work</span>
-git worktree add ../sf-auth feature/auth
-cd ../sf-auth &amp;&amp; claude
-
-<span class="cm"># second session: separate branch</span>
-git worktree add ../sf-api feature/api
-cd ../sf-api &amp;&amp; claude</pre>
-        <pre><span class="cm"># before a multi-file change</span>
-&gt; Read the trigger, handler, tests,
-  and current rules. Write a plan.
-  List the files you will change.
-  Do not edit yet.</pre>
-      </div>
-      <ul class="tight">
-        <li>One worktree and branch per Claude session.</li>
-        <li>Keep architecture, review, and merge decisions with the developer.</li>
-        <li>Ask research subagents for a short report, not a long transcript.</li>
-      </ul>
-      <p class="note">Sources: r/ClaudeCode, “Senior engineer best practice for scaling yourself”; Boris Cherny’s workflow thread; Simon Willison on async code research.</p>
-    </div>
-  </div>
+  <div class="inner"><div class="kicker">Review later - Boris Cherny thread (2 of 3)</div><h2>Use plan mode before <span class="accent">complex work</span></h2><div class="body">
+    <div class="grid c2"><pre><span class="cm"># first session writes the plan</span>
+&gt; Read the current implementation,
+  tests, and constraints. Ask questions.
+  Write the plan. Do not edit files.</pre><pre><span class="cm"># second session reviews it</span>
+&gt; Review this plan as a staff engineer.
+  Find missing migrations, failure modes,
+  tests, and rollout risks.</pre></div>
+    <ul class="tight"><li><b>Spend effort before implementation.</b> A better plan reduces corrections later.</li><li><b>Re-plan when the work goes wrong.</b> Do not keep pushing a weak approach.</li><li><b>Plan verification too.</b> Decide which tests, logs, screenshots, or benchmarks prove the result.</li><li><b>Separate author and reviewer.</b> A fresh session can challenge assumptions without inheriting the first session's reasoning.</li></ul>
+    <p class="note">Source: Claude Code team tips posted on Boris Cherny's X account: threadreaderapp.com/thread/2017742741636321619.html</p>
+  </div></div>
 </section>
 
 <section class="slide review-slide">
-  <div class="inner">
-    <div class="kicker">Review later - reading list</div>
-    <h2>The sources <span class="accent">behind these ideas</span></h2>
-    <div class="body">
-      <table class="t">
-        <tr><th>Source</th><th>Useful point</th></tr>
-        <tr><td><a href="https://threadreaderapp.com/thread/2007179832300581177.html">Boris Cherny - X thread</a></td><td>Plan, parallel sessions, CLAUDE.md, verification</td></tr>
-        <tr><td><a href="https://getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started">John Kim - 50 Claude Code Tips</a></td><td>Fresh context and executable checks</td></tr>
-        <tr><td><a href="https://scortier.substack.com/p/claudemd-the-complete-guide-to-claude">Scott Ortier - CLAUDE.md guide</a></td><td>Short project instructions</td></tr>
-        <tr><td><a href="https://reddit.com/r/ClaudeCode/comments/1sciznh/senior_engineer_best_practice_for_scaling/">r/ClaudeCode - senior engineer thread</a></td><td>Worktrees and human judgment</td></tr>
-        <tr><td><a href="https://simonwillison.net/2025/Nov/6/async-code-research/">Simon Willison - async code research</a></td><td>Bounded research with a saved artifact</td></tr>
-      </table>
-      <p class="note">Selection rule: widely discussed, practical, and supported by a real workflow. Links open the original or a readable primary-thread mirror.</p>
-    </div>
-  </div>
+  <div class="inner"><div class="kicker">Review later - Boris Cherny thread (3 of 3)</div><h2>Turn corrections into <span class="accent">project memory</span></h2><div class="body">
+    <pre><span class="kw">&gt;</span> Update CLAUDE.md so you do not make that mistake again.
+
+<span class="cm">Before adding a rule, check:</span>
+1. Did this mistake actually happen?
+2. Does the rule apply to the whole project?
+3. Can the instruction be one clear sentence?
+4. Can a test or hook enforce it instead?</pre>
+    <ul class="tight"><li><b>Use real failures as input.</b> Do not fill CLAUDE.md with generic advice.</li><li><b>Edit it ruthlessly.</b> Remove rules Claude follows without being told and rules that no longer apply.</li><li><b>Track longer project notes separately.</b> Keep task or PR notes in a directory and link to them.</li><li><b>Measure the result.</b> The file is useful only if repeated mistakes fall.</li></ul>
+    <p class="note">Source: Claude Code team tips posted on Boris Cherny's X account: threadreaderapp.com/thread/2017742741636321619.html</p>
+  </div></div>
 </section>
 
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - 50 Claude Code Tips (1 of 5)</div><h2>Treat context as the <span class="accent">main resource</span></h2><div class="body">
+    <table class="t"><tr><th>Tool</th><th>What it does</th><th>When to use it</th></tr><tr><td><code>/context</code></td><td>Shows what uses the context window</td><td>Audit large sessions and MCP overhead</td></tr><tr><td><code>/clear</code></td><td>Starts a fresh conversation</td><td>Before an unrelated task</td></tr><tr><td><code>/compact</code></td><td>Condenses useful session history</td><td>Continue the same task with less history</td></tr><tr><td>CLAUDE.md</td><td>Loads durable project guidance</td><td>Commands and rules needed often</td></tr><tr><td>Skills</td><td>Load procedures on demand</td><td>Repeatable but not always needed</td></tr><tr><td>Subagents</td><td>Use a separate context window</td><td>Bounded independent research</td></tr></table>
+    <ul class="tight"><li><b>Fresh and condensed beats large.</b> More context is not automatically better context.</li><li><b>Load detail only when needed.</b> Keep an index at the root and detail closer to the relevant code.</li></ul>
+    <p class="note">Source: John Kim, “50 Claude Code Tips To Get You Started”: getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - 50 Claude Code Tips (2 of 5)</div><h2>Give Claude a <span class="accent">verification loop</span></h2><div class="body">
+    <pre><span class="kw">&gt;</span> Implement the change. Then run:
+  npm run build
+  npm test -- --runInBand
+  npm run lint
+Read every failure, fix it, and repeat. Stop only when all three pass.</pre>
+    <ul class="tight"><li><b>Name the exact commands.</b> “Make sure it works” is not a test.</li><li><b>Let Claude read the failure.</b> Build output, test output, logs, browser state, or performance traces become the next input.</li><li><b>Use the smallest useful check first.</b> Focused tests give faster feedback; run the full suite before completion.</li><li><b>Match the check to the product.</b> Web work can use browser automation; mobile work can use device logs; performance work can use traces.</li></ul>
+    <p class="note">Source: John Kim, “50 Claude Code Tips To Get You Started”: getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - 50 Claude Code Tips (3 of 5)</div><h2>Build the plan before <span class="accent">Claude builds the code</span></h2><div class="body">
+    <div class="grid c2"><div class="card"><div class="h">What</div><p>State the outcome, files or area, expected behavior, and what must not change.</p></div><div class="card"><div class="h">Domain</div><p>Point Claude to architecture notes, examples, constraints, and existing patterns.</p></div><div class="card"><div class="h">Validation</div><p>Name the commands or observations that prove the task is complete.</p></div><div class="card"><div class="h">Challenge the plan</div><p>Ask about failure modes, migration, rollback, permissions, and tests before editing.</p></div></div>
+    <ul class="tight"><li><b>Plan mode is for shared understanding.</b> Use it to find wrong assumptions early.</li><li><b>Do not over-plan a one-line change.</b> Match planning effort to risk and scope.</li></ul>
+    <p class="note">Source: John Kim, “50 Claude Code Tips To Get You Started”: getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - 50 Claude Code Tips (4 of 5)</div><h2>Choose the right <span class="accent">extension</span></h2><div class="body">
+    <table class="t"><tr><th>Need</th><th>Use</th><th>Reason</th></tr><tr><td>Project facts used often</td><td>CLAUDE.md</td><td>Loads at the start</td></tr><tr><td>Detailed repeatable procedure</td><td>Skill</td><td>Loads when relevant</td></tr><tr><td>External service or data</td><td>MCP</td><td>Adds callable tools</td></tr><tr><td>Independent reading or side task</td><td>Subagent</td><td>Separate context</td></tr><tr><td>Deterministic guard or formatter</td><td>Hook</td><td>Runs at a fixed event</td></tr></table>
+    <ul class="tight"><li><b>Avoid instruction overload.</b> A long global file lowers attention to each rule.</li><li><b>Ask Claude to scaffold extensions.</b> Then inspect the generated files, permissions, and commands.</li><li><b>Use clear descriptions.</b> Claude routes skills and subagents partly from their descriptions.</li></ul>
+    <p class="note">Source: John Kim, “50 Claude Code Tips To Get You Started”: getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - 50 Claude Code Tips (5 of 5)</div><h2>Use permissions and hooks <span class="accent">deliberately</span></h2><div class="body">
+    <div class="grid c2"><pre><span class="cm"># allow routine tools</span>
+/permissions
+  Read
+  Edit
+  Bash(npm test:*)
+  Bash(npm run lint:*)</pre><pre><span class="cm"># enforce a hard rule</span>
+PreToolUse
+  block destructive commands
+
+PostToolUse
+  format edited files
+  run focused checks</pre></div>
+    <ul class="tight"><li><b>Use allowlists for routine commands.</b> Keep approval for risky or broad actions.</li><li><b>Use skip-permissions only in a throwaway environment.</b> It is not a normal project setting.</li><li><b>Hooks are deterministic.</b> Put must-run checks there instead of hoping an instruction is followed.</li><li><b>Review third-party MCPs and hooks.</b> They can add executable access to the session.</li></ul>
+    <p class="note">Source: John Kim, “50 Claude Code Tips To Get You Started”: getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - CLAUDE.md guide (1 of 3)</div><h2>Choose the right <span class="accent">instruction scope</span></h2><div class="body">
+    <table class="t"><tr><th>Scope</th><th>Location</th><th>Use</th><th>Shared?</th></tr><tr><td>User</td><td><code>~/.claude/CLAUDE.md</code></td><td>Personal style across projects</td><td>No</td></tr><tr><td>Project</td><td><code>./CLAUDE.md</code></td><td>Team commands and standards</td><td>Commit it</td></tr><tr><td>Local project</td><td><code>./CLAUDE.local.md</code></td><td>Machine URLs and test data</td><td>Gitignore</td></tr><tr><td>Directory</td><td><code>src/api/CLAUDE.md</code></td><td>Module-specific conventions</td><td>Usually</td></tr></table>
+    <ul class="tight"><li><b>More specific files apply closer to the code.</b> This is useful in monorepos.</li><li><b>Do not mix personal and team preferences.</b> Put them at different scopes.</li><li><b>Check loading with <code>/context</code>.</b> Confirm which memory files entered the session.</li></ul>
+    <p class="note">Source: Scott Ortier, “CLAUDE.md: The Complete Guide to Claude Code's Most Important File”: scortier.substack.com/p/claudemd-the-complete-guide-to-claude</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - CLAUDE.md guide (2 of 3)</div><h2>Write instructions that <span class="accent">change behavior</span></h2><div class="body">
+    <div class="grid c2"><pre><span class="bad"># weak</span>
+- Write clean code.
+- Follow best practices.
+- Be careful with errors.</pre><pre><span class="ok"># useful</span>
+- Use named exports only.
+- Return Result types; do not throw
+  from service modules.
+- Keep tests beside source as
+  *.test.ts.</pre></div>
+    <ul class="tight"><li><b>Describe observable behavior.</b> Claude must be able to tell whether it followed the rule.</li><li><b>Include commands and locations.</b> State where code lives and how to build or test it.</li><li><b>Record non-obvious choices.</b> Import paths, error patterns, environment sources, and naming that Claude might guess wrong.</li><li><b>Remove generic expertise claims.</b> They add tokens without guiding a decision.</li></ul>
+    <p class="note">Source: Scott Ortier, “CLAUDE.md: The Complete Guide”: scortier.substack.com/p/claudemd-the-complete-guide-to-claude</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - CLAUDE.md guide (3 of 3)</div><h2>Keep guidance short; <span class="accent">enforce guarantees elsewhere</span></h2><div class="body">
+    <div class="grid c2"><div class="card"><div class="h">Delete the line when</div><p>Claude already does it reliably, it repeats documentation, it is obsolete, or it applies to one temporary task.</p></div><div class="card"><div class="h">Move the line when</div><p>It is file-specific: use a rule. It is a procedure: use a skill. It must always happen: use a hook or test.</p></div></div>
+    <pre><span class="cm">Monthly CLAUDE.md review</span>
+1. Which mistakes repeated?
+2. Which rules were ignored?
+3. Which rules are vague or duplicated?
+4. Which checks can become tests or hooks?
+5. Does every remaining line still earn its context cost?</pre>
+    <p class="note">Source: Scott Ortier, “CLAUDE.md: The Complete Guide”: scortier.substack.com/p/claudemd-the-complete-guide-to-claude</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - Simon Willison (1 of 3)</div><h2>Use Claude Code to build a <span class="accent">checked CI workflow</span></h2><div class="body">
+    <pre><span class="kw">&gt;</span> Add a GitHub Actions workflow that rebuilds the README index.
+  Inspect the repository first. Use current action versions.
+  Run the generator locally. Show the generated diff.
+  Validate the workflow file before finishing.</pre>
+    <ul class="tight"><li><b>Start with a small real feature.</b> The article used an automatically updated README index.</li><li><b>Let Claude inspect the repository.</b> Existing scripts and file layout should drive the workflow.</li><li><b>Check generated configuration.</b> Action versions, permissions, triggers, and paths can become stale or unsafe.</li><li><b>Keep the transcript.</b> A recorded session makes the process reviewable and repeatable.</li></ul>
+    <p class="note">Source: Simon Willison, “Using Claude Code to build a GitHub Actions workflow”: simonwillison.net/2025/Jul/1/claude-code-github-actions/</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - Simon Willison (2 of 3)</div><h2>Give code research a <span class="accent">clear deliverable</span></h2><div class="body">
+    <pre><span class="kw">&gt;</span> Research how this library handles retries.
+  Read source, tests, issues, and release notes.
+  Run a small experiment for each retry mode.
+  Save findings in research/retries.md with links,
+  commands, outputs, and open questions.</pre>
+    <ul class="tight"><li><b>Ask a research question, not “explore this repo.”</b></li><li><b>Provide a useful environment.</b> Source, dependencies, test tools, and network access decide what can be proven.</li><li><b>Require an artifact.</b> A report or pull request survives after the session ends.</li><li><b>Ask for experiments.</b> Running code gives stronger evidence than reading alone.</li></ul>
+    <p class="note">Source: Simon Willison, “Code research projects with async coding agents like Claude Code and Codex”: simonwillison.net/2025/Nov/6/async-code-research/</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - Simon Willison (3 of 3)</div><h2>Use a separate repository for <span class="accent">open-ended research</span></h2><div class="body">
+    <div class="grid c2"><div class="card"><div class="h">Why separate it</div><p>The agent can create files, install tools, and run experiments without risking the product repository.</p></div><div class="card"><div class="h">Public or private</div><p>Use a public research repo for shareable work. Use a private one when the question or data is not ready to publish.</p></div><div class="card"><div class="h">Review the pull request</div><p>Check sources, commands, generated files, experiment design, and whether the conclusion follows from the evidence.</p></div><div class="card"><div class="h">Keep boundaries</div><p>Do not put credentials, customer data, or unrelated production access into the research environment.</p></div></div>
+    <p class="note">Source: Simon Willison, “Code research projects with async coding agents”: simonwillison.net/2025/Nov/6/async-code-research/</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - senior engineer Reddit thread (1 of 2)</div><h2>Scale execution without giving up <span class="accent">engineering judgment</span></h2><div class="body">
+    <table class="t"><tr><th>Delegate</th><th>Keep with the developer</th></tr><tr><td>Repository search and code mapping</td><td>Problem definition and product intent</td></tr><tr><td>Bounded implementation from an agreed plan</td><td>Architecture and data-boundary decisions</td></tr><tr><td>Test generation and routine fixes</td><td>Risk, security, and rollout judgment</td></tr><tr><td>Documentation and repetitive migrations</td><td>Diff review, merge, and production approval</td></tr></table>
+    <ul class="tight"><li><b>Experience still matters.</b> Senior engineers can spot plausible but wrong designs earlier.</li><li><b>Productivity changes estimation.</b> Parallel work increases review and integration load, not only output.</li><li><b>Use Claude as a multiplier.</b> Do not treat generated volume as completed work.</li></ul>
+    <p class="note">Source: r/ClaudeCode, “Senior engineer best practice for scaling yourself with Claude Code”: reddit.com/r/ClaudeCode/comments/1sciznh/senior_engineer_best_practice_for_scaling/</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - senior engineer Reddit thread (2 of 2)</div><h2>Parallel sessions need <span class="accent">isolation and integration</span></h2><div class="body">
+    <pre><span class="cm"># split by independent outcome</span>
+feature/auth      → session A → focused tests → PR A
+feature/api       → session B → focused tests → PR B
+bugfix/login      → session C → regression test → PR C
+
+<span class="cm"># developer integrates</span>
+review each diff → resolve shared assumptions → run full suite → merge</pre>
+    <ul class="tight"><li><b>Use one worktree per session.</b> Separate directories prevent file collisions.</li><li><b>Split by outcome, not by arbitrary file count.</b> Each branch needs a clear acceptance test.</li><li><b>Pre-orient the agent.</b> A maintained project map or concise CLAUDE.md reduces repeated discovery.</li><li><b>Budget for integration.</b> Parallel branches can still make conflicting architecture choices.</li></ul>
+    <p class="note">Source: r/ClaudeCode thread above. Popularity corroborated by independent April 2026 indexes; direct Reddit reading was blocked by a captcha, so no verbatim Reddit quote is used.</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - combined operating model</div><h2>A complete Claude Code <span class="accent">working loop</span></h2><div class="body">
+    <div class="flow"><div class="stage"><span class="sn">01</span><div class="st">Orient</div><p>Read CLAUDE.md, project map, and relevant rules.</p></div><div class="stage"><span class="sn">02</span><div class="st">Plan</div><p>Ask questions. List files, risks, and checks.</p></div><div class="stage"><span class="sn">03</span><div class="st">Implement</div><p>Make the smallest coherent change.</p></div><div class="stage"><span class="sn">04</span><div class="st">Verify</div><p>Build, test, lint, inspect UI or logs.</p></div><div class="stage"><span class="sn">05</span><div class="st">Review</div><p>Read the diff and challenge assumptions.</p></div><div class="stage"><span class="sn">06</span><div class="st">Learn</div><p>Save a real repeated lesson in rules or tests.</p></div></div>
+    <ul class="tight"><li><b>Use subagents for bounded reading.</b> Keep core implementation where the full context lives.</li><li><b>Use worktrees for independent outcomes.</b> Integrate through reviewed pull requests.</li><li><b>Automate guarantees.</b> Tests and hooks are stronger than prose instructions.</li></ul>
+    <p class="note">Synthesis of the X, Substack, Reddit, Simon Willison, and Anthropic sources in this appendix.</p>
+  </div></div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner"><div class="kicker">Review later - reading list</div><h2>Read the <span class="accent">original sources</span></h2><div class="body">
+    <table class="t"><tr><th>Source</th><th>Coverage</th></tr><tr><td><a href="https://threadreaderapp.com/thread/2017742741636321619.html">Claude Code team tips - X thread mirror</a></td><td>Worktrees, plan mode, CLAUDE.md</td></tr><tr><td><a href="https://getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started">John Kim - 50 Claude Code Tips</a></td><td>Context, verification, extensions, permissions</td></tr><tr><td><a href="https://scortier.substack.com/p/claudemd-the-complete-guide-to-claude">Scott Ortier - CLAUDE.md guide</a></td><td>Scopes, content, maintenance</td></tr><tr><td><a href="https://reddit.com/r/ClaudeCode/comments/1sciznh/senior_engineer_best_practice_for_scaling/">r/ClaudeCode - senior engineer thread</a></td><td>Delegation, worktrees, judgment</td></tr><tr><td><a href="https://simonwillison.net/2025/Jul/1/claude-code-github-actions/">Simon Willison - GitHub Actions</a></td><td>Small feature and CI workflow</td></tr><tr><td><a href="https://simonwillison.net/2025/Nov/6/async-code-research/">Simon Willison - async code research</a></td><td>Research prompts, repositories, artifacts</td></tr><tr><td><a href="https://code.claude.com/docs/en/best-practices">Anthropic - best practices</a></td><td>Official cross-check</td></tr></table>
+  </div></div>
+</section>
 
 <nav class="nav">
   <div class="counter"><b id="cur">01</b> / <span id="total">22</span></div>
