@@ -68,8 +68,8 @@ a:hover{color:var(--purple-pale)}
 .slide{position:fixed;inset:0;display:flex;padding:62px 36px 74px;opacity:0;transform:translateX(40px);pointer-events:none;transition:opacity .35s ease,transform .35s ease;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 .slide.back{transform:translateX(-40px)}
 .slide.active{opacity:1;transform:none;pointer-events:auto}
-.inner{width:min(1600px,94vw);min-height:calc(100vh - 162px);margin:auto;position:relative;flex:none;display:flex;flex-direction:column}
-.body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:16px;margin-top:6px}
+.inner{width:min(1600px,94vw);min-height:calc(100vh - 162px);margin:auto;position:relative;flex:none;display:flex;flex-direction:column;justify-content:center}
+.body{flex:0 0 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:16px;margin-top:6px}
 .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--purple-soft);margin-bottom:16px;display:flex;align-items:center;gap:12px}
 .kicker::before{content:'';width:30px;height:1px;background:var(--purple);display:inline-block}
 h1{font-family:var(--display);font-weight:700;font-size:clamp(46px,7.2vw,78px);line-height:1.05;letter-spacing:-.01em;margin-bottom:24px}
@@ -157,7 +157,7 @@ h2{font-size:clamp(24px,6.6vw,32px);margin-bottom:12px}
 .card p{font-size:13.5px}
 ul.tight li{font-size:14.5px;padding:6px 0 6px 20px}
 ul.tight li::before{top:14px}
-pre{font-size:12px;padding:12px 14px}
+pre{font-size:12px;padding:12px 14px;white-space:pre-wrap;word-break:break-word}
 table.t{font-size:12px;margin-top:0}
 table.t td,table.t th{padding:6px 6px;white-space:normal;word-break:break-word;overflow-wrap:anywhere}
 table.t td code{font-size:11px;word-break:break-all}
