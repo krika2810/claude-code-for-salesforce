@@ -179,15 +179,14 @@ table.t td code{font-size:11px;word-break:break-all}
     <h2>Claude does not know <span class="accent">our standards</span></h2>
     <div class="body">
       <ul class="tight">
-        <li><b>Every session starts blank.</b> Unguided Claude writes generic Salesforce code.</li>
-        <li><b>Write the standards once, in the repo.</b> Claude reads them every session.</li>
+        <li><b>Every session starts blank.</b> Write the standards once, in the repo - Claude reads them every time.</li>
       </ul>
       <div class="grid c2">
         <pre><span class="cm">// unguided: the first draft you get today</span>
 for (Account a : accounts) {
     List&lt;Contact&gt; cs = [SELECT Id FROM Contact
         WHERE AccountId = :a.Id]; <span class="bad">// SOQL in a loop</span>
-    update cs;                  <span class="bad">// DML in a loop</span>
+    update cs; <span class="bad">// DML in a loop too</span>
 }</pre>
         <pre><span class="cm">// the same prompt, with our setup in the repo</span>
 Map&lt;Id, Account&gt; byId = new Map&lt;Id, Account&gt;(accounts);
