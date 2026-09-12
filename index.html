@@ -168,32 +168,28 @@ table.t td code{font-size:11px;word-break:break-all}
     <div class="body">
       <div class="kicker">Hands-on developer workshop</div>
       <h1>Claude Code<br>for <span class="accent">Salesforce</span></h1>
+      <p class="lede">Plan, build, test, review, and ship from one development session.</p>
     </div>
   </div>
 </section>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">The problem</div>
-    <h2>Repo instructions prevent <span class="accent">common Apex mistakes</span></h2>
+    <div class="kicker">Why developers use it</div>
+    <h2>Claude Code works across the <span class="accent">development lifecycle</span></h2>
     <div class="body">
-      <ul class="tight">
-        <li>Without repo instructions, Claude can repeat the same mistakes we catch in review.</li>
-      </ul>
       <div class="grid c2">
-        <pre><span class="cm">// without repo instructions</span>
-for (Account a : accounts) {
-    List&lt;Contact&gt; cs = [SELECT Id FROM Contact
-        WHERE AccountId = :a.Id]; <span class="bad">// SOQL in a loop</span>
-    update cs; <span class="bad">// DML in a loop too</span>
-}</pre>
-        <pre><span class="cm">// same prompt, with our repo instructions</span>
-Map&lt;Id, Account&gt; byId = new Map&lt;Id, Account&gt;(accounts);
-List&lt;Contact&gt; cs = [SELECT Id, AccountId FROM Contact
-    WHERE AccountId IN :byId.keySet()]; <span class="ok">// one query</span>
-update cs; <span class="ok">// one DML</span></pre>
+        <div class="card"><div class="h">Without Claude Code</div><p>Search the repo. Read docs. Edit files. Switch to the terminal. Run tests. Read errors. Repeat.</p></div>
+        <div class="card"><div class="h">With Claude Code</div><p>Describe the outcome once. Claude reads, edits, runs tools, checks the result, and shows the diff.</p></div>
       </div>
-      <div class="takeaway"><p>Same prompt. <b>Repo instructions change the result.</b></p></div>
+      <pre><span class="kw">Explore</span>  →  <span class="kw">Plan</span>  →  <span class="kw">Build</span>  →  <span class="kw">Test</span>  →  <span class="kw">Review</span>  →  <span class="kw">Ship</span>
+   reads       asks       edits       runs        shows       opens
+   code        first      files       checks      diff        PR</pre>
+      <ul class="tight">
+        <li><b>Less tool switching.</b> The work stays in one terminal session.</li>
+        <li><b>Faster feedback.</b> Claude reads test failures and fixes the next issue.</li>
+        <li><b>Developer stays in control.</b> You approve the plan, diff, and merge.</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -201,18 +197,18 @@ update cs; <span class="ok">// one DML</span></pre>
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (1 of 8)</div>
-    <h2>What Claude Code <span class="accent">is</span></h2>
+    <h2>Claude Code is a <span class="accent">development agent</span></h2>
     <div class="body">
-      <pre><span class="kw">&gt;</span> Add a validation rule: Amount must be over 1000 when Closed Won
+      <pre><span class="kw">&gt;</span> Find why login fails after a password reset. Fix it and run the tests.
 
-<span class="cm">●</span> Reads the Opportunity object metadata
-<span class="cm">●</span> Writes Opportunity_Amount_gt_1000.validationRule-meta.xml
-<span class="cm">●</span> Runs sf project deploy start
-  <span class="ok">Deployed 1 component in 9s</span></pre>
+<span class="cm">●</span> Searches the repository for the reset and login flow
+<span class="cm">●</span> Reads the relevant code and recent test failures
+<span class="cm">●</span> Edits two files and adds a regression test
+<span class="cm">●</span> Runs the test command and reports the diff</pre>
       <ul class="tight">
-        <li>Describe the task in plain English. Claude reads files, changes code, and runs commands.</li>
-        <li>It uses the same tools you use: <code>sf</code>, <code>git</code>, and <code>gh</code>.</li>
-        <li>It runs in your terminal and works directly in your repo.</li>
+        <li><b>Agent means action.</b> It can read files, edit code, and run commands.</li>
+        <li><b>It uses your tools.</b> Git, the shell, tests, linters, and connected services.</li>
+        <li><b>You set the boundary.</b> Permissions decide what it may read or change.</li>
       </ul>
     </div>
   </div>
@@ -221,18 +217,22 @@ update cs; <span class="ok">// one DML</span></pre>
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (2 of 8)</div>
-    <h2>What Claude can see <span class="accent">in a session</span></h2>
+    <h2>Context is Claude's <span class="accent">working memory</span></h2>
     <div class="body">
       <div class="grid c2">
-        <div class="card"><div class="h">Context</div><p>The files Claude has read, your messages, and its replies. A new session starts with no task history.</p></div>
-        <div class="card"><div class="h">Tokens</div><p>Small pieces of text that Claude reads and writes. Files, prompts, and replies all use tokens.</p></div>
+        <div class="card"><div class="h">What enters context</div><p><b>Your prompts</b>, files Claude reads, command output, tool results, and Claude's replies.</p></div>
+        <div class="card"><div class="h">Why tokens matter</div><p>Tokens measure that text. As the window fills, old and unrelated details compete for attention.</p></div>
       </div>
       <pre><span class="kw">/context</span>
-Files read            142k
-Conversation           38k
+System tools           18k
 CLAUDE.md + rules       6k
-<span class="cm">Run /context to see what is using the window.</span></pre>
-      <div class="takeaway"><p>A full Salesforce repo may not fit. <b>Give Claude only the files needed for the task.</b></p></div>
+Files and commands     82k
+Conversation           34k
+<span class="cm">Use /compact to keep the useful parts. Use /clear for a new task.</span></pre>
+      <ul class="tight">
+        <li><b>Load only what the task needs.</b> Do not ask Claude to read the whole repo.</li>
+        <li><b>Start fresh between unrelated tasks.</b> Old work can pull the next answer off course.</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -240,23 +240,27 @@ CLAUDE.md + rules       6k
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (3 of 8)</div>
-    <h2>Put shared instructions <span class="accent">in CLAUDE.md</span></h2>
+    <h2>CLAUDE.md holds <span class="accent">shared project instructions</span></h2>
     <div class="body">
-      <pre><span class="cm"># CLAUDE.md - repo root, plain markdown</span>
-Project: C360 person-account service (Apex, Flows, LWC)
+      <div class="grid c2">
+        <pre><span class="cm"># CLAUDE.md - commit this file</span>
+<span class="kw">## Build and test</span>
+- npm run build
+- npm test -- --runInBand
 
-<span class="kw">## Commands</span>
-Deploy:  sf project deploy start --source-dir force-app
-Test:    sf apex run test --wait 10
+<span class="kw">## Architecture</span>
+- API handlers call service modules.
+- Database access stays in repositories.
 
-<span class="kw">## Standards</span>
-- Service classes end in Service. Tests end in Test.
-- No SOQL or DML inside loops. Check CRUD/FLS.
-- Done = deployed, tests green, analyzer clean.</pre>
+<span class="kw">## Definition of done</span>
+- Tests pass. Lint is clean.
+- Update docs for public APIs.</pre>
+        <div class="card"><div class="h">Put this in</div><p><b>Commands</b>, architecture boundaries, naming rules, common mistakes, and the checks required before completion.</p><div class="h" style="margin-top:18px">Keep this out</div><p>Task-specific requests, long tutorials, copied docs, secrets, and rules that apply to only one file type.</p></div>
+      </div>
       <ul class="tight">
-        <li>Claude reads it at the start of each session.</li>
-        <li>Keep only shared commands, standards, and naming rules here.</li>
-        <li><code>/init</code> creates a first draft. Review it and remove anything unnecessary.</li>
+        <li><b>Claude reads it at session start.</b> Every line uses context, so keep it short.</li>
+        <li><b>Use <code>/init</code> for a draft.</b> Then review every line with the team.</li>
+        <li><b>Use imports or rules for detail.</b> CLAUDE.md should point, not become a handbook.</li>
       </ul>
     </div>
   </div>
@@ -265,20 +269,19 @@ Test:    sf apex run test --wait 10
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (4 of 8)</div>
-    <h2>Use rules for <span class="accent">specific file types</span></h2>
+    <h2>Rules add instructions for <span class="accent">matching files</span></h2>
     <div class="body">
-      <pre><span class="cm"># .claude/rules/apex.md</span>
+      <pre><span class="cm"># .claude/rules/api-tests.md</span>
 ---
-paths: ["**/*.cls", "**/*.trigger"]
+paths: ["src/api/**/*.ts", "tests/api/**/*.ts"]
 ---
-- Bulkify everything: collections in, collections out.
-- One trigger per object, logic in a handler class.
-- Tests need real assertions, wrapped in
-  Test.startTest() / Test.stopTest().</pre>
+- Validate every request at the boundary.
+- Cover success, invalid input, and permission failure.
+- Mock external calls. Do not mock the service under test.</pre>
       <ul class="tight">
-        <li>Claude loads a rule only when it works on a matching file.</li>
-        <li>When you edit a Flow, the Apex rules do not load.</li>
-        <li>Put detailed guidance here: bulkification, CRUD/FLS, and sharing.</li>
+        <li><b>Path-scoped.</b> This rule loads only while Claude works on matching files.</li>
+        <li><b>More specific than CLAUDE.md.</b> Put framework and file-type detail here.</li>
+        <li><b>Lower context cost.</b> Front-end rules do not load during database work.</li>
       </ul>
     </div>
   </div>
@@ -287,28 +290,31 @@ paths: ["**/*.cls", "**/*.trigger"]
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (5 of 8)</div>
-    <h2>Use skills for <span class="accent">repeatable tasks</span></h2>
+    <h2>Skills store a <span class="accent">repeatable procedure</span></h2>
     <div class="body">
       <div class="grid c2">
-        <pre><span class="cm"># .claude/skills/apex-review/SKILL.md</span>
+        <pre><span class="cm"># .claude/skills/pr-review/SKILL.md</span>
 ---
-name: apex-review
-description: Check edited Apex against
-  our standards
+name: pr-review
+description: Review the current diff
 ---
-1. Read the diff. Flag SOQL/DML in loops.
-2. Check CRUD/FLS on every query.
-3. Tests must assert behavior.</pre>
-        <pre><span class="kw">&gt;</span> /apex-review
+1. Read the diff and changed tests.
+2. Check behavior, security, and errors.
+3. Run the smallest relevant test set.
+4. Report findings by severity.</pre>
+        <pre><span class="kw">&gt;</span> /pr-review
 
-<span class="cm">●</span> Checked 3 edited classes:
-  AccountService.cls:41  <span class="bad">SOQL in a loop</span>
-  AccountTrigger.cls:12  <span class="bad">no CRUD check</span>
-  AccountRatingTest.cls  <span class="ok">clean</span></pre>
+<span class="bad">High</span>  auth.ts:88
+Missing permission check
+
+<span class="cm">Medium</span>  user.test.ts
+No invalid-token test
+
+<span class="ok">Passed</span>  24 focused tests</pre>
       </div>
       <ul class="tight">
-        <li>Write the review steps once. Any developer can run <code>/apex-review</code>.</li>
-        <li>The skill loads only when a developer calls it.</li>
+        <li><b>Use a skill when steps repeat.</b> Review, release, migration, or incident checks.</li>
+        <li><b>Loads when needed.</b> The full procedure does not sit in every session.</li>
       </ul>
     </div>
   </div>
@@ -317,7 +323,7 @@ description: Check edited Apex against
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (6 of 8)</div>
-    <h2>Use hooks to <span class="accent">block unsafe commands</span></h2>
+    <h2>Hooks run checks at <span class="accent">fixed points</span></h2>
     <div class="body">
       <div class="grid c2">
         <pre><span class="cm"># .claude/settings.json</span>
@@ -326,19 +332,20 @@ description: Check edited Apex against
     "matcher": "Bash",
     "hooks": [{
       "type": "command",
-      "command": ".claude/hooks/deny-dangerous-sf.sh"
+      "command": ".claude/hooks/check-command.sh"
     }]
   }]
 }</pre>
-        <pre><span class="cm">●</span> Bash: sf org delete scratch --target-org prod
-  <span class="bad">✗ Blocked by hook: destructive sf commands
-  need a human</span>
+        <pre><span class="cm">● Bash: rm -rf ./data</span>
+<span class="bad">✕ Blocked by hook</span>
+Destructive commands need approval.
 
-<span class="cm">The hook checks the command before it runs.</span></pre>
+<span class="ok">The command did not run.</span></pre>
       </div>
       <ul class="tight">
-        <li>CLAUDE.md gives instructions. A hook can stop a command.</li>
-        <li>Hooks can run before a command, after an edit, or when Claude stops.</li>
+        <li><b>PreToolUse</b> checks an action before it runs.</li>
+        <li><b>PostToolUse</b> checks the result after a tool finishes.</li>
+        <li><b>Stop</b> can require tests or another completion check before Claude stops.</li>
       </ul>
     </div>
   </div>
@@ -347,17 +354,17 @@ description: Check edited Apex against
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (7 of 8)</div>
-    <h2>Use subagents for <span class="accent">separate research tasks</span></h2>
+    <h2>Subagents handle <span class="accent">separate work</span></h2>
     <div class="body">
-      <pre><span class="kw">&gt;</span> Explore how AccountTriggerHandler routes events
+      <pre><span class="kw">&gt;</span> Ask one subagent to trace the login flow and another to inspect the tests.
 
-<span class="cm">●</span> explore(Trace trigger routing) <span class="cm">- runs in the background</span>
-  Read 14 files, came back with a 12-line summary
-  <span class="ok">Your window keeps the summary, not the 14 files.</span></pre>
+<span class="cm">● explore-login</span>     Reads 12 source files → returns a 10-line map
+<span class="cm">● inspect-tests</span>      Reads 8 test files   → returns 3 missing cases
+<span class="ok">Main session keeps the findings, not all 20 files.</span></pre>
       <ul class="tight">
-        <li>A subagent reads files in a separate context window.</li>
-        <li>You can run several at once. <code>/tasks</code> shows their status.</li>
-        <li>Define your own in <code>.claude/agents/*.md</code> with a name, tools, and instructions.</li>
+        <li><b>Separate context.</b> Wide research does not fill the main session.</li>
+        <li><b>Parallel when independent.</b> Do not parallelize tasks that edit the same files.</li>
+        <li><b>Define a clear output.</b> Ask for a short report, list, or saved artifact.</li>
       </ul>
     </div>
   </div>
@@ -366,29 +373,26 @@ description: Check edited Apex against
 <section class="slide">
   <div class="inner">
     <div class="kicker">Part 1 - the ideas (8 of 8)</div>
-    <h2>Use MCP to connect <span class="accent">Salesforce tools</span></h2>
+    <h2>MCP connects Claude Code to <span class="accent">external tools</span></h2>
     <div class="body">
       <div class="grid c2">
-        <pre><span class="cm"># .mcp.json - in the repo</span>
+        <pre><span class="cm"># .mcp.json</span>
 "mcpServers": {
-  "Salesforce DX": {
+  "github": {
     "command": "npx",
-    "args": ["-y", "@salesforce/mcp",
-      "--orgs", "DEFAULT_TARGET_ORG",
-      "--toolsets", "orgs,metadata,data,users"]
+    "args": ["-y", "@modelcontextprotocol/server-github"]
   }
 }</pre>
-        <pre><span class="kw">&gt;</span> How many Opportunities closed this month?
+        <pre><span class="kw">&gt;</span> Read issue 482 and list the files
+  likely involved. Do not edit yet.
 
-<span class="cm">●</span> Salesforce DX: runs the query
-  <span class="ok">142 records - answer in seconds</span>
-
-<span class="cm">The query runs through the Salesforce MCP server.</span></pre>
+<span class="cm">● github.get_issue</span>
+<span class="ok">Returns the issue and linked discussion</span></pre>
       </div>
       <ul class="tight">
-        <li>MCP connects Claude Code to external tools.</li>
-        <li>Salesforce provides an MCP server for queries, metadata, and tests.</li>
-        <li>Use <code>/mcp</code> to check and manage connections.</li>
+        <li><b>MCP is a tool connection.</b> It is not extra knowledge inside the model.</li>
+        <li><b>Permissions still matter.</b> Give each server only the access it needs.</li>
+        <li><b>Use <code>/mcp</code>.</b> Check connection state and available tools.</li>
       </ul>
     </div>
   </div>
