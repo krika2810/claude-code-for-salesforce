@@ -612,6 +612,100 @@ class with an empty-list case.</pre>
 </section>
 
 
+<!-- REVIEW SECTION: intentionally outside the workshop flow -->
+<section class="slide review-slide">
+  <div class="inner">
+    <div class="kicker">Review later - not workshop content yet</div>
+    <h2>Ideas from popular <span class="accent">Claude Code posts</span></h2>
+    <div class="body">
+      <div class="grid c2">
+        <div class="card"><div class="h">What repeated</div><p>Manage context. Give Claude a test. Plan large changes. Isolate parallel work.</p></div>
+        <div class="card"><div class="h">What did not make the cut</div><p>Prompt tricks, large agent frameworks, and advice without a real example.</p></div>
+      </div>
+      <div class="takeaway"><p>This section is separate so we can decide what belongs in the workshop.</p></div>
+      <p class="note">Sources: Boris Cherny on X; John Kim and Scott Ortier on Substack; r/ClaudeCode; Simon Willison.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner">
+    <div class="kicker">Review later - source findings (1 of 2)</div>
+    <h2>Keep context small and <span class="accent">make Claude verify</span></h2>
+    <div class="body">
+      <div class="grid c2">
+        <pre><span class="cm"># keep project context short</span>
+CLAUDE.md
+  commands + shared standards
+rules/
+  file-specific guidance
+skills/
+  repeatable procedures</pre>
+        <pre><span class="cm"># put the check in the prompt</span>
+&gt; Fix AccountService.
+  Then run:
+  sf apex run test --class-names
+  AccountServiceTest --wait 10
+  Do not stop until it passes.</pre>
+      </div>
+      <ul class="tight">
+        <li>Clear old task history before starting unrelated work.</li>
+        <li>Every CLAUDE.md line should prevent a real mistake.</li>
+        <li>Name the command that proves the task is done.</li>
+      </ul>
+      <p class="note">Sources: John Kim, “50 Claude Code Tips”; Scott Ortier, “CLAUDE.md”; Boris Cherny’s workflow thread; Anthropic best practices.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner">
+    <div class="kicker">Review later - source findings (2 of 2)</div>
+    <h2>Plan large changes and <span class="accent">isolate parallel work</span></h2>
+    <div class="body">
+      <div class="grid c2">
+        <pre><span class="cm"># first session: feature work</span>
+git worktree add ../sf-auth feature/auth
+cd ../sf-auth &amp;&amp; claude
+
+<span class="cm"># second session: separate branch</span>
+git worktree add ../sf-api feature/api
+cd ../sf-api &amp;&amp; claude</pre>
+        <pre><span class="cm"># before a multi-file change</span>
+&gt; Read the trigger, handler, tests,
+  and current rules. Write a plan.
+  List the files you will change.
+  Do not edit yet.</pre>
+      </div>
+      <ul class="tight">
+        <li>One worktree and branch per Claude session.</li>
+        <li>Keep architecture, review, and merge decisions with the developer.</li>
+        <li>Ask research subagents for a short report, not a long transcript.</li>
+      </ul>
+      <p class="note">Sources: r/ClaudeCode, “Senior engineer best practice for scaling yourself”; Boris Cherny’s workflow thread; Simon Willison on async code research.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide review-slide">
+  <div class="inner">
+    <div class="kicker">Review later - reading list</div>
+    <h2>The sources <span class="accent">behind these ideas</span></h2>
+    <div class="body">
+      <table class="t">
+        <tr><th>Source</th><th>Useful point</th></tr>
+        <tr><td><a href="https://threadreaderapp.com/thread/2007179832300581177.html">Boris Cherny - X thread</a></td><td>Plan, parallel sessions, CLAUDE.md, verification</td></tr>
+        <tr><td><a href="https://getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started">John Kim - 50 Claude Code Tips</a></td><td>Fresh context and executable checks</td></tr>
+        <tr><td><a href="https://scortier.substack.com/p/claudemd-the-complete-guide-to-claude">Scott Ortier - CLAUDE.md guide</a></td><td>Short project instructions</td></tr>
+        <tr><td><a href="https://reddit.com/r/ClaudeCode/comments/1sciznh/senior_engineer_best_practice_for_scaling/">r/ClaudeCode - senior engineer thread</a></td><td>Worktrees and human judgment</td></tr>
+        <tr><td><a href="https://simonwillison.net/2025/Nov/6/async-code-research/">Simon Willison - async code research</a></td><td>Bounded research with a saved artifact</td></tr>
+      </table>
+      <p class="note">Selection rule: widely discussed, practical, and supported by a real workflow. Links open the original or a readable primary-thread mirror.</p>
+    </div>
+  </div>
+</section>
+
+
 <nav class="nav">
   <div class="counter"><b id="cur">01</b> / <span id="total">22</span></div>
   <div class="arrows"><button class="prev" aria-label="Previous">←</button><button class="next" aria-label="Next">→</button></div>
