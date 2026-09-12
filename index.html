@@ -174,7 +174,7 @@ table.t td code{font-size:11px;word-break:break-all}
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Why we are doing this</div>
+    <div class="kicker">The problem</div>
     <h2>Repo instructions prevent <span class="accent">common Apex mistakes</span></h2>
     <div class="body">
       <ul class="tight">
@@ -210,9 +210,9 @@ update cs; <span class="ok">// one DML</span></pre>
 <span class="cm">●</span> Runs sf project deploy start
   <span class="ok">Deployed 1 component in 9s</span></pre>
       <ul class="tight">
-        <li>You type <b>plain English</b>. It reads files, writes code, runs commands.</li>
-        <li>It drives the tools you already use: <code>sf</code>, <code>git</code>, <code>gh</code>.</li>
-        <li>Your repo, your terminal. Nothing new to host.</li>
+        <li>Describe the task in plain English. Claude reads files, changes code, and runs commands.</li>
+        <li>It uses the same tools you use: <code>sf</code>, <code>git</code>, and <code>gh</code>.</li>
+        <li>It runs in your terminal and works directly in your repo.</li>
       </ul>
     </div>
   </div>
@@ -420,8 +420,8 @@ cd claude-code-sf-starter &amp;&amp; claude</pre>
   Opportunity is Closed Won, create a follow-up Task for the
   owner, due in 7 days. Explain each choice as you go.</pre>
       <ul class="tight">
-        <li>Watch: does it <b>look at existing fields and automation first</b>?</li>
-        <li>It writes metadata files, not clicks - read the XML it produces.</li>
+        <li>Check that it reads the existing fields and automation first.</li>
+        <li>Open the generated metadata file and review the XML.</li>
       </ul>
     </div>
   </div>
@@ -436,8 +436,8 @@ cd claude-code-sf-starter &amp;&amp; claude</pre>
   Stage is Closed Won. Then a permission set called
   "Opportunity Manager" with edit access. Deploy both.</pre>
       <ul class="tight">
-        <li>Watch: <b>two artifacts, one request</b> - it keeps both in its head.</li>
-        <li>Read the deploy output together. What ran, what passed?</li>
+        <li>Check that it creates both metadata files from one request.</li>
+        <li>Read the deploy output. Confirm which components passed.</li>
       </ul>
     </div>
   </div>
@@ -452,7 +452,7 @@ cd claude-code-sf-starter &amp;&amp; claude</pre>
   that recalculates ratings for a list of Accounts. Follow our
   repo standards. Write the test class too, real assertions.</pre>
       <ul class="tight">
-        <li>Watch: <code>.claude/rules/apex.md</code> <b>loads by itself</b> - look for it.</li>
+        <li>Confirm that <code>.claude/rules/apex.md</code> loads for the Apex files.</li>
         <li>Check that the class handles lists without SOQL or DML inside loops.</li>
       </ul>
     </div>
@@ -468,8 +468,8 @@ cd claude-code-sf-starter &amp;&amp; claude</pre>
   datatable, using an Apex controller with cacheable=true.
   Follow our lwc.md rules.</pre>
       <ul class="tight">
-        <li>Watch: the <b>full bundle appears</b> - .js, .html, .js-meta.xml, controller, tests.</li>
-        <li>Wire vs imperative: for read-only display it should pick wire.</li>
+        <li>Confirm that it creates the full bundle: .js, .html, .js-meta.xml, controller, and tests.</li>
+        <li>For read-only data, check that the component uses a wire adapter.</li>
       </ul>
     </div>
   </div>
@@ -484,9 +484,9 @@ cd claude-code-sf-starter &amp;&amp; claude</pre>
 
 <span class="kw">&gt;</span> Rebuild this layout as an LWC.</pre>
       <ul class="tight">
-        <li><b>Ctrl+V drops an image straight into the prompt.</b> Claude sees it.</li>
-        <li>Fields, sections, buttons, error text - all read from the image.</li>
-        <li>Use it for error dialogs, UI mocks, "make it look like this".</li>
+        <li>Press <b>Ctrl+V</b> to add an image to the prompt.</li>
+        <li>Claude can read fields, sections, buttons, and error text from the image.</li>
+        <li>Use this for error dialogs, UI mockups, or an existing page layout.</li>
       </ul>
     </div>
   </div>
@@ -503,7 +503,7 @@ cd claude-code-sf-starter &amp;&amp; claude</pre>
 <span class="cm">● Explores 6 files, asks 2 questions, presents a plan
   You approve the plan - then it builds.</span></pre>
       <ul class="tight">
-        <li><b>Shift+Tab</b> until the mode reads <code>plan</code>. Now it cannot edit - only read and plan.</li>
+        <li>Press <b>Shift+Tab</b> until the mode reads <code>plan</code>. Claude can read files, but it cannot edit them.</li>
         <li>Use plan mode for multi-file changes. Skip it for a one-line fix.</li>
       </ul>
     </div>
@@ -543,7 +543,7 @@ class with an empty-list case.</pre>
 <span class="kw">/clear</span>     wipe it - new task, fresh window</pre>
       <ul class="tight">
         <li>Long sessions can include old files and unrelated messages.</li>
-        <li><code>/clear</code> between unrelated tasks. It costs nothing.</li>
+        <li>Run <code>/clear</code> before starting an unrelated task.</li>
         <li>Use a subagent to read many files and return a short summary.</li>
       </ul>
     </div>
@@ -587,9 +587,9 @@ class with an empty-list case.</pre>
     <h2>Review and protect <span class="accent">every change</span></h2>
     <div class="body">
       <ul class="tight">
-        <li><b>You review everything you merge.</b> Your name is on the commit.</li>
+        <li><b>Review every change before you merge it.</b></li>
         <li><b>Use the same checks as human-written code.</b> Run tests and fix analyzer findings.</li>
-        <li><b>No secrets, ever.</b> No credentials or customer data in prompts or setup files.</li>
+        <li><b>Do not add secrets.</b> Keep credentials and customer data out of prompts and setup files.</li>
         <li><b>Keep production deployment manual.</b> A developer approves and runs it.</li>
       </ul>
     </div>
