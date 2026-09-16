@@ -12,7 +12,7 @@
 })();
 </script>
 <title>Claude Code for Salesforce - Developer Workshop</title>
-<meta name="description" content="A hands-on workshop for Salesforce developers: the basic ideas behind Claude Code with real examples, a one-clone setup, live prompts on declarative and development work, and how to work well while saving tokens.">
+<meta name="description" content="~3-hour hands-on workshop for Salesforce developers and architects: clone the sf starter, four labs (Flow, validation rule, Apex, LWC), fight context rot, encode standards in CLAUDE.md/rules/skills/hooks, and verify before merge.">
 <style>
 @font-face{font-family:'Fragment Mono';src:url(fonts/FragmentMono-Regular.woff2) format('woff2');font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:'Fragment Mono';src:url(fonts/FragmentMono-Italic.woff2) format('woff2');font-weight:400;font-style:italic;font-display:swap}
@@ -167,276 +167,88 @@ table.t td code{font-size:11px;word-break:break-all}
 </style>
 </head>
 <body>
-<div id="progress"></div>
-<header class="topbar">
-  <div class="brand">CLAUDE CODE <b>/</b> SALESFORCE</div>
-  <button class="theme-toggle" type="button"><span class="theme-icon">☀</span><span class="theme-label">LIGHT</span></button>
-</header>
 
-<!-- 1 TITLE -->
+<!-- WORKSHOP: 22-slide main path (Acts A–H) -->
 <section class="slide">
   <div class="inner">
     <div class="body">
-      <div class="kicker">Hands-on developer workshop</div>
+      <div class="kicker">Act A — Hook</div>
       <h1>Claude Code<br>for <span class="accent">Salesforce</span></h1>
-      <p class="lede">Plan, build, test, review, and ship from one development session.</p>
-    </div>
-  </div>
-</section>
-
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Why developers use it</div>
-    <h2>Claude Code works across the <span class="accent">development lifecycle</span></h2>
-    <div class="body">
-      <div class="grid c2">
-        <div class="card"><div class="h">Without Claude Code</div><p>Search the repo. Read docs. Edit files. Switch to the terminal. Run tests. Read errors. Repeat.</p></div>
-        <div class="card"><div class="h">With Claude Code</div><p>Describe the outcome once. Claude reads, edits, runs tools, checks the result, and shows the diff.</p></div>
-      </div>
+      <p class="lede"><em>Plan, build, test, review, and ship — without leaving the session.</em></p>
       <pre><span class="kw">Explore</span>  →  <span class="kw">Plan</span>  →  <span class="kw">Build</span>  →  <span class="kw">Test</span>  →  <span class="kw">Review</span>  →  <span class="kw">Ship</span>
-   reads       asks       edits       runs        shows       opens
-   code        first      files       checks      diff        PR</pre>
-      <ul class="tight">
-        <li><b>Less tool switching.</b> The work stays in one terminal session.</li>
-        <li><b>Faster feedback.</b> Claude reads test failures and fixes the next issue.</li>
-        <li><b>Developer stays in control.</b> You approve the plan, diff, and merge.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Part 1 - the ideas (1 of 8)</div>
-    <h2>Claude Code is a <span class="accent">development agent</span></h2>
-    <div class="body">
-      <pre><span class="kw">&gt;</span> Find why login fails after a password reset. Fix it and run the tests.
-
-<span class="cm">●</span> Searches the repository for the reset and login flow
-<span class="cm">●</span> Reads the relevant code and recent test failures
-<span class="cm">●</span> Edits two files and adds a regression test
-<span class="cm">●</span> Runs the test command and reports the diff</pre>
-      <ul class="tight">
-        <li><b>Agent means action.</b> It can read files, edit code, and run commands.</li>
-        <li><b>It uses your tools.</b> Git, the shell, tests, linters, and connected services.</li>
-        <li><b>You set the boundary.</b> Permissions decide what it may read or change.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Part 1 - the ideas (2 of 8)</div>
-    <h2>Context is Claude's <span class="accent">working memory</span></h2>
-    <div class="body">
-      <div class="grid c2">
-        <div class="card"><div class="h">What enters context</div><p><b>Your prompts</b>, files Claude reads, command output, tool results, and Claude's replies.</p></div>
-        <div class="card"><div class="h">Why tokens matter</div><p>Tokens measure that text. As the window fills, old and unrelated details compete for attention.</p></div>
+         (one agent session)</pre>
+      <div class="meta-hero">
+        <span><i></i> ~3 hours</span>
+        <span><i></i> Developers &amp; architects</span>
+        <span><i></i> <a href="https://code.claude.com/docs/en/">Official docs</a></span>
       </div>
-      <pre><span class="kw">/context</span>
-System tools           18k
-CLAUDE.md + rules       6k
-Files and commands     82k
-Conversation           34k
-<span class="cm">Use /compact to keep the useful parts. Use /clear for a new task.</span></pre>
-      <ul class="tight">
-        <li><b>Load only what the task needs.</b> Do not ask Claude to read the whole repo.</li>
-        <li><b>Start fresh between unrelated tasks.</b> Old work can pull the next answer off course.</li>
-      </ul>
     </div>
   </div>
 </section>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 1 - the ideas (3 of 8)</div>
-    <h2>CLAUDE.md holds <span class="accent">shared project instructions</span></h2>
+    <div class="kicker">Act A — Hook</div>
+    <h2>The day <span class="accent">without vs with</span></h2>
     <div class="body">
-      <div class="grid c2">
-        <pre><span class="cm"># CLAUDE.md - commit this file</span>
-<span class="kw">## Build and test</span>
-- npm run build
-- npm test -- --runInBand
-
-<span class="kw">## Architecture</span>
-- API handlers call service modules.
-- Database access stays in repositories.
-
-<span class="kw">## Definition of done</span>
-- Tests pass. Lint is clean.
-- Update docs for public APIs.</pre>
-        <div class="card"><div class="h">Put this in</div><p><b>Commands</b>, architecture boundaries, naming rules, common mistakes, and the checks required before completion.</p><div class="h" style="margin-top:18px">Keep this out</div><p>Task-specific requests, long tutorials, copied docs, secrets, and rules that apply to only one file type.</p></div>
-      </div>
-      <ul class="tight">
-        <li><b>Claude reads it at session start.</b> Every line uses context, so keep it short.</li>
-        <li><b>Use <code>/init</code> for a draft.</b> Then review every line with the team.</li>
-        <li><b>Use imports or rules for detail.</b> CLAUDE.md should point, not become a handbook.</li>
-      </ul>
+      <p class="lede">Without: Dev Console → VS Code → <code>sf</code> → Setup → test fail → Slack → repeat.<br>With: one session that reads metadata, edits Apex/LWC/Flow XML, runs tests, shows the diff.</p>
+      <table class="t">
+        <tr><th>Without</th><th>With Claude Code</th></tr>
+        <tr><td>Tool-hopping all day</td><td>One agent loop</td></tr>
+        <tr><td>Copy-paste errors into Slack</td><td><code>sf apex run test</code> in-session</td></tr>
+        <tr><td>"Looks right" in Setup</td><td>Diff + green tests before merge</td></tr>
+      </table>
     </div>
   </div>
 </section>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 1 - the ideas (4 of 8)</div>
-    <h2>Rules add instructions for <span class="accent">matching files</span></h2>
+    <div class="kicker">Act A — Hook</div>
+    <h2>What you'll <span class="accent">walk out with</span></h2>
     <div class="body">
-      <pre><span class="cm"># .claude/rules/api-tests.md</span>
----
-paths: ["src/api/**/*.ts", "tests/api/**/*.ts"]
----
-- Validate every request at the boundary.
-- Cover success, invalid input, and permission failure.
-- Mock external calls. Do not mock the service under test.</pre>
       <ul class="tight">
-        <li><b>Path-scoped.</b> This rule loads only while Claude works on matching files.</li>
-        <li><b>More specific than CLAUDE.md.</b> Put framework and file-type detail here.</li>
-        <li><b>Lower context cost.</b> Front-end rules do not load during database work.</li>
+        <li>Run Claude Code as an <b>agent</b>, not a chatbot</li>
+        <li>Write lean <b>CLAUDE.md</b> — and know rules / skills / hooks / MCP</li>
+        <li>Ship <b>Flow, VR + perm set, Apex + tests, LWC</b> with the agent</li>
+        <li>Fight <b>context rot</b> with <code>/context</code>, <code>/compact</code>, <code>/clear</code></li>
+        <li>Close the <b>verification loop</b> before merge</li>
+        <li>Know what <b>not</b> to do</li>
       </ul>
+      <div class="takeaway"><span class="tag">Starter repo</span><p><a href="https://github.com/krika2810/claude-code-sf-starter">github.com/krika2810/claude-code-sf-starter</a></p></div>
     </div>
   </div>
 </section>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 1 - the ideas (5 of 8)</div>
-    <h2>Skills store a <span class="accent">repeatable procedure</span></h2>
+    <div class="kicker">Act B — Install</div>
+    <h2>Install + clone + first <span class="accent"><code>/context</code></span></h2>
     <div class="body">
-      <div class="grid c2">
-        <pre><span class="cm"># .claude/skills/pr-review/SKILL.md</span>
----
-name: pr-review
-description: Review the current diff
----
-1. Read the diff and changed tests.
-2. Check behavior, security, and errors.
-3. Run the smallest relevant test set.
-4. Report findings by severity.</pre>
-        <pre><span class="kw">&gt;</span> /pr-review
+      <p class="lede">Get running in five minutes. Then shout what <code>/context</code> already loaded.</p>
+      <pre><span class="cm"># Prefer native installer (docs); npm still works for many teams</span>
+curl -fsSL https://claude.ai/install.sh | bash
+<span class="cm"># Alternative: npm install -g @anthropic-ai/claude-code</span>
 
-<span class="bad">High</span>  auth.ts:88
-Missing permission check
-
-<span class="cm">Medium</span>  user.test.ts
-No invalid-token test
-
-<span class="ok">Passed</span>  24 focused tests</pre>
-      </div>
-      <ul class="tight">
-        <li><b>Use a skill when steps repeat.</b> Review, release, migration, or incident checks.</li>
-        <li><b>Loads when needed.</b> The full procedure does not sit in every session.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Part 1 - the ideas (6 of 8)</div>
-    <h2>Hooks run checks at <span class="accent">fixed points</span></h2>
-    <div class="body">
-      <div class="grid c2">
-        <pre><span class="cm"># .claude/settings.json</span>
-"hooks": {
-  "PreToolUse": [{
-    "matcher": "Bash",
-    "hooks": [{
-      "type": "command",
-      "command": ".claude/hooks/check-command.sh"
-    }]
-  }]
-}</pre>
-        <pre><span class="cm">● Bash: rm -rf ./data</span>
-<span class="bad">✕ Blocked by hook</span>
-Destructive commands need approval.
-
-<span class="ok">The command did not run.</span></pre>
-      </div>
-      <ul class="tight">
-        <li><b>PreToolUse</b> checks an action before it runs.</li>
-        <li><b>PostToolUse</b> checks the result after a tool finishes.</li>
-        <li><b>Stop</b> can require tests or another completion check before Claude stops.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Part 1 - the ideas (7 of 8)</div>
-    <h2>Subagents handle <span class="accent">separate work</span></h2>
-    <div class="body">
-      <pre><span class="kw">&gt;</span> Ask one subagent to trace the login flow and another to inspect the tests.
-
-<span class="cm">● explore-login</span>     Reads 12 source files → returns a 10-line map
-<span class="cm">● inspect-tests</span>      Reads 8 test files   → returns 3 missing cases
-<span class="ok">Main session keeps the findings, not all 20 files.</span></pre>
-      <ul class="tight">
-        <li><b>Separate context.</b> Wide research does not fill the main session.</li>
-        <li><b>Parallel when independent.</b> Do not parallelize tasks that edit the same files.</li>
-        <li><b>Define a clear output.</b> Ask for a short report, list, or saved artifact.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Part 1 - the ideas (8 of 8)</div>
-    <h2>MCP connects Claude Code to <span class="accent">external tools</span></h2>
-    <div class="body">
-      <div class="grid c2">
-        <pre><span class="cm"># .mcp.json</span>
-"mcpServers": {
-  "github": {
-    "command": "npx",
-    "args": ["-y", "@modelcontextprotocol/server-github"]
-  }
-}</pre>
-        <pre><span class="kw">&gt;</span> Read issue 482 and list the files
-  likely involved. Do not edit yet.
-
-<span class="cm">● github.get_issue</span>
-<span class="ok">Returns the issue and linked discussion</span></pre>
-      </div>
-      <ul class="tight">
-        <li><b>MCP is a tool connection.</b> It is not extra knowledge inside the model.</li>
-        <li><b>Permissions still matter.</b> Give each server only the access it needs.</li>
-        <li><b>Use <code>/mcp</code>.</b> Check connection state and available tools.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<section class="slide">
-  <div class="inner">
-    <div class="kicker">Part 2 - setup</div>
-    <h2>Install Claude Code and <span class="accent">clone the starter repo</span></h2>
-    <div class="body">
-      <pre>npm install -g @anthropic-ai/claude-code
 git clone https://github.com/krika2810/claude-code-sf-starter
-cd claude-code-sf-starter &amp;&amp; claude</pre>
-      <ul class="tight">
-        <li>The starter includes CLAUDE.md, rules, skills, and hooks.</li>
-        <li>Read each file before copying it into your project.</li>
-      </ul>
+cd claude-code-sf-starter &amp;&amp; claude
+<span class="cm"># inside session:</span>
+<span class="kw">/context</span></pre>
     </div>
   </div>
 </section>
 
-
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 3 - declarative (1 of 2)</div>
-    <h2>Try it: a <span class="accent">record-triggered Flow</span></h2>
+    <div class="kicker">Act B — Install</div>
+    <h2>Mental model in <span class="accent">one slide</span></h2>
     <div class="body">
-      <pre><span class="kw">&gt;</span> Create a record-triggered Flow on Opportunity. When an
-  Opportunity is Closed Won, create a follow-up Task for the
-  owner, due in 7 days. Explain each choice as you go.</pre>
+      <p class="lede">You prompt → Claude picks tools → reads result → repeats → shows answer/diff.<br>You set boundaries with <b>permissions</b> and <b>hooks</b>.</p>
+      <pre><span class="cm">Tools:</span> Read, Edit, Write, Bash, Grep, Glob, Web, AskUserQuestion, …
+
+<span class="cm">Salesforce day-to-day:</span> prefer <span class="kw">sf</span> CLI over MCP <span class="cm">(cheaper on context)</span></pre>
       <ul class="tight">
-        <li>Check that it reads the existing fields and automation first.</li>
-        <li>Open the generated metadata file and review the XML.</li>
+        <li><b>Esc</b> mid-loop to steer. MCP is for external systems — not everyday deploy/test/retrieve.</li>
       </ul>
     </div>
   </div>
@@ -444,31 +256,31 @@ cd claude-code-sf-starter &amp;&amp; claude</pre>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 3 - declarative (2 of 2)</div>
-    <h2>Try it: a validation rule <span class="accent">and a permission set</span></h2>
+    <div class="kicker">Act C — Agent loop</div>
+    <h2>Bad prompt vs <span class="accent">good prompt</span></h2>
     <div class="body">
-      <pre><span class="kw">&gt;</span> Add a validation rule on Opportunity: Amount over 1000 when
-  Stage is Closed Won. Then a permission set called
-  "Opportunity Manager" with edit access. Deploy both.</pre>
-      <ul class="tight">
-        <li>Check that it creates both metadata files from one request.</li>
-        <li>Read the deploy output. Confirm which components passed.</li>
-      </ul>
+      <p class="lede">Vague burns tokens. Specific ships green tests.</p>
+      <table class="t">
+        <tr><th>Bad</th><th>Good</th></tr>
+        <tr><td>Fix the account code</td><td><code>AccountService.recalculate()</code> throws <code>ListException</code> on empty list. Add a guard; extend <code>AccountServiceTest</code> with an empty-list case. Run that test class and paste the result.</td></tr>
+      </table>
+      <div class="takeaway"><p><b>Pattern:</b> Outcome · Scope · Constraints · Verify command · Evidence</p></div>
     </div>
   </div>
 </section>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 3 - development (1 of 2)</div>
-    <h2>Try it: an Apex class <span class="accent">with real tests</span></h2>
+    <div class="kicker">Act C — Agent loop</div>
+    <h2>Plan mode when it <span class="accent">matters</span></h2>
     <div class="body">
-      <pre><span class="kw">&gt;</span> Write an Apex service class AccountRatingService with a method
-  that recalculates ratings for a list of Accounts. Follow our
-  repo standards. Write the test class too, real assertions.</pre>
+      <p class="lede"><code>Shift+Tab</code> until plan mode. Multi-file / trigger framework → plan first. One-liners → skip.</p>
+      <pre><span class="kw">Explore</span> → <span class="kw">Plan</span> → <span class="kw">Implement</span> → <span class="kw">Commit</span>
+
+Plan mode: propose without editing source</pre>
       <ul class="tight">
-        <li>Confirm that <code>.claude/rules/apex.md</code> loads for the Apex files.</li>
-        <li>Check that the class handles lists without SOQL or DML inside loops.</li>
+        <li>Use for OAuth setups, one-trigger-per-object refactors, Flow + Apex order-of-execution.</li>
+        <li>Skip for a one-line null guard — planning theater wastes tokens.</li>
       </ul>
     </div>
   </div>
@@ -476,90 +288,82 @@ cd claude-code-sf-starter &amp;&amp; claude</pre>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 3 - development (2 of 2)</div>
-    <h2>Try it: a <span class="accent">Lightning web component</span></h2>
+    <div class="kicker">Act D — Labs (1 of 5)</div>
+    <h2>Lab 1 — Record-triggered <span class="accent">Flow</span></h2>
     <div class="body">
-      <pre><span class="kw">&gt;</span> Build an LWC that shows an Account&#39;s open Opportunities in a
-  datatable, using an Apex controller with cacheable=true.
-  Follow our lwc.md rules.</pre>
-      <ul class="tight">
-        <li>Confirm that it creates the full bundle: .js, .html, .js-meta.xml, controller, and tests.</li>
-        <li>For read-only data, check that the component uses a wire adapter.</li>
-      </ul>
+      <pre><span class="kw">&gt;</span> Create a record-triggered Flow on Opportunity. When StageName becomes
+  Closed Won, create a Task for the owner due in 7 days. Explain before-save
+  vs after-save and why you chose it. Do not put DML inside a loop.</pre>
+      <table class="t">
+        <tr><th>Watch for</th><th>Success</th><th>Anti-pattern</th></tr>
+        <tr><td>After-save (related Task), fault path, naming</td><td>Metadata reviewed; after-save reason stated</td><td>"Make a flow for opportunities"</td></tr>
+      </table>
     </div>
   </div>
 </section>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 3 - one more input</div>
-    <h2>Try it: <span class="accent">paste a screenshot</span></h2>
+    <div class="kicker">Act D — Labs (2 of 5)</div>
+    <h2>Lab 2 — Validation rule + <span class="accent">permission set</span></h2>
     <div class="body">
-      <pre><span class="cm">[ Ctrl+V - a screenshot of the record page lands in the prompt ]</span>
-
-<span class="kw">&gt;</span> Rebuild this layout as an LWC.</pre>
-      <ul class="tight">
-        <li>Press <b>Ctrl+V</b> to add an image to the prompt.</li>
-        <li>Claude can read fields, sections, buttons, and error text from the image.</li>
-        <li>Use this for error dialogs, UI mockups, or an existing page layout.</li>
-      </ul>
+      <pre><span class="kw">&gt;</span> Add a validation rule on Opportunity: Amount must be &gt; 1000 when Stage is
+  Closed Won. Add a permission set <code>Opportunity_Manager</code> with edit on Opportunity.
+  Create both metadata files. Do not deploy to production.</pre>
+      <table class="t">
+        <tr><th>Success</th><th>Anti-pattern</th></tr>
+        <tr><td>Both files exist; target is scratch/sandbox</td><td>Silent prod deploy; hardcoding a Profile</td></tr>
+      </table>
+      <p class="note">Permission sets over profiles. "Never deploy prod" in CLAUDE.md is a request — hooks enforce it (Act G).</p>
     </div>
   </div>
 </section>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 3 - before a big change</div>
-    <h2>Try it: <span class="accent">plan mode</span></h2>
+    <div class="kicker">Act D — Labs (3 of 5)</div>
+    <h2>Lab 3 — Apex service + <span class="accent">real tests</span></h2>
     <div class="body">
-      <pre><span class="kw">&gt;</span> Move our Account triggers into the handler framework.
-  Plan it first.
-
-<span class="cm">● Explores 6 files, asks 2 questions, presents a plan
-  You approve the plan - then it builds.</span></pre>
-      <ul class="tight">
-        <li>Press <b>Shift+Tab</b> until the mode reads <code>plan</code>. Claude can read files, but it cannot edit them.</li>
-        <li>Use plan mode for multi-file changes. Skip it for a one-line fix.</li>
-      </ul>
+      <pre><span class="kw">&gt;</span> Write <code>AccountRatingService</code> with a bulk-safe method that recalculates
+  ratings for a list of Accounts. Follow CLAUDE.md and <code>.claude/rules/apex.md</code>.
+  Write <code>AccountRatingServiceTest</code> with real assertions (including empty list).
+  Run <code>sf apex run test -n AccountRatingServiceTest</code> and fix until green.</pre>
+      <table class="t">
+        <tr><th>Watch for</th><th>Anti-pattern</th></tr>
+        <tr><td>Path-scoped <code>apex.md</code>; no SOQL/DML in loops; <code>with sharing</code></td><td><code>SeeAllData=true</code>; tests with no asserts</td></tr>
+      </table>
     </div>
   </div>
 </section>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 4 - working well (1 of 5)</div>
-    <h2>Give Claude <span class="accent">exact task details</span></h2>
+    <div class="kicker">Act D — Labs (4 of 5)</div>
+    <h2>Lab 4 — LWC + <span class="accent">cacheable Apex</span></h2>
     <div class="body">
-      <div class="grid c2">
-        <pre><span class="cm"># too vague</span>
-Fix the account code</pre>
-        <pre><span class="cm"># clear task</span>
-AccountService.recalculate() throws
-ListException on an empty list.
-Add a guard, and extend the test
-class with an empty-list case.</pre>
-      </div>
-      <ul class="tight">
-        <li><b>Name the class, the error, the expected behavior.</b></li>
-        <li>Paste the exact error text. Every word is a clue.</li>
-        <li>Show one example of the result you want.</li>
-      </ul>
+      <pre><span class="kw">&gt;</span> Build an LWC that shows an Account's open Opportunities in a datatable.
+  Apex controller must be <code>@AuraEnabled(cacheable=true)</code>. Follow
+  <code>.claude/rules/lwc.md</code>. Include Jest test skeleton.</pre>
+      <table class="t">
+        <tr><th>Success</th><th>Anti-pattern</th></tr>
+        <tr><td>Full bundle + wire for read-only data</td><td>Imperative Apex for static read; missing meta.xml</td></tr>
+      </table>
+      <p class="note">⚠️ Optional: <code>forcedotcom/sf-skills</code> — verify install path and skill names on demo day before you promise a slash command.</p>
     </div>
   </div>
 </section>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 4 - working well (2 of 5)</div>
-    <h2>Keep the context <span class="accent">clean</span></h2>
+    <div class="kicker">Act D — Labs (5 of 5)</div>
+    <h2>Bonus — Paste a <span class="accent">screenshot</span></h2>
     <div class="body">
-      <pre><span class="kw">/context</span>   what is filling the window right now
-<span class="kw">/compact</span>   summarize the session so far, keep going
-<span class="kw">/clear</span>     wipe it - new task, fresh window</pre>
+      <pre><span class="cm">[screenshot of Setup error]</span>
+        ↓  Ctrl+V into Claude Code
+<span class="kw">&gt;</span> Explain this error and propose a fix in our DX project.</pre>
       <ul class="tight">
-        <li>Long sessions can include old files and unrelated messages.</li>
-        <li>Run <code>/clear</code> before starting an unrelated task.</li>
-        <li>Use a subagent to read many files and return a short summary.</li>
+        <li><b>Ctrl+V</b> a Setup validation error or page layout — architect wow-moment.</li>
+        <li>No customer data in prompts — use sanitized examples.</li>
       </ul>
     </div>
   </div>
@@ -567,30 +371,125 @@ class with an empty-list case.</pre>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 4 - working well (3 of 5)</div>
-    <h2>Pick the model <span class="accent">for the job</span></h2>
+    <div class="kicker">Act E — Context</div>
+    <h2>Context fills → <span class="accent">performance degrades</span></h2>
+    <div class="body">
+      <div class="takeaway"><p>Claude's context window fills up fast, and performance degrades as it fills. — Anthropic best practices</p></div>
+      <p class="lede"><b>Name it: context rot</b> — old files, failed attempts, and unrelated tasks still in the window, so the next answer drifts.</p>
+      <pre>Scratchpad that gets messy  →  <span class="kw">/clear</span> = new notepad
+<span class="cm">(one metaphor — don't stack more)</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Act E — Context</div>
+    <h2>What enters <span class="accent">context</span></h2>
+    <div class="body">
+      <p class="lede">Startup junk + every file you touched + every command you ran.</p>
+      <ul class="tight">
+        <li><b>Startup:</b> CLAUDE.md, skill descriptions, MCP tool names, auto memory</li>
+        <li><b>Work:</b> file reads, command output, tool results, your prompts, Claude's replies</li>
+        <li><b>Path-scoped rules:</b> when matching files are touched</li>
+      </ul>
+      <p class="note">Demo: <code>/context</code> after Lab 3 — point at the biggest buckets. Prefer <code>sf</code> CLI output over huge JSON pasted into chat.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Act E — Context</div>
+    <h2>Tools that fight rot <span class="accent">(+ recovery lab)</span></h2>
     <div class="body">
       <table class="t">
-        <tr><th>Model</th><th>Price per MTok (in / out)</th><th>Use it for</th></tr>
-        <tr><td>Haiku 4.5</td><td>$1 / $5</td><td>File scans, boilerplate, formatting</td></tr>
-        <tr><td>Sonnet 5</td><td>$2 / $10</td><td>The default. Day-to-day Apex, LWC, tests</td></tr>
-        <tr><td>Opus 5</td><td>$5 / $25</td><td>Architecture, nasty governor-limit bugs</td></tr>
+        <tr><th>Command</th><th>Use when</th></tr>
+        <tr><td><code>/context</code></td><td>Audit what's filling the window</td></tr>
+        <tr><td><code>/compact Focus on the Opportunity Flow and Apex tests</code></td><td>Same task, less noise</td></tr>
+        <tr><td><code>/clear</code></td><td>Unrelated next task</td></tr>
+        <tr><td><code>/btw …</code></td><td>Side question that must not stick</td></tr>
+        <tr><td>Subagent</td><td>"Map all Account triggers; return 10 lines"</td></tr>
+        <tr><td>Esc Esc / <code>/rewind</code></td><td>Bad path — restore conversation and/or code</td></tr>
       </table>
-      <p class="note">Switch with /model or Alt+P. Use Sonnet for normal development, Haiku for simple file work, and Opus for difficult design or debugging.</p>
+      <div class="takeaway"><span class="tag">Mini-lab — context-rot recovery</span><p>After <b>two failed corrections</b> → <code>/clear</code> → focused rewrite (handler file + Map pattern) → run the single test → paste output. Do not keep saying "try again differently" in a polluted session.</p></div>
+      <p class="note">Checkpoints rewind file edits — they do <b>not</b> undo org deploys or remote side effects.</p>
     </div>
   </div>
 </section>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 4 - working well (4 of 5)</div>
-    <h2>Reduce <span class="accent">token use</span></h2>
+    <div class="kicker">Act E — Context</div>
+    <h2>Token-saving playbook <span class="accent">(Salesforce edition)</span></h2>
     <div class="body">
+      <p class="lede">Eight habits. Pick three for your team this week.</p>
       <ul class="tight">
-        <li><b>Use path-scoped rules.</b> Apex rules do not load while you edit a Flow.</li>
-        <li><b>Keep CLAUDE.md short.</b> Every line loads into every session.</li>
-        <li><b>Choose the right model.</b> Use smaller models for simple work.</li>
-        <li><b>Use subagents.</b> They can read many files and return a short summary.</li>
+        <li>CLAUDE.md under ~200 lines; Apex detail → <code>.claude/rules/apex.md</code></li>
+        <li>Path-scoped rules so Flow work doesn't load LWC essays</li>
+        <li>Skills for long procedures (<code>/apex-review</code>, <code>/deploy-validate</code>) — on demand</li>
+        <li>Subagents for "find all trigger handlers"</li>
+        <li>Models: Haiku scans · Sonnet daily Apex/LWC · Opus nasty governors</li>
+        <li>Prefer CLI (<code>sf</code>, <code>gh</code>) over huge JSON in chat / unnecessary MCP</li>
+        <li>Two failed corrections → <code>/clear</code> + better prompt</li>
+        <li>Never "read the whole repo"</li>
+      </ul>
+      <p class="note">Add Compact instructions in CLAUDE.md so <code>/compact</code> preserves org alias, test failure messages/IDs, deploy/validation IDs, and files changed.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Act F — Team setup</div>
+    <h2>Decision table <span class="accent">(architect money slide)</span></h2>
+    <div class="body">
+      <p class="lede">Same need, wrong drawer = tokens burned or guardrails that don't fire.</p>
+      <table class="t">
+        <tr><th>Need</th><th>Use</th><th>Why</th></tr>
+        <tr><td>Always-on team rules</td><td><code>CLAUDE.md</code></td><td>Loads every session</td></tr>
+        <tr><td>File-type standards</td><td><code>.claude/rules/*.md</code></td><td>Loads when paths match</td></tr>
+        <tr><td>Repeatable checklist</td><td>Skill (<code>/apex-review</code>)</td><td>On demand</td></tr>
+        <tr><td>Must always happen</td><td>Hook (scan Apex after edit)</td><td><b>Deterministic</b></td></tr>
+        <tr><td>External system</td><td>MCP</td><td>Tools, not knowledge</td></tr>
+        <tr><td>Wide research</td><td>Subagent</td><td>Separate context</td></tr>
+      </table>
+      <div class="takeaway"><p>Put guardrails in hooks. "Never edit prod deploy" in CLAUDE.md is a request; a PreToolUse hook that blocks the edit is enforcement. Day-to-day Salesforce: prefer <code>sf</code> over MCP.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Act F — Team setup</div>
+    <h2>Walk the <span class="accent">starter repo</span></h2>
+    <div class="body">
+      <p class="lede">Open the files. Tie each to the decision table.</p>
+      <pre>claude-code-sf-starter/
+  CLAUDE.md                 → always-on
+  .claude/rules/apex.md     → path-scoped
+  .claude/rules/lwc.md      → path-scoped
+  .claude/skills/…          → on-demand (/apex-review, /deploy-validate)
+  .claude/settings.json     → deny list (prod deploy, etc.)
+  hooks → Code Analyzer after Apex edit</pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Act F — Team setup</div>
+    <h2>Turn a mistake into <span class="accent">memory</span></h2>
+    <div class="body">
+      <p class="lede">One sentence into CLAUDE.md or the Apex rule. If a hook or test can enforce it, prefer that.</p>
+      <pre><span class="kw">&gt;</span> Update CLAUDE.md / the Apex rule so we never put SOQL in a loop again. One sentence.
+If a hook or test can enforce it, prefer that.
+
+<span class="cm"># Compact instructions (keep in CLAUDE.md)</span>
+When compacting, preserve: org alias in use, test failure messages/IDs,
+any in-flight deployment/validation ID, and the list of files changed.</pre>
+      <ul class="tight">
+        <li><code>/init</code> drafts CLAUDE.md — prune with the team. Never put secrets or raw org IDs in CLAUDE.md — aliases only.</li>
       </ul>
     </div>
   </div>
@@ -598,518 +497,123 @@ class with an empty-list case.</pre>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Part 4 - the ground rules</div>
-    <h2>Review and protect <span class="accent">every change</span></h2>
+    <div class="kicker">Act G — Verify</div>
+    <h2>Verification loop + <span class="accent">prod guards</span></h2>
     <div class="body">
-      <ul class="tight">
-        <li><b>Review every change before you merge it.</b></li>
-        <li><b>Use the same checks as human-written code.</b> Run tests and fix analyzer findings.</li>
-        <li><b>Do not add secrets.</b> Keep credentials and customer data out of prompts and setup files.</li>
-        <li><b>Keep production deployment manual.</b> A developer approves and runs it.</li>
-      </ul>
+      <pre>Implement → sf apex run test → sf code-analyzer run → read failures → fix → repeat
+Stop only when checks pass. Paste evidence — don't claim "done."</pre>
+      <table class="t">
+        <tr><th>Layer</th><th>What it does</th></tr>
+        <tr><td>Prompt Don'ts</td><td>Advisory</td></tr>
+        <tr><td><code>.claude/settings.json</code> deny</td><td>Blocks dangerous tool calls</td></tr>
+        <tr><td>PreToolUse / PostToolUse hooks</td><td>Deterministic scan / block prod deploy</td></tr>
+        <tr><td>Human merge</td><td>Same bar as human-written code</td></tr>
+      </table>
+      <div class="takeaway"><p>⚠️ Checkpoints snapshot files before edits — they do <b>not</b> undo org deploys. Prod/deploy guards belong in hooks + permissions, not only CLAUDE.md prose.</p></div>
     </div>
   </div>
 </section>
 
 <section class="slide">
   <div class="inner">
-    <div class="kicker">Where you go from here</div>
-    <h2>Use this setup <span class="accent">in your repo</span></h2>
+    <div class="kicker">Act G — Verify</div>
+    <h2>Do / <span class="accent">Don't</span></h2>
     <div class="body">
+      <div class="grid c2">
+        <div class="card"><div class="h">Do</div><p><b>Name</b> class, error, expected behavior, verification command<br><b>Plan mode</b> for multi-file refactors<br><b>/clear</b> between unrelated tasks<br><b>Review</b> every diff; run org tests<br><b>Commit</b> CLAUDE.md so learning compounds</p></div>
+        <div class="card"><div class="h">Don't</div><p>Kitchen-sink sessions (Flow + CI + architecture in one chat)<br>Paste secrets, customer data, or session IDs<br>Let Claude deploy production unattended<br>Bloated CLAUDE.md that burns tokens<br>Correct the same failure more than twice without clearing<br>Treat volume of generated metadata as finished work</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">Act H — Close</div>
+    <h2><span class="accent">Take-home</span></h2>
+    <div class="body">
+      <p class="lede">Ship the practice this week — not another bookmark.</p>
       <ul class="tight">
-        <li>Start with <b>github.com/krika2810/claude-code-sf-starter</b>.</li>
-        <li>Check which files Claude reads, changes, and tests.</li>
-        <li>Use plan mode before a large change.</li>
-        <li>Keep the instructions that improve your team's results.</li>
+        <li>Copy the starter into one real DX repo this week</li>
+        <li>Run <code>/init</code>, then prune with the team for 30 minutes</li>
+        <li>Add one path-scoped rule and one skill from a real review comment</li>
+        <li>Optional Architect track: worktrees; <code>@claude</code> in GitHub Actions; managed settings</li>
+      </ul>
+      <p class="note">Links: <a href="https://code.claude.com/docs/en/">Official docs</a> · <a href="https://github.com/krika2810/claude-code-sf-starter">Starter repo</a> · this deck</p>
+    </div>
+  </div>
+</section>
+
+<!-- APPENDIX: Architect / later (outside main workshop path) -->
+<section class="slide review-slide">
+  <div class="inner">
+    <div class="kicker">Architect / later — appendix</div>
+    <h2>After the <span class="accent">workshop path</span></h2>
+    <div class="body">
+      <p class="lede">Slides 1–22 are the ~3-hour story. What follows is optional depth for architects — not required for the labs.</p>
+      <ul class="tight">
+        <li>Parallel worktrees, CI with <code>@claude</code>, managed org settings</li>
+        <li>Official docs index and Salesforce-specific tips</li>
+        <li><b>Not here:</b> Agent SDK, enterprise gateways, plugin evals, 203-page docs dump</li>
       </ul>
     </div>
   </div>
 </section>
 
-
-<!-- REVIEW SECTION: intentionally outside the workshop flow -->
 <section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - research appendix</div><h2>What the popular Claude Code guides <span class="accent">actually teach</span></h2><div class="body">
-    <div class="grid c2"><div class="card"><div class="h">X: Claude Code team workflow</div><p>Parallel worktrees, plan mode, and a CLAUDE.md that improves after real mistakes.</p></div><div class="card"><div class="h">Substack: operating Claude Code</div><p>Context management, verification loops, instruction hierarchy, skills, hooks, permissions, and daily habits.</p></div><div class="card"><div class="h">Reddit: scaling as a senior engineer</div><p>Delegate bounded implementation, isolate sessions, and keep architecture and review with the developer.</p></div><div class="card"><div class="h">Simon Willison: research and CI</div><p>Give agents a safe workspace, a clear deliverable, executable checks, and a saved artifact.</p></div></div>
-    <div class="takeaway"><p>This appendix is intentionally detailed. It is research material, not part of the workshop yet.</p></div>
-  </div></div>
+  <div class="inner">
+    <div class="kicker">Architect / later</div>
+    <h2>Parallel worktrees, CI, <span class="accent">managed settings</span></h2>
+    <div class="body">
+      <pre><span class="cm"># parallel independent Salesforce tasks</span>
+git worktree add ../sf-flow feature/opportunity-flow
+git worktree add ../sf-apex feature/account-rating
+(cd ../sf-flow &amp;&amp; claude)   <span class="cm"># Lab 1 in isolation</span>
+(cd ../sf-apex &amp;&amp; claude)   <span class="cm"># Lab 3 in isolation</span>
+
+<span class="cm"># GitHub Actions (teaser)</span>
+<span class="cm"># PR comment:</span> @claude fix the failing Apex test on this branch
+
+<span class="cm"># Enterprise rollout</span>
+Managed policy CLAUDE.md · MDM deployment · org-wide deny lists</pre>
+      <p class="note">Native <code>claude --worktree</code> may be available — check current docs. Full CI cookbook stays out of the main deck.</p>
+    </div>
+  </div>
 </section>
 
 <section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - Boris Cherny thread (1 of 3)</div><h2>Run independent tasks in <span class="accent">parallel worktrees</span></h2><div class="body">
-    <pre><span class="cm"># one branch and directory per session</span>
-git worktree add ../app-auth feature/auth
-git worktree add ../app-api feature/api
-git worktree add ../app-analysis analysis
-
-(cd ../app-auth &amp;&amp; claude)
-(cd ../app-api &amp;&amp; claude)
-(cd ../app-analysis &amp;&amp; claude)</pre>
-    <ul class="tight"><li><b>Team pattern:</b> run three to five sessions when the tasks do not depend on one another.</li><li><b>Name worktrees clearly.</b> Short shell aliases make switching quick.</li><li><b>Keep an analysis worktree.</b> Use it for logs, queries, and investigation without touching feature branches.</li><li><b>Do not share a working directory.</b> Two sessions editing the same files will overwrite or confuse each other.</li></ul>
-    <p class="note">Source: Claude Code team tips posted on Boris Cherny's X account, readable mirror: threadreaderapp.com/thread/2017742741636321619.html</p>
-  </div></div>
+  <div class="inner">
+    <div class="kicker">Architect / later</div>
+    <h2>High-value <span class="accent">tips</span></h2>
+    <div class="body">
+      <ul class="tight">
+        <li><b><code>/doctor</code></b> — trim bloated CLAUDE.md and catch config issues</li>
+        <li><b>Writer / reviewer sessions</b> — one session plans or implements; a fresh session reviews as staff engineer</li>
+        <li><b>Allowlist routine <code>sf</code> commands</b> in permissions; deny prod deploy patterns in settings</li>
+        <li><b>Single-class test runs</b> while iterating — full suite before merge</li>
+        <li><b>Verify third-party skills</b> (<code>forcedotcom/sf-skills</code>) before promising them in enablement</li>
+      </ul>
+    </div>
+  </div>
 </section>
 
 <section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - Boris Cherny thread (2 of 3)</div><h2>Use plan mode before <span class="accent">complex work</span></h2><div class="body">
-    <div class="grid c2"><pre><span class="cm"># first session writes the plan</span>
-&gt; Read the current implementation,
-  tests, and constraints. Ask questions.
-  Write the plan. Do not edit files.</pre><pre><span class="cm"># second session reviews it</span>
-&gt; Review this plan as a staff engineer.
-  Find missing migrations, failure modes,
-  tests, and rollout risks.</pre></div>
-    <ul class="tight"><li><b>Spend effort before implementation.</b> A better plan reduces corrections later.</li><li><b>Re-plan when the work goes wrong.</b> Do not keep pushing a weak approach.</li><li><b>Plan verification too.</b> Decide which tests, logs, screenshots, or benchmarks prove the result.</li><li><b>Separate author and reviewer.</b> A fresh session can challenge assumptions without inheriting the first session's reasoning.</li></ul>
-    <p class="note">Source: Claude Code team tips posted on Boris Cherny's X account: threadreaderapp.com/thread/2017742741636321619.html</p>
-  </div></div>
+  <div class="inner">
+    <div class="kicker">Architect / later — resources</div>
+    <h2>Further <span class="accent">reading</span></h2>
+    <div class="body">
+      <table class="t">
+        <tr><th>Resource</th><th>Why</th></tr>
+        <tr><td><a href="https://code.claude.com/docs/en/best-practices">Best practices</a></td><td>Context, verification, instruction hierarchy</td></tr>
+        <tr><td><a href="https://code.claude.com/docs/en/features-overview">Features overview</a></td><td>CLAUDE.md vs skills vs hooks vs MCP</td></tr>
+        <tr><td><a href="https://code.claude.com/docs/en/context-window">Context window</a></td><td>What loads and when</td></tr>
+        <tr><td><a href="https://code.claude.com/docs/en/costs">Costs</a></td><td>Prefer CLI over MCP; model choice</td></tr>
+        <tr><td><a href="https://code.claude.com/docs/llms.txt">Docs index (llms.txt)</a></td><td>Full reference — not a slide dump</td></tr>
+        <tr><td><a href="https://github.com/krika2810/claude-code-sf-starter">claude-code-sf-starter</a></td><td>Team template for this workshop</td></tr>
+      </table>
+    </div>
+  </div>
 </section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - Boris Cherny thread (3 of 3)</div><h2>Turn corrections into <span class="accent">project memory</span></h2><div class="body">
-    <pre><span class="kw">&gt;</span> Update CLAUDE.md so you do not make that mistake again.
-
-<span class="cm">Before adding a rule, check:</span>
-1. Did this mistake actually happen?
-2. Does the rule apply to the whole project?
-3. Can the instruction be one clear sentence?
-4. Can a test or hook enforce it instead?</pre>
-    <ul class="tight"><li><b>Use real failures as input.</b> Do not fill CLAUDE.md with generic advice.</li><li><b>Edit it ruthlessly.</b> Remove rules Claude follows without being told and rules that no longer apply.</li><li><b>Track longer project notes separately.</b> Keep task or PR notes in a directory and link to them.</li><li><b>Measure the result.</b> The file is useful only if repeated mistakes fall.</li></ul>
-    <p class="note">Source: Claude Code team tips posted on Boris Cherny's X account: threadreaderapp.com/thread/2017742741636321619.html</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - 50 Claude Code Tips (1 of 5)</div><h2>Treat context as the <span class="accent">main resource</span></h2><div class="body">
-    <table class="t"><tr><th>Tool</th><th>What it does</th><th>When to use it</th></tr><tr><td><code>/context</code></td><td>Shows what uses the context window</td><td>Audit large sessions and MCP overhead</td></tr><tr><td><code>/clear</code></td><td>Starts a fresh conversation</td><td>Before an unrelated task</td></tr><tr><td><code>/compact</code></td><td>Condenses useful session history</td><td>Continue the same task with less history</td></tr><tr><td>CLAUDE.md</td><td>Loads durable project guidance</td><td>Commands and rules needed often</td></tr><tr><td>Skills</td><td>Load procedures on demand</td><td>Repeatable but not always needed</td></tr><tr><td>Subagents</td><td>Use a separate context window</td><td>Bounded independent research</td></tr></table>
-    <ul class="tight"><li><b>Fresh and condensed beats large.</b> More context is not automatically better context.</li><li><b>Load detail only when needed.</b> Keep an index at the root and detail closer to the relevant code.</li></ul>
-    <p class="note">Source: John Kim, “50 Claude Code Tips To Get You Started”: getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - 50 Claude Code Tips (2 of 5)</div><h2>Give Claude a <span class="accent">verification loop</span></h2><div class="body">
-    <pre><span class="kw">&gt;</span> Implement the change. Then run:
-  npm run build
-  npm test -- --runInBand
-  npm run lint
-Read every failure, fix it, and repeat. Stop only when all three pass.</pre>
-    <ul class="tight"><li><b>Name the exact commands.</b> “Make sure it works” is not a test.</li><li><b>Let Claude read the failure.</b> Build output, test output, logs, browser state, or performance traces become the next input.</li><li><b>Use the smallest useful check first.</b> Focused tests give faster feedback; run the full suite before completion.</li><li><b>Match the check to the product.</b> Web work can use browser automation; mobile work can use device logs; performance work can use traces.</li></ul>
-    <p class="note">Source: John Kim, “50 Claude Code Tips To Get You Started”: getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - 50 Claude Code Tips (3 of 5)</div><h2>Build the plan before <span class="accent">Claude builds the code</span></h2><div class="body">
-    <div class="grid c2"><div class="card"><div class="h">What</div><p>State the outcome, files or area, expected behavior, and what must not change.</p></div><div class="card"><div class="h">Domain</div><p>Point Claude to architecture notes, examples, constraints, and existing patterns.</p></div><div class="card"><div class="h">Validation</div><p>Name the commands or observations that prove the task is complete.</p></div><div class="card"><div class="h">Challenge the plan</div><p>Ask about failure modes, migration, rollback, permissions, and tests before editing.</p></div></div>
-    <ul class="tight"><li><b>Plan mode is for shared understanding.</b> Use it to find wrong assumptions early.</li><li><b>Do not over-plan a one-line change.</b> Match planning effort to risk and scope.</li></ul>
-    <p class="note">Source: John Kim, “50 Claude Code Tips To Get You Started”: getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - 50 Claude Code Tips (4 of 5)</div><h2>Choose the right <span class="accent">extension</span></h2><div class="body">
-    <table class="t"><tr><th>Need</th><th>Use</th><th>Reason</th></tr><tr><td>Project facts used often</td><td>CLAUDE.md</td><td>Loads at the start</td></tr><tr><td>Detailed repeatable procedure</td><td>Skill</td><td>Loads when relevant</td></tr><tr><td>External service or data</td><td>MCP</td><td>Adds callable tools</td></tr><tr><td>Independent reading or side task</td><td>Subagent</td><td>Separate context</td></tr><tr><td>Deterministic guard or formatter</td><td>Hook</td><td>Runs at a fixed event</td></tr></table>
-    <ul class="tight"><li><b>Avoid instruction overload.</b> A long global file lowers attention to each rule.</li><li><b>Ask Claude to scaffold extensions.</b> Then inspect the generated files, permissions, and commands.</li><li><b>Use clear descriptions.</b> Claude routes skills and subagents partly from their descriptions.</li></ul>
-    <p class="note">Source: John Kim, “50 Claude Code Tips To Get You Started”: getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - 50 Claude Code Tips (5 of 5)</div><h2>Use permissions and hooks <span class="accent">deliberately</span></h2><div class="body">
-    <div class="grid c2"><pre><span class="cm"># allow routine tools</span>
-/permissions
-  Read
-  Edit
-  Bash(npm test:*)
-  Bash(npm run lint:*)</pre><pre><span class="cm"># enforce a hard rule</span>
-PreToolUse
-  block destructive commands
-
-PostToolUse
-  format edited files
-  run focused checks</pre></div>
-    <ul class="tight"><li><b>Use allowlists for routine commands.</b> Keep approval for risky or broad actions.</li><li><b>Use skip-permissions only in a throwaway environment.</b> It is not a normal project setting.</li><li><b>Hooks are deterministic.</b> Put must-run checks there instead of hoping an instruction is followed.</li><li><b>Review third-party MCPs and hooks.</b> They can add executable access to the session.</li></ul>
-    <p class="note">Source: John Kim, “50 Claude Code Tips To Get You Started”: getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - CLAUDE.md guide (1 of 3)</div><h2>Choose the right <span class="accent">instruction scope</span></h2><div class="body">
-    <table class="t"><tr><th>Scope</th><th>Location</th><th>Use</th><th>Shared?</th></tr><tr><td>User</td><td><code>~/.claude/CLAUDE.md</code></td><td>Personal style across projects</td><td>No</td></tr><tr><td>Project</td><td><code>./CLAUDE.md</code></td><td>Team commands and standards</td><td>Commit it</td></tr><tr><td>Local project</td><td><code>./CLAUDE.local.md</code></td><td>Machine URLs and test data</td><td>Gitignore</td></tr><tr><td>Directory</td><td><code>src/api/CLAUDE.md</code></td><td>Module-specific conventions</td><td>Usually</td></tr></table>
-    <ul class="tight"><li><b>More specific files apply closer to the code.</b> This is useful in monorepos.</li><li><b>Do not mix personal and team preferences.</b> Put them at different scopes.</li><li><b>Check loading with <code>/context</code>.</b> Confirm which memory files entered the session.</li></ul>
-    <p class="note">Source: Scott Ortier, “CLAUDE.md: The Complete Guide to Claude Code's Most Important File”: scortier.substack.com/p/claudemd-the-complete-guide-to-claude</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - CLAUDE.md guide (2 of 3)</div><h2>Write instructions that <span class="accent">change behavior</span></h2><div class="body">
-    <div class="grid c2"><pre><span class="bad"># weak</span>
-- Write clean code.
-- Follow best practices.
-- Be careful with errors.</pre><pre><span class="ok"># useful</span>
-- Use named exports only.
-- Return Result types; do not throw
-  from service modules.
-- Keep tests beside source as
-  *.test.ts.</pre></div>
-    <ul class="tight"><li><b>Describe observable behavior.</b> Claude must be able to tell whether it followed the rule.</li><li><b>Include commands and locations.</b> State where code lives and how to build or test it.</li><li><b>Record non-obvious choices.</b> Import paths, error patterns, environment sources, and naming that Claude might guess wrong.</li><li><b>Remove generic expertise claims.</b> They add tokens without guiding a decision.</li></ul>
-    <p class="note">Source: Scott Ortier, “CLAUDE.md: The Complete Guide”: scortier.substack.com/p/claudemd-the-complete-guide-to-claude</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - CLAUDE.md guide (3 of 3)</div><h2>Keep guidance short; <span class="accent">enforce guarantees elsewhere</span></h2><div class="body">
-    <div class="grid c2"><div class="card"><div class="h">Delete the line when</div><p>Claude already does it reliably, it repeats documentation, it is obsolete, or it applies to one temporary task.</p></div><div class="card"><div class="h">Move the line when</div><p>It is file-specific: use a rule. It is a procedure: use a skill. It must always happen: use a hook or test.</p></div></div>
-    <pre><span class="cm">Monthly CLAUDE.md review</span>
-1. Which mistakes repeated?
-2. Which rules were ignored?
-3. Which rules are vague or duplicated?
-4. Which checks can become tests or hooks?
-5. Does every remaining line still earn its context cost?</pre>
-    <p class="note">Source: Scott Ortier, “CLAUDE.md: The Complete Guide”: scortier.substack.com/p/claudemd-the-complete-guide-to-claude</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - Simon Willison (1 of 3)</div><h2>Use Claude Code to build a <span class="accent">checked CI workflow</span></h2><div class="body">
-    <pre><span class="kw">&gt;</span> Add a GitHub Actions workflow that rebuilds the README index.
-  Inspect the repository first. Use current action versions.
-  Run the generator locally. Show the generated diff.
-  Validate the workflow file before finishing.</pre>
-    <ul class="tight"><li><b>Start with a small real feature.</b> The article used an automatically updated README index.</li><li><b>Let Claude inspect the repository.</b> Existing scripts and file layout should drive the workflow.</li><li><b>Check generated configuration.</b> Action versions, permissions, triggers, and paths can become stale or unsafe.</li><li><b>Keep the transcript.</b> A recorded session makes the process reviewable and repeatable.</li></ul>
-    <p class="note">Source: Simon Willison, “Using Claude Code to build a GitHub Actions workflow”: simonwillison.net/2025/Jul/1/claude-code-github-actions/</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - Simon Willison (2 of 3)</div><h2>Give code research a <span class="accent">clear deliverable</span></h2><div class="body">
-    <pre><span class="kw">&gt;</span> Research how this library handles retries.
-  Read source, tests, issues, and release notes.
-  Run a small experiment for each retry mode.
-  Save findings in research/retries.md with links,
-  commands, outputs, and open questions.</pre>
-    <ul class="tight"><li><b>Ask a research question, not “explore this repo.”</b></li><li><b>Provide a useful environment.</b> Source, dependencies, test tools, and network access decide what can be proven.</li><li><b>Require an artifact.</b> A report or pull request survives after the session ends.</li><li><b>Ask for experiments.</b> Running code gives stronger evidence than reading alone.</li></ul>
-    <p class="note">Source: Simon Willison, “Code research projects with async coding agents like Claude Code and Codex”: simonwillison.net/2025/Nov/6/async-code-research/</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - Simon Willison (3 of 3)</div><h2>Use a separate repository for <span class="accent">open-ended research</span></h2><div class="body">
-    <div class="grid c2"><div class="card"><div class="h">Why separate it</div><p>The agent can create files, install tools, and run experiments without risking the product repository.</p></div><div class="card"><div class="h">Public or private</div><p>Use a public research repo for shareable work. Use a private one when the question or data is not ready to publish.</p></div><div class="card"><div class="h">Review the pull request</div><p>Check sources, commands, generated files, experiment design, and whether the conclusion follows from the evidence.</p></div><div class="card"><div class="h">Keep boundaries</div><p>Do not put credentials, customer data, or unrelated production access into the research environment.</p></div></div>
-    <p class="note">Source: Simon Willison, “Code research projects with async coding agents”: simonwillison.net/2025/Nov/6/async-code-research/</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - senior engineer Reddit thread (1 of 2)</div><h2>Scale execution without giving up <span class="accent">engineering judgment</span></h2><div class="body">
-    <table class="t"><tr><th>Delegate</th><th>Keep with the developer</th></tr><tr><td>Repository search and code mapping</td><td>Problem definition and product intent</td></tr><tr><td>Bounded implementation from an agreed plan</td><td>Architecture and data-boundary decisions</td></tr><tr><td>Test generation and routine fixes</td><td>Risk, security, and rollout judgment</td></tr><tr><td>Documentation and repetitive migrations</td><td>Diff review, merge, and production approval</td></tr></table>
-    <ul class="tight"><li><b>Experience still matters.</b> Senior engineers can spot plausible but wrong designs earlier.</li><li><b>Productivity changes estimation.</b> Parallel work increases review and integration load, not only output.</li><li><b>Use Claude as a multiplier.</b> Do not treat generated volume as completed work.</li></ul>
-    <p class="note">Source: r/ClaudeCode, “Senior engineer best practice for scaling yourself with Claude Code”: reddit.com/r/ClaudeCode/comments/1sciznh/senior_engineer_best_practice_for_scaling/</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - senior engineer Reddit thread (2 of 2)</div><h2>Parallel sessions need <span class="accent">isolation and integration</span></h2><div class="body">
-    <pre><span class="cm"># split by independent outcome</span>
-feature/auth      → session A → focused tests → PR A
-feature/api       → session B → focused tests → PR B
-bugfix/login      → session C → regression test → PR C
-
-<span class="cm"># developer integrates</span>
-review each diff → resolve shared assumptions → run full suite → merge</pre>
-    <ul class="tight"><li><b>Use one worktree per session.</b> Separate directories prevent file collisions.</li><li><b>Split by outcome, not by arbitrary file count.</b> Each branch needs a clear acceptance test.</li><li><b>Pre-orient the agent.</b> A maintained project map or concise CLAUDE.md reduces repeated discovery.</li><li><b>Budget for integration.</b> Parallel branches can still make conflicting architecture choices.</li></ul>
-    <p class="note">Source: r/ClaudeCode thread above. Popularity corroborated by independent April 2026 indexes; direct Reddit reading was blocked by a captcha, so no verbatim Reddit quote is used.</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - combined operating model</div><h2>A complete Claude Code <span class="accent">working loop</span></h2><div class="body">
-    <div class="flow"><div class="stage"><span class="sn">01</span><div class="st">Orient</div><p>Read CLAUDE.md, project map, and relevant rules.</p></div><div class="stage"><span class="sn">02</span><div class="st">Plan</div><p>Ask questions. List files, risks, and checks.</p></div><div class="stage"><span class="sn">03</span><div class="st">Implement</div><p>Make the smallest coherent change.</p></div><div class="stage"><span class="sn">04</span><div class="st">Verify</div><p>Build, test, lint, inspect UI or logs.</p></div><div class="stage"><span class="sn">05</span><div class="st">Review</div><p>Read the diff and challenge assumptions.</p></div><div class="stage"><span class="sn">06</span><div class="st">Learn</div><p>Save a real repeated lesson in rules or tests.</p></div></div>
-    <ul class="tight"><li><b>Use subagents for bounded reading.</b> Keep core implementation where the full context lives.</li><li><b>Use worktrees for independent outcomes.</b> Integrate through reviewed pull requests.</li><li><b>Automate guarantees.</b> Tests and hooks are stronger than prose instructions.</li></ul>
-    <p class="note">Synthesis of the X, Substack, Reddit, Simon Willison, and Anthropic sources in this appendix.</p>
-  </div></div>
-</section>
-
-<section class="slide review-slide">
-  <div class="inner"><div class="kicker">Review later - reading list</div><h2>Read the <span class="accent">original sources</span></h2><div class="body">
-    <table class="t"><tr><th>Source</th><th>Coverage</th></tr><tr><td><a href="https://threadreaderapp.com/thread/2017742741636321619.html">Claude Code team tips - X thread mirror</a></td><td>Worktrees, plan mode, CLAUDE.md</td></tr><tr><td><a href="https://getpushtoprod.substack.com/p/50-claude-code-tips-to-get-you-started">John Kim - 50 Claude Code Tips</a></td><td>Context, verification, extensions, permissions</td></tr><tr><td><a href="https://scortier.substack.com/p/claudemd-the-complete-guide-to-claude">Scott Ortier - CLAUDE.md guide</a></td><td>Scopes, content, maintenance</td></tr><tr><td><a href="https://reddit.com/r/ClaudeCode/comments/1sciznh/senior_engineer_best_practice_for_scaling/">r/ClaudeCode - senior engineer thread</a></td><td>Delegation, worktrees, judgment</td></tr><tr><td><a href="https://simonwillison.net/2025/Jul/1/claude-code-github-actions/">Simon Willison - GitHub Actions</a></td><td>Small feature and CI workflow</td></tr><tr><td><a href="https://simonwillison.net/2025/Nov/6/async-code-research/">Simon Willison - async code research</a></td><td>Research prompts, repositories, artifacts</td></tr><tr><td><a href="https://code.claude.com/docs/en/best-practices">Anthropic - best practices</a></td><td>Official cross-check</td></tr></table>
-  </div></div>
-</section>
-
-
-
-<!-- OFFICIAL DOCS CANDIDATE SECTION -->
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - official docs audit</div><h2>Candidate slides from <span class="accent">every docs page</span></h2><div class="body"><div class="grid c2"><div class="card"><div class="h">Pages audited</div><p><b>203 current pages</b> from the official Claude Code documentation index.</p></div><div class="card"><div class="h">What was compared</div><p>The full page text and headings against all <b>42 existing slides</b>.</p></div><div class="card"><div class="h">What follows</div><p>Only topics missing or materially thinner than the docs, grouped into clear candidate slides.</p></div><div class="card"><div class="h">How to use it</div><p>Keep, cut, or move each candidate after review. The workshop stays unchanged before this section.</p></div></div><div class="takeaway"><p>Coverage includes local use, cloud, IDEs, automation, parallel agents, security, administration, and the Agent SDK.</p></div><p class="note">Official index read: <a href="https://code.claude.com/docs/llms.txt">code.claude.com/docs/llms.txt</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · getting started</div><h2>Install, sign in, and <span class="accent">start a session</span></h2><div class="body"><pre><span class="cm"># macOS, Linux, or WSL</span>
-curl -fsSL https://claude.ai/install.sh | bash
-cd my-project
-claude
-
-<span class="kw">&gt;</span> Explain this repository. Do not change files.</pre><ul class="tight"><li><b>Install</b> Use the native installer or the supported package for your platform.</li><li><b>Authenticate</b> Sign in with a Claude subscription, Console account, or an organization provider.</li><li><b>Start at the repo root</b> Claude uses the current directory to find code and project instructions.</li><li><b>Begin read-only</b> Ask for a repository map before the first edit.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/quickstart.md">quickstart</a> · <a href="https://code.claude.com/docs/en/setup.md">setup</a> · <a href="https://code.claude.com/docs/en/authentication.md">authentication</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · core</div><h2>Understand the <span class="accent">agent loop</span></h2><div class="body"><pre><span class="kw">Prompt</span> → inspect → choose tool → observe result → repeat → answer
-
-<span class="cm">Built-in tools can:</span>
-Read / Edit / Write / Bash / Glob / Grep / Web / AskUserQuestion</pre><ul class="tight"><li><b>Tools make it an agent.</b> Claude can inspect and change the environment, not only return text.</li><li><b>Each result becomes context.</b> Command output and file contents guide the next step.</li><li><b>Permission checks happen before actions.</b> The selected mode and rules decide whether Claude asks.</li><li><b>Compaction keeps the loop going.</b> When context fills, Claude summarizes earlier work.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/how-claude-code-works.md">how-claude-code-works</a> · <a href="https://code.claude.com/docs/en/tools-reference.md">tools-reference</a> · <a href="https://code.claude.com/docs/en/context-window.md">context-window</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · surfaces</div><h2>Choose where <span class="accent">Claude Code runs</span></h2><div class="body"><pre><span class="cm">Local</span>   CLI · VS Code · JetBrains · Desktop
-<span class="cm">Cloud</span>   claude.ai/code · mobile
-<span class="cm">Team</span>    Slack · GitHub Actions · GitLab CI</pre><ul class="tight"><li><b>CLI</b> Full terminal workflow and scripting.</li><li><b>IDE</b> Inline diffs, file mentions, plan review, and editor context.</li><li><b>Desktop</b> Visual diff review, isolated parallel sessions, previews, and scheduled tasks.</li><li><b>Web and mobile</b> Run cloud tasks without keeping a local machine awake.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/platforms.md">platforms</a> · <a href="https://code.claude.com/docs/en/overview.md">overview</a> · <a href="https://code.claude.com/docs/en/feature-availability.md">feature-availability</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · sessions</div><h2>Resume, name, and <span class="accent">branch sessions</span></h2><div class="body"><pre>claude --continue
-claude --resume
-claude --resume "auth-refactor"
-claude --resume "auth-refactor" --fork-session
-claude --from-pr 482</pre><ul class="tight"><li><b>Continue</b> Open the most recent conversation for the current project.</li><li><b>Resume</b> Choose or name a previous session and restore its conversation.</li><li><b>Fork</b> Branch the conversation before trying a different approach.</li><li><b>From a PR</b> Start with pull-request context instead of rebuilding it by hand.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/sessions.md">sessions</a> · <a href="https://code.claude.com/docs/en/cli-reference.md">cli-reference</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · sessions</div><h2>Use <span class="accent">checkpoints</span> before risky edits</h2><div class="body"><pre><span class="kw">Esc Esc</span>     rewind to an earlier point
-<span class="kw">/rewind</span>    choose a checkpoint
-
-Restore: conversation only · code only · both</pre><ul class="tight"><li><b>Automatic checkpoints</b> Claude records file changes before edits.</li><li><b>Rewind is local</b> It is not a replacement for Git history or commits.</li><li><b>Choose what to restore</b> Keep the conversation while reverting code, or restore both.</li><li><b>Summarize before switching</b> Preserve the useful state when moving to a fresh session.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/checkpointing.md">checkpointing</a> · <a href="https://code.claude.com/docs/en/interactive-mode.md">interactive-mode</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · context</div><h2>Know how <span class="accent">prompt caching</span> works</h2><div class="body"><pre><span class="cm">Stable prefix</span>  system + tools + CLAUDE.md → cache hit
-<span class="cm">Changed prefix</span> model switch or instruction edit → uncached turn
-<span class="cm">/compact</span>      writes a new summary → new cached prefix</pre><ul class="tight"><li><b>Claude manages caching</b> You do not manually construct cache blocks in the CLI.</li><li><b>Model switches cost a fresh prefix</b> The first turn can be slower and more expensive.</li><li><b>Instruction edits apply to new sessions</b> Changing CLAUDE.md mid-session does not rebuild the loaded prefix.</li><li><b>Watch cache metrics</b> Use status and cost information when diagnosing high usage.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/prompt-caching.md">prompt-caching</a> · <a href="https://code.claude.com/docs/en/costs.md">costs</a> · <a href="https://code.claude.com/docs/en/context-window.md">context-window</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · CLI</div><h2>Use Claude Code in <span class="accent">scripts</span></h2><div class="body"><pre><span class="cm"># one-off answer</span>
-claude -p "List public API changes"
-
-<span class="cm"># machine-readable output</span>
-claude -p "Find security risks" --output-format json
-
-<span class="cm"># stream events</span>
-claude -p "Run tests" --output-format stream-json</pre><ul class="tight"><li><b>Print mode</b> Use -p for non-interactive runs.</li><li><b>Structured output</b> Choose text, JSON, or streaming JSON for another program to consume.</li><li><b>Limit tools</b> Use allowed-tools and permission settings for automation.</li><li><b>Set a budget</b> Use max-turns and cost controls for unattended runs.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/cli-reference.md">cli-reference</a> · <a href="https://code.claude.com/docs/en/headless.md">headless</a> · <a href="https://code.claude.com/docs/en/env-vars.md">env-vars</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · interface</div><h2>Use <span class="accent">interactive mode</span> faster</h2><div class="body"><pre>Shift+Tab   change permission mode
-Alt+P       switch model
-Ctrl+V      paste an image
-Esc Esc     rewind
-/           open commands
-@file       add file context
-! command   run shell command</pre><ul class="tight"><li><b>Input modes</b> Write multiline prompts, paste images, mention files, and invoke commands.</li><li><b>History</b> Search and reuse previous prompts.</li><li><b>Vim mode</b> Enable modal editing if that matches your terminal workflow.</li><li><b>Customize keys</b> Override shortcuts in the keybindings file.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/interactive-mode.md">interactive-mode</a> · <a href="https://code.claude.com/docs/en/commands.md">commands</a> · <a href="https://code.claude.com/docs/en/keybindings.md">keybindings</a> · <a href="https://code.claude.com/docs/en/terminal-config.md">terminal-config</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · configuration</div><h2>Put settings at the right scope</h2><div class="body"><pre><span class="cm">Managed</span>   organization policy
-<span class="cm">User</span>      ~/.claude/settings.json
-<span class="cm">Project</span>   .claude/settings.json       <span class="ok">commit</span>
-<span class="cm">Local</span>     .claude/settings.local.json <span class="ok">gitignore</span></pre><ul class="tight"><li><b>Precedence is defined</b> A more authoritative scope wins when the same key appears twice.</li><li><b>Share team defaults</b> Commit project settings that every developer should use.</li><li><b>Keep machine details local</b> Put personal paths and local allow rules in the local file.</li><li><b>Verify effective config</b> Use diagnostic commands instead of guessing which file won.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/settings.md">settings</a> · <a href="https://code.claude.com/docs/en/settings-reference.md">settings-reference</a> · <a href="https://code.claude.com/docs/en/settings-example.md">settings-example</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · permissions</div><h2>Choose a <span class="accent">permission mode</span></h2><div class="body"><pre><span class="cm">Normal</span>       ask for actions not already allowed
-<span class="cm">Plan</span>         read and plan; no edits
-<span class="cm">Accept edits</span> allow file edits; still gate commands
-<span class="cm">Auto</span>         classifier decides inside configured trust
-<span class="cm">Bypass</span>       only for isolated throwaway environments</pre><ul class="tight"><li><b>Switch with Shift+Tab</b> The current mode is visible in CLI, IDE, and Desktop.</li><li><b>Rules match tools</b> Allow, ask, or deny exact command and tool patterns.</li><li><b>Deny wins</b> Use managed policy for rules developers must not override.</li><li><b>Bypass is not a convenience mode</b> Combine autonomy with a sandbox instead.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/permissions.md">permissions</a> · <a href="https://code.claude.com/docs/en/permission-modes.md">permission-modes</a> · <a href="https://code.claude.com/docs/en/auto-mode-config.md">auto-mode-config</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · security</div><h2>Use <span class="accent">sandboxing</span> for autonomous commands</h2><div class="body"><pre>{
-  "sandbox": {
-    "enabled": true,
-    "autoAllowBashIfSandboxed": true,
-    "excludedCommands": ["docker"]
-  }
-}</pre><ul class="tight"><li><b>Filesystem isolation</b> Limit reads and writes outside approved paths.</li><li><b>Network isolation</b> Control which domains and sockets commands can reach.</li><li><b>Fewer prompts, not fewer controls</b> Safe commands can run automatically inside the boundary.</li><li><b>Pick isolation by risk</b> Built-in sandbox, sandbox runtime, container, or VM.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/sandboxing.md">sandboxing</a> · <a href="https://code.claude.com/docs/en/sandbox-environments.md">sandbox-environments</a> · <a href="https://code.claude.com/docs/en/devcontainer.md">devcontainer</a> · <a href="https://code.claude.com/docs/en/security.md">security</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · models</div><h2>Configure model, effort, and speed</h2><div class="body"><pre>/model
-/model sonnet
-/model opus
-/fast
-
-<span class="cm">settings.json</span>
-{ "model": "sonnet", "effortLevel": "high" }</pre><ul class="tight"><li><b>Model</b> Choose for complexity, latency, and cost.</li><li><b>Effort</b> Raise reasoning effort for difficult decisions; lower it for routine work.</li><li><b>Fast mode</b> Trades higher price for faster Opus output when latency matters.</li><li><b>Advisor</b> Let the main model consult a stronger model at selected decision points.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/model-config.md">model-config</a> · <a href="https://code.claude.com/docs/en/fast-mode.md">fast-mode</a> · <a href="https://code.claude.com/docs/en/advisor.md">advisor</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · interface</div><h2>Monitor the session in the <span class="accent">status line</span></h2><div class="body"><pre><span class="cm">example</span>
-main*  │  Sonnet  │  58% context  │  $1.42
-
-/statusline
-<span class="cm">Claude generates a script that prints the fields you choose.</span></pre><ul class="tight"><li><b>Context</b> Show remaining window before performance drops.</li><li><b>Cost</b> Track session spend when using API billing.</li><li><b>Git state</b> Show branch and dirty files before edits.</li><li><b>Custom command</b> The status-line program receives session data as JSON on stdin.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/statusline.md">statusline</a> · <a href="https://code.claude.com/docs/en/costs.md">costs</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · interface</div><h2>Configure terminal and accessibility</h2><div class="body"><pre>/config
-<span class="cm">Choose:</span> theme · notifications · editor · Vim mode
-
-<span class="cm">Accessibility:</span> reduced motion · screen-reader mode
-colorblind-friendly themes · larger terminal text</pre><ul class="tight"><li><b>Newlines</b> Configure Shift+Enter for terminals that do not send it correctly.</li><li><b>Notifications</b> Use the terminal bell when Claude finishes or needs input.</li><li><b>Fullscreen</b> Use stable full-screen rendering for long sessions.</li><li><b>Screen readers</b> CLI output supports VoiceOver and NVDA guidance.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/terminal-config.md">terminal-config</a> · <a href="https://code.claude.com/docs/en/fullscreen.md">fullscreen</a> · <a href="https://code.claude.com/docs/en/accessibility.md">accessibility</a> · <a href="https://code.claude.com/docs/en/voice-dictation.md">voice-dictation</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · IDE</div><h2>Use VS Code or JetBrains with editor context</h2><div class="body"><pre><span class="kw">@src/auth.ts</span> explain this flow
-<span class="kw">@selection</span> add tests for these branches
-
-<span class="cm">Review inline diff → accept or reject each change</span></pre><ul class="tight"><li><b>Editor selection becomes context</b> Mention a file or selected range instead of describing it.</li><li><b>Inline diffs</b> Review changes where the code lives.</li><li><b>Plan review</b> Comment on the plan before implementation.</li><li><b>Same project instructions</b> IDE sessions still use CLAUDE.md, settings, skills, and MCP.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/vs-code.md">vs-code</a> · <a href="https://code.claude.com/docs/en/jetbrains.md">jetbrains</a> · <a href="https://code.claude.com/docs/en/platforms.md">platforms</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · browser and GUI</div><h2>Test web and native interfaces</h2><div class="body"><pre><span class="kw">&gt;</span> Open localhost:3000, submit the form,
-  inspect console errors, fix the failure,
-  and capture a screenshot after it passes.
-
-<span class="cm">Chrome:</span> DOM + console + network + screenshots
-<span class="cm">Computer use:</span> screen + click + type on macOS</pre><ul class="tight"><li><b>Chrome integration</b> Debug and verify web apps in the real browser.</li><li><b>Computer use</b> Operate native apps and GUI-only tools from the CLI.</li><li><b>Visual evidence</b> Screenshots and rendered pixels catch problems tests miss.</li><li><b>Protect sensitive pages</b> Browser and computer access should stay permission-scoped.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/chrome.md">chrome</a> · <a href="https://code.claude.com/docs/en/computer-use.md">computer-use</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · web and mobile</div><h2>Move work between <span class="accent">local and cloud</span></h2><div class="body"><pre>claude --cloud "Fix issue 482 and open a PR"
-claude --teleport <session-id>
-
-<span class="cm">Remote Control</span>
-/remote-control   <span class="cm"># continue the local session from phone/web</span></pre><ul class="tight"><li><b>Cloud sessions</b> Run against GitHub without keeping your laptop active.</li><li><b>Teleport</b> Continue a cloud conversation in the terminal.</li><li><b>Remote Control</b> Drive a still-local session from another device.</li><li><b>Mobile</b> Start, monitor, and steer cloud tasks from the Claude app.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/web-quickstart.md">web-quickstart</a> · <a href="https://code.claude.com/docs/en/claude-code-on-the-web.md">claude-code-on-the-web</a> · <a href="https://code.claude.com/docs/en/remote-control.md">remote-control</a> · <a href="https://code.claude.com/docs/en/mobile.md">mobile</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · desktop</div><h2>Use <span class="accent">Desktop</span> for parallel visual work</h2><div class="body"><pre><span class="cm">Desktop workspace</span>
-[ Session A ] [ Session B ] [ Side chat ]
-[ terminal  ] [ preview   ] [ visual diff ]
-
-Each coding session can use isolated Git state.</pre><ul class="tight"><li><b>Parallel sessions</b> Run and arrange several tasks side by side.</li><li><b>Visual diff review</b> Inspect changes before commit or PR.</li><li><b>Previews and simulators</b> Run apps beside the conversation, including isolated iOS simulators.</li><li><b>Dispatch and schedules</b> Start work from phone and create recurring desktop tasks.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/desktop.md">desktop</a> · <a href="https://code.claude.com/docs/en/desktop-scheduled-tasks.md">desktop-scheduled-tasks</a> · <a href="https://code.claude.com/docs/en/desktop-ios-simulator.md">desktop-ios-simulator</a> · <a href="https://code.claude.com/docs/en/desktop-wsl.md">desktop-wsl</a> · <a href="https://code.claude.com/docs/en/desktop-linux.md">desktop-linux</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · team surfaces</div><h2>Start coding tasks from <span class="accent">Slack</span></h2><div class="body"><pre><span class="kw">@Claude</span> investigate the failing checkout test
-Use repo: payments-api
-Return: cause, proposed fix, and test evidence
-
-<span class="cm">Claude creates or updates the linked coding task.</span></pre><ul class="tight"><li><b>Claude Tag</b> The newer team path brings Claude into Slack channels.</li><li><b>Older Slack integration</b> Still documented for some Pro and Max setups.</li><li><b>Give explicit repository and outcome</b> A chat mention needs enough routing context.</li><li><b>Review disclosure and permissions</b> Channel membership does not grant repository or deployment access.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/slack.md">slack</a> · <a href="https://code.claude.com/docs/en/claude-tag.md">claude-tag</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · automation</div><h2>Run scheduled prompts and cloud routines</h2><div class="body"><pre><span class="cm">session schedule</span>
-/loop 30m check CI and report new failures
-
-<span class="cm">cloud routine</span>
-Trigger: weekday 08:00 or GitHub event
-Task: review dependency alerts
-Output: issue or pull request</pre><ul class="tight"><li><b>Scheduled tasks</b> Run reminders or repeated prompts inside an active session.</li><li><b>Routines</b> Run scheduled, API-triggered, or GitHub-triggered work in cloud infrastructure.</li><li><b>Define an output</b> Issue, PR, report, or notification should be explicit.</li><li><b>Use bounded permissions</b> Unattended tasks need narrow repository and network access.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/scheduled-tasks.md">scheduled-tasks</a> · <a href="https://code.claude.com/docs/en/routines.md">routines</a> · <a href="https://code.claude.com/docs/en/desktop-scheduled-tasks.md">desktop-scheduled-tasks</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · automation</div><h2>Keep working until a <span class="accent">goal</span> is met</h2><div class="body"><pre>/goal Fix the checkout test.
-Require `npm test -- checkout` to exit 0.
-Do not change public API behavior.
-Stop after 12 turns and report the blocker.</pre><ul class="tight"><li><b>Completion condition</b> A separate evaluator checks whether the conversation proves the goal.</li><li><b>Evidence must be visible</b> Surface test output and other proof in the session.</li><li><b>Bound the loop</b> Set turn or safety limits for difficult tasks.</li><li><b>Clear when needed</b> Use /goal to inspect status and /goal clear to cancel.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/goal.md">goal</a> · <a href="https://code.claude.com/docs/en/best-practices.md">best-practices</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · automation</div><h2>Push events into a running session</h2><div class="body"><pre><span class="cm">External event</span> CI failed on PR 482
-        ↓ channel notification
-<span class="kw">Claude session</span> reads failure, investigates, replies
-        ↓ MCP reply tool
-<span class="cm">External system</span> receives scoped response</pre><ul class="tight"><li><b>Channels are inbound</b> An MCP server can deliver webhooks, alerts, or messages to a live session.</li><li><b>Declare capabilities</b> The server identifies channel support and reply tools.</li><li><b>Gate senders</b> Filter which sources may wake or instruct the session.</li><li><b>Do not treat payloads as trusted instructions</b> Validate scope and permissions before actions.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/channels.md">channels</a> · <a href="https://code.claude.com/docs/en/channels-reference.md">channels-reference</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · automation</div><h2>Launch the right session from a link</h2><div class="body"><pre>claude-cli://open?repo=/work/payments&prompt=Investigate%20PR%20482
-
-<span class="cm">Place links in:</span> runbooks · alerts · dashboards · issue templates</pre><ul class="tight"><li><b>Open the correct repo</b> The link routes Claude Code to a local working directory.</li><li><b>Prefill the task</b> Include a bounded prompt so responders start with the right context.</li><li><b>Treat links as input</b> The user still reviews the prompt and permissions.</li><li><b>Use for operations</b> Attach a diagnostic session directly to an alert or runbook step.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/deep-links.md">deep-links</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · parallel agents</div><h2>Choose the right <span class="accent">parallel pattern</span></h2><div class="body"><pre><span class="cm">Subagent</span>     one parent, separate bounded context
-<span class="cm">Worktree</span>     independent session and branch
-<span class="cm">Agent view</span>   dashboard for many sessions
-<span class="cm">Agent team</span>   shared tasks and messaging
-<span class="cm">Workflow</span>     rerunnable script that spawns subagents</pre><ul class="tight"><li><b>Subagent</b> Best for research or a specialist check that returns to one session.</li><li><b>Worktree</b> Best for independent changes that will become separate commits or PRs.</li><li><b>Agent team</b> Best when peers must coordinate on shared work.</li><li><b>Dynamic workflow</b> Best for repeatable audits, migrations, or cross-checks at scale.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/agents.md">agents</a> · <a href="https://code.claude.com/docs/en/sub-agents.md">sub-agents</a> · <a href="https://code.claude.com/docs/en/worktrees.md">worktrees</a> · <a href="https://code.claude.com/docs/en/agent-view.md">agent-view</a> · <a href="https://code.claude.com/docs/en/agent-teams.md">agent-teams</a> · <a href="https://code.claude.com/docs/en/workflows.md">workflows</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · parallel agents</div><h2>Manage many sessions with <span class="accent">agent view</span></h2><div class="body"><pre>claude agents
-
-[ auth-refactor ] working
-[ api-tests     ] waiting for input
-[ docs-update   ] complete
-[ perf-analysis ] blocked</pre><ul class="tight"><li><b>One screen</b> See what every session is doing and which needs input.</li><li><b>Dispatch work</b> Start and route tasks without opening many terminals.</li><li><b>Keep tasks isolated</b> Each session still needs its own workspace or worktree.</li><li><b>Review before integration</b> A dashboard shows status, not correctness.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/agent-view.md">agent-view</a> · <a href="https://code.claude.com/docs/en/agents.md">agents</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · parallel agents</div><h2>Coordinate <span class="accent">agent teams</span></h2><div class="body"><pre><span class="kw">Lead</span> breaks work into shared tasks
-  ├─ teammate: API migration
-  ├─ teammate: test coverage
-  └─ teammate: docs and rollout
-
-Teammates message each other and update shared status.</pre><ul class="tight"><li><b>Shared task list</b> The team tracks ownership and dependencies.</li><li><b>Inter-agent messages</b> Peers can coordinate instead of only reporting to one parent.</li><li><b>Central management</b> The lead monitors progress and combines results.</li><li><b>Use when coordination is real</b> Independent tasks are simpler with worktrees or subagents.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/agent-teams.md">agent-teams</a> · <a href="https://code.claude.com/docs/en/cross-session-messaging.md">cross-session-messaging</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · parallel agents</div><h2>Create a reusable <span class="accent">dynamic workflow</span></h2><div class="body"><pre>const results = await parallel(
-  packages.map(pkg => task(`Audit ${pkg} for deprecated API use`))
-)
-return task(`Compare findings, remove false positives, save report`)</pre><ul class="tight"><li><b>Claude writes the orchestration script</b> You can inspect and rerun it.</li><li><b>Parallel fan-out</b> Apply the same bounded task to many packages or files.</li><li><b>Cross-check results</b> Use a final step to compare evidence and remove duplicates.</li><li><b>Use for repeatable scale</b> Audits, migrations, and research fit better than one-off edits.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/workflows.md">workflows</a> · <a href="https://code.claude.com/docs/en/agents.md">agents</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · worktrees</div><h2>Use native worktree support</h2><div class="body"><pre>claude --worktree feature-auth
-
-<span class="cm">Include ignored local files when needed:</span>
-# .worktreeinclude
-.env.example
-fixtures/**
-
-<span class="cm">Clean up after merge:</span> git worktree remove ../feature-auth</pre><ul class="tight"><li><b>Isolation</b> Each session gets separate files and Git state.</li><li><b>Ignored files need a rule</b> Use .worktreeinclude for safe local assets required by the task.</li><li><b>Subagents can isolate too</b> Choose worktree isolation for agents that edit independently.</li><li><b>Non-Git projects</b> VCS hooks can provide equivalent setup and cleanup.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/worktrees.md">worktrees</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · plugins</div><h2>Install and inspect <span class="accent">plugins</span></h2><div class="body"><pre>/plugin marketplace add org/claude-plugins
-/plugin install security-review@org-marketplace
-/plugin list
-
-<span class="cm">A plugin may package:</span> skills · agents · hooks · MCP · commands</pre><ul class="tight"><li><b>Marketplace</b> A catalog distributes approved plugin versions.</li><li><b>Inspect before install</b> Read hooks, tools, network access, and instructions.</li><li><b>Project or user scope</b> Choose whether the extension follows one repository or every project.</li><li><b>Version constraints</b> Organizations can curate compatible plugin sets.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/discover-plugins.md">discover-plugins</a> · <a href="https://code.claude.com/docs/en/plugins.md">plugins</a> · <a href="https://code.claude.com/docs/en/plugins-reference.md">plugins-reference</a> · <a href="https://code.claude.com/docs/en/plugin-marketplaces.md">plugin-marketplaces</a> · <a href="https://code.claude.com/docs/en/plugin-dependencies.md">plugin-dependencies</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · plugins</div><h2>Test a plugin with evals</h2><div class="body"><pre>claude plugin eval ./security-review/evals
-
-<span class="cm">Compare:</span>
-with plugin       18 / 20 cases pass
-without plugin    11 / 20 cases pass
-regression gate   required score ≥ 17</pre><ul class="tight"><li><b>Write task cases</b> Each eval defines input, expected behavior, and grading.</li><li><b>Use a baseline</b> Prove the plugin improves results over no plugin.</li><li><b>Grade consistently</b> Use programmatic or model-based graders with clear criteria.</li><li><b>Gate releases</b> Run evals in CI before publishing a plugin update.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/plugin-evals.md">plugin-evals</a> · <a href="https://code.claude.com/docs/en/plugins-reference.md">plugins-reference</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · artifacts</div><h2>Share session output as an artifact</h2><div class="body"><pre><span class="kw">&gt;</span> Turn these benchmark results into an interactive chart.
-
-<span class="cm">Artifact visibility:</span> private · organization · public link
-<span class="cm">Artifact type:</span> live page with interactive controls</pre><ul class="tight"><li><b>Artifact is a deliverable</b> It turns session output into a page, not only a chat response.</li><li><b>Choose visibility</b> Keep private, share inside the organization, or publish.</li><li><b>Review data first</b> Do not expose repository secrets or private inputs.</li><li><b>Use for explanation</b> Reports, demos, visualizations, and small tools fit well.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/artifacts.md">artifacts</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · security review</div><h2>Add <span class="accent">security checks</span> while coding</h2><div class="body"><pre>/plugin install security-guidance
-
-<span class="kw">&gt;</span> Implement token refresh and run the security review.
-<span class="cm">Checks:</span> injection · auth · secrets · unsafe deserialization
-<span class="ok">Fix findings in the same session, then rerun tests.</span></pre><ul class="tight"><li><b>Security guidance</b> Reviews new code while the working context is fresh.</li><li><b>Claude Security</b> Scans a codebase and turns findings into reviewable patches.</li><li><b>Human review remains</b> A plugin can miss design and business-logic risks.</li><li><b>Keep proof</b> Link each fix to a finding and test.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/security-guidance.md">security-guidance</a> · <a href="https://code.claude.com/docs/en/claude-security.md">claude-security</a> · <a href="https://code.claude.com/docs/en/security.md">security</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · code review</div><h2>Run automated pull-request review</h2><div class="body"><pre><span class="cm">Pull request opened</span>
-  → multi-agent review
-  → logic, security, regression findings
-  → verified comments with code references
-  → developer fixes or dismisses
-
-<span class="kw">/code-review ultra</span>  <span class="cm">deep cloud review</span></pre><ul class="tight"><li><b>Codebase-aware</b> Review agents inspect more than the changed lines.</li><li><b>Verify findings</b> The system attempts to reduce false positives before commenting.</li><li><b>Configure review instructions</b> State project-specific risks and exclusions.</li><li><b>Do not auto-merge on a score</b> A developer owns the final decision.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/code-review.md">code-review</a> · <a href="https://code.claude.com/docs/en/ultrareview.md">ultrareview</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · CI/CD</div><h2>Use Claude in GitHub Actions or GitLab CI</h2><div class="body"><pre><span class="cm">Issue or PR comment</span>  @claude fix the failing test
-        ↓
-<span class="cm">CI job</span> authenticates with scoped credentials
-        ↓
-<span class="cm">Claude</span> reads repo, edits branch, runs checks, opens PR</pre><ul class="tight"><li><b>Mention-driven tasks</b> Turn an issue or review comment into a branch and pull request.</li><li><b>Workflow triggers</b> Choose issue, PR, schedule, or manual dispatch.</li><li><b>Scope the token</b> Limit repository, branch, and secret access.</li><li><b>Alternative providers</b> Actions can route through supported cloud model providers.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/github-actions.md">github-actions</a> · <a href="https://code.claude.com/docs/en/github-actions-cloud-providers.md">github-actions-cloud-providers</a> · <a href="https://code.claude.com/docs/en/gitlab-ci-cd.md">gitlab-ci-cd</a> · <a href="https://code.claude.com/docs/en/github-enterprise-server.md">github-enterprise-server</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · large repositories</div><h2>Keep monorepo context focused</h2><div class="body"><pre>repo/CLAUDE.md             <span class="cm">shared commands</span>
-packages/web/CLAUDE.md     <span class="cm">front-end rules</span>
-packages/api/CLAUDE.md     <span class="cm">API rules</span>
-packages/api/.claude/skills/migrate-db/
-
-claude --worktree --sparse packages/api</pre><ul class="tight"><li><b>Nested instructions</b> Load package guidance only where it applies.</li><li><b>Sparse worktrees</b> Check out only the part of a very large repository needed for a task.</li><li><b>Code intelligence</b> Use language servers and indexes instead of reading every file.</li><li><b>Per-package skills</b> Keep build, test, and release workflows next to their owners.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/large-codebases.md">large-codebases</a> · <a href="https://code.claude.com/docs/en/memory.md">memory</a> · <a href="https://code.claude.com/docs/en/worktrees.md">worktrees</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · troubleshooting</div><h2>Debug what Claude Code actually loaded</h2><div class="body"><pre>/doctor      <span class="cm">installation and environment</span>
-/context     <span class="cm">instructions and context use</span>
-/hooks       <span class="cm">registered hooks and matches</span>
-/mcp         <span class="cm">server status and tools</span>
-/plugin list <span class="cm">installed extensions</span></pre><ul class="tight"><li><b>Do not guess</b> Inspect the effective configuration and loaded files.</li><li><b>Match the error text</b> Use the error reference for runtime failures.</li><li><b>Separate installation from project config</b> PATH, auth, and network issues have different checks.</li><li><b>Watch resource symptoms</b> High CPU, hangs, search failures, and compact loops have documented fixes.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/debug-your-config.md">debug-your-config</a> · <a href="https://code.claude.com/docs/en/troubleshoot-install.md">troubleshoot-install</a> · <a href="https://code.claude.com/docs/en/troubleshooting.md">troubleshooting</a> · <a href="https://code.claude.com/docs/en/errors.md">errors</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · cost and usage</div><h2>Track and reduce cost</h2><div class="body"><pre>/cost
-/context
-
-<span class="cm">OpenTelemetry:</span> tokens · cost · latency · tool events
-<span class="cm">Analytics:</span> active users · acceptance · velocity trends
-<span class="cm">Controls:</span> model · effort · compact · spend limits</pre><ul class="tight"><li><b>Know the billing path</b> Subscription usage and API usage are managed differently.</li><li><b>Measure before tuning</b> Find large context, expensive models, or repetitive tool output.</li><li><b>Use preprocessing hooks</b> Trim noisy command output before it enters context.</li><li><b>Set team limits</b> Gateways and organization tools can enforce spend policy.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/costs.md">costs</a> · <a href="https://code.claude.com/docs/en/monitoring-usage.md">monitoring-usage</a> · <a href="https://code.claude.com/docs/en/analytics.md">analytics</a> · <a href="https://code.claude.com/docs/en/prompt-caching.md">prompt-caching</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · organization</div><h2>Roll out Claude Code with managed policy</h2><div class="body"><pre><span class="cm">Admin decisions</span>
-provider → authentication → managed settings → MCP policy
-network → data policy → telemetry → spend controls
-
-<span class="cm">Developer verifies:</span> /doctor · /mcp · effective settings</pre><ul class="tight"><li><b>Managed settings</b> Push non-overridable organization policy to developer machines.</li><li><b>Server-managed settings</b> Deliver policy centrally without relying only on device management.</li><li><b>Managed MCP</b> Allow, deny, or provide approved servers.</li><li><b>Adoption support</b> Champion and communications kits cover training and internal rollout.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/admin-setup.md">admin-setup</a> · <a href="https://code.claude.com/docs/en/managed-settings.md">managed-settings</a> · <a href="https://code.claude.com/docs/en/server-managed-settings.md">server-managed-settings</a> · <a href="https://code.claude.com/docs/en/managed-mcp.md">managed-mcp</a> · <a href="https://code.claude.com/docs/en/communications-kit.md">communications-kit</a> · <a href="https://code.claude.com/docs/en/champion-kit.md">champion-kit</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · enterprise providers</div><h2>Choose an API <span class="accent">provider and gateway</span></h2><div class="body"><pre>Claude Code
-  ├─ Anthropic API / Claude subscription
-  ├─ Amazon Bedrock / Claude Platform on AWS
-  ├─ Google Cloud Agent Platform
-  ├─ Microsoft Foundry
-  └─ organization LLM gateway → approved upstreams</pre><ul class="tight"><li><b>Identity and billing differ</b> Provider choice changes credentials, regions, models, and cost ownership.</li><li><b>Gateway centralizes control</b> Keep credentials, model routing, telemetry, and spend limits in one layer.</li><li><b>Compatibility matters</b> Gateways must forward required endpoints, headers, and streaming fields.</li><li><b>Test the full path</b> Verify auth, model resolution, caching, tools, and errors before rollout.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/third-party-integrations.md">third-party-integrations</a> · <a href="https://code.claude.com/docs/en/amazon-bedrock.md">amazon-bedrock</a> · <a href="https://code.claude.com/docs/en/claude-platform-on-aws.md">claude-platform-on-aws</a> · <a href="https://code.claude.com/docs/en/google-vertex-ai.md">google-vertex-ai</a> · <a href="https://code.claude.com/docs/en/microsoft-foundry.md">microsoft-foundry</a> · <a href="https://code.claude.com/docs/en/gateways.md">gateways</a> · <a href="https://code.claude.com/docs/en/llm-gateway-protocol.md">llm-gateway-protocol</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · enterprise network</div><h2>Run behind <span class="accent">enterprise network</span> controls</h2><div class="body"><pre>HTTPS_PROXY=http://proxy.corp:8080
-NODE_EXTRA_CA_CERTS=/etc/corp/ca.pem
-
-<span class="cm">Optional controls:</span> mTLS · process wrapper · domain allowlist
-<span class="cm">Container controls:</span> fixed image · egress policy · secret mount</pre><ul class="tight"><li><b>Proxy and CA</b> Configure outbound traffic and private trust roots.</li><li><b>mTLS</b> Use client certificates where the network requires them.</li><li><b>Process wrapper</b> Route Claude Code and child processes through a corporate launcher.</li><li><b>Dev container</b> Give every developer the same isolated dependencies and policy.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/network-config.md">network-config</a> · <a href="https://code.claude.com/docs/en/corporate-launcher.md">corporate-launcher</a> · <a href="https://code.claude.com/docs/en/devcontainer.md">devcontainer</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · cloud environments</div><h2>Configure cloud and self-hosted environments</h2><div class="body"><pre><span class="cm">Cloud environment</span>
-network: restricted
-setup: ./scripts/bootstrap.sh
-env: test-only variables
-cache: dependencies
-
-<span class="cm">Self-hosted</span> runner → orchestrator → session container</pre><ul class="tight"><li><b>Cloud setup scripts</b> Install dependencies before the agent starts.</li><li><b>Network levels</b> Choose no network, approved domains, or broader access.</li><li><b>Self-hosted runners</b> Keep cloud sessions on infrastructure you control.</li><li><b>Verify identity</b> Internal services can validate a session access-token JWT.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/cloud-environments.md">cloud-environments</a> · <a href="https://code.claude.com/docs/en/self-hosted-environments.md">self-hosted-environments</a> · <a href="https://code.claude.com/docs/en/self-hosted-environments-configuration.md">self-hosted-environments-configuration</a> · <a href="https://code.claude.com/docs/en/self-hosted-environments-identity.md">self-hosted-environments-identity</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · data and security</div><h2>Know what data leaves the machine</h2><div class="body"><pre><span class="cm">Review before rollout:</span>
-source files · prompts · tool output · telemetry · transcripts
-retention · training policy · region · provider · support access
-
-<span class="cm">ZDR:</span> qualified Enterprise accounts; some features disabled</pre><ul class="tight"><li><b>Data policy depends on account and provider</b> Check the current plan and deployment path.</li><li><b>Minimize secrets</b> Use environment injection and scoped credentials, not prompts or files.</li><li><b>Zero Data Retention has limits</b> Confirm feature availability before choosing it.</li><li><b>Security is layered</b> Permissions, sandbox, network, hooks, and human review work together.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/data-usage.md">data-usage</a> · <a href="https://code.claude.com/docs/en/zero-data-retention.md">zero-data-retention</a> · <a href="https://code.claude.com/docs/en/security.md">security</a> · <a href="https://code.claude.com/docs/en/feature-availability.md">feature-availability</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · Agent SDK</div><h2>Build an agent with the Claude <span class="accent">Agent SDK</span></h2><div class="body"><pre><span class="cm">Python</span>
-from claude_agent_sdk import query, ClaudeAgentOptions
-
-async for message in query(
-  prompt="Inspect the failing tests and propose a fix",
-  options=ClaudeAgentOptions(allowed_tools=["Read", "Grep", "Bash"])
-):
-    print(message)</pre><ul class="tight"><li><b>Same agent loop as Claude Code</b> The library gives your app sessions, tools, permissions, hooks, and context.</li><li><b>Python and TypeScript</b> Choose the SDK that fits the host application.</li><li><b>Single or streaming input</b> Use one-shot input for fixed tasks and streaming for interactive agents.</li><li><b>Load Claude Code features deliberately</b> Project instructions and skills are opt-in SDK configuration.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/agent-sdk/overview.md">agent-sdk/overview</a> · <a href="https://code.claude.com/docs/en/agent-sdk/quickstart.md">agent-sdk/quickstart</a> · <a href="https://code.claude.com/docs/en/agent-sdk/agent-loop.md">agent-sdk/agent-loop</a> · <a href="https://code.claude.com/docs/en/agent-sdk/claude-code-features.md">agent-sdk/claude-code-features</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · Agent SDK</div><h2>Persist and resume <span class="accent">SDK sessions</span></h2><div class="body"><pre><span class="cm">first run</span>  result.session_id → save it
-<span class="cm">later</span>      resume=session_id
-<span class="cm">alternate path</span> fork_session=true
-
-External store: transcript mirror → S3 / Redis / database</pre><ul class="tight"><li><b>Resume preserves conversation</b> Return to a prior agent task without rebuilding history.</li><li><b>Fork protects the original</b> Try another approach from the same point.</li><li><b>External storage supports many hosts</b> Mirror transcripts so a different worker can resume.</li><li><b>Apply retention policy</b> Session data can contain source, tool output, and user input.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/agent-sdk/sessions.md">agent-sdk/sessions</a> · <a href="https://code.claude.com/docs/en/agent-sdk/external-session-storage.md">agent-sdk/external-session-storage</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · Agent SDK</div><h2>Handle streaming, approvals, and questions</h2><div class="body"><pre><span class="cm">stream events</span> text_delta · tool_use · tool_result
-
-<span class="cm">approval request</span> Bash("npm publish")
-app UI → user approves or denies → SDK continues
-
-<span class="cm">question</span> "Which database should I target?"</pre><ul class="tight"><li><b>Stream for responsive UI</b> Render text and tool activity as it arrives.</li><li><b>Surface approval requests</b> The host application must return the user&#x27;s decision.</li><li><b>Handle clarifying questions</b> Do not guess load-bearing choices in unattended code.</li><li><b>Separate input modes</b> Choose fixed input for jobs and streaming input for conversation.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/agent-sdk/streaming-vs-single-mode.md">agent-sdk/streaming-vs-single-mode</a> · <a href="https://code.claude.com/docs/en/agent-sdk/streaming-output.md">agent-sdk/streaming-output</a> · <a href="https://code.claude.com/docs/en/agent-sdk/user-input.md">agent-sdk/user-input</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · Agent SDK</div><h2>Return validated <span class="accent">structured output</span></h2><div class="body"><pre>schema = {
-  "type": "object",
-  "properties": {
-    "risk": {"enum": ["low","medium","high"]},
-    "files": {"type": "array", "items": {"type":"string"}}
-  },
-  "required": ["risk","files"]
-}
-<span class="cm">Agent works with tools, then returns schema-valid JSON.</span></pre><ul class="tight"><li><b>Use JSON Schema</b> Define the exact result another program needs.</li><li><b>Validate after multi-turn work</b> Structure applies to the final output, not only one model call.</li><li><b>Use typed helpers</b> Zod and Pydantic can generate and validate schemas.</li><li><b>Still validate meaning</b> Schema correctness does not prove factual correctness.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/agent-sdk/structured-outputs.md">agent-sdk/structured-outputs</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · Agent SDK</div><h2>Give SDK agents custom and external tools</h2><div class="body"><pre><span class="cm">In-process tool</span>
-@tool("get_build", "Read CI build status", {"id": str})
-async def get_build(args): ...
-
-<span class="cm">External tools</span> MCP server over stdio / HTTP
-<span class="cm">Large catalog</span> tool search loads only matching tools</pre><ul class="tight"><li><b>Custom tools call your code</b> Expose a narrow typed function instead of broad shell access.</li><li><b>MCP connects services</b> Use transport and authentication appropriate to the environment.</li><li><b>Tool search scales</b> Discover from thousands of tools without loading every schema.</li><li><b>Handle tool errors</b> Return useful failures so the agent can recover or stop.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/agent-sdk/custom-tools.md">agent-sdk/custom-tools</a> · <a href="https://code.claude.com/docs/en/agent-sdk/mcp.md">agent-sdk/mcp</a> · <a href="https://code.claude.com/docs/en/agent-sdk/tool-search.md">agent-sdk/tool-search</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · Agent SDK</div><h2>Control SDK agents with permissions and hooks</h2><div class="body"><pre>options = ClaudeAgentOptions(
-  allowed_tools=["Read", "Grep", "Bash(npm test:*)"],
-  permission_mode="default",
-  hooks={"PreToolUse": [check_command]}
-)</pre><ul class="tight"><li><b>Declarative rules</b> Allow or deny tool patterns before the session starts.</li><li><b>Runtime approval</b> Ask the user when a new action falls outside the rules.</li><li><b>Hooks intercept behavior</b> Inspect, modify, block, or log at defined lifecycle points.</li><li><b>Checkpoint files</b> Track and restore agent edits when a run goes wrong.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/agent-sdk/permissions.md">agent-sdk/permissions</a> · <a href="https://code.claude.com/docs/en/agent-sdk/hooks.md">agent-sdk/hooks</a> · <a href="https://code.claude.com/docs/en/agent-sdk/checkpointing.md">agent-sdk/checkpointing</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · Agent SDK</div><h2>Operate SDK agents in production</h2><div class="body"><pre><span class="cm">service</span> API → queue → isolated agent worker
-<span class="cm">state</span> sessions + artifacts + audit events
-<span class="cm">controls</span> tenant sandbox + network + secrets + limits
-<span class="cm">telemetry</span> traces + tokens + cost + tool latency</pre><ul class="tight"><li><b>Isolate tenants</b> Use containers, Kubernetes, or a sandbox provider.</li><li><b>Persist sessions</b> Workers are replaceable; conversation state must not be trapped on one host.</li><li><b>Manage credentials</b> Inject scoped secrets per session and rotate them.</li><li><b>Observe and limit</b> Export OpenTelemetry, track cost, time out loops, and cap concurrency.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/agent-sdk/hosting.md">agent-sdk/hosting</a> · <a href="https://code.claude.com/docs/en/agent-sdk/secure-deployment.md">agent-sdk/secure-deployment</a> · <a href="https://code.claude.com/docs/en/agent-sdk/observability.md">agent-sdk/observability</a> · <a href="https://code.claude.com/docs/en/agent-sdk/cost-tracking.md">agent-sdk/cost-tracking</a></p></div></div></section>
-<section class="slide review-slide docs-candidate"><div class="inner"><div class="kicker">Review later - docs candidate · reference</div><h2>Use the <span class="accent">reference pages</span> when behavior is exact</h2><div class="body"><pre><span class="cm">Need exact syntax?</span> CLI reference · Commands · Environment variables
-<span class="cm">Need execution rules?</span> Tools · Permissions · Hooks reference
-<span class="cm">Need extension schema?</span> Plugins · Channels · SDK API
-<span class="cm">Need a term?</span> Glossary</pre><ul class="tight"><li><b>Guides explain a workflow</b> Use them to understand when and why.</li><li><b>References define the contract</b> Use them for flags, JSON keys, event fields, and defaults.</li><li><b>Check the changelog</b> New commands and behavior can move faster than workshop material.</li><li><b>Verify against current docs</b> Do not copy old blog syntax into team setup.</li></ul><p class="note">Official docs: <a href="https://code.claude.com/docs/en/cli-reference.md">cli-reference</a> · <a href="https://code.claude.com/docs/en/commands.md">commands</a> · <a href="https://code.claude.com/docs/en/env-vars.md">env-vars</a> · <a href="https://code.claude.com/docs/en/tools-reference.md">tools-reference</a> · <a href="https://code.claude.com/docs/en/hooks.md">hooks</a> · <a href="https://code.claude.com/docs/en/plugins-reference.md">plugins-reference</a> · <a href="https://code.claude.com/docs/en/channels-reference.md">channels-reference</a> · <a href="https://code.claude.com/docs/en/glossary.md">glossary</a> · <a href="https://code.claude.com/docs/en/changelog.md">changelog</a></p></div></div></section>
 
 <nav class="nav">
   <div class="counter"><b id="cur">01</b> / <span id="total">22</span></div>
